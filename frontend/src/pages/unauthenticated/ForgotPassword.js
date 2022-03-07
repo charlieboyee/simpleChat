@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+
 import {
 	Card,
 	CardActions,
@@ -13,14 +14,14 @@ export default function CreateAccount() {
 	return (
 		<main>
 			<Card>
-				<CardHeader title='Create Account' />
+				<CardHeader title='Forgot Password' />
 				<CardContent>
 					<TextField placeholder='Username' />
 					<TextField placeholder='Password' type='password' />
 				</CardContent>
 				<CardActions>
 					<Button onClick={() => navigate('/', { replace: true })}>
-						Already have an account? Click here.
+						Click here to go back
 					</Button>
 				</CardActions>
 			</Card>

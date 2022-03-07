@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import {
 	Card,
 	CardActions,
@@ -9,22 +10,32 @@ import {
 import './design/Landing.css';
 
 export default function Landing() {
+	const navigate = useNavigate();
 	return (
-		<main>
+		<div id='landing'>
 			<h1>Simple Chat</h1>
 			<main>
 				<Card>
 					<CardHeader title='Login' />
 					<CardContent>
-						<TextField placeholder='Username' />
-						<TextField placeholder='Password' type='password' />
+						<TextField label='Username' placeholder='Username' />
+						<TextField
+							label='Password'
+							placeholder='Password'
+							type='password'
+						/>
+						<Button>Log In</Button>
 					</CardContent>
 					<CardActions>
-						<Button>Don't have an account? Click here.</Button>
-						<Button>Forgot password? Click here.</Button>
+						<Button onClick={() => navigate('createAccount')}>
+							Don't have an account? Click here.
+						</Button>
+						<Button onClick={() => navigate('forgotPassword')}>
+							Forgot password? Click here.
+						</Button>
 					</CardActions>
 				</Card>
 			</main>
-		</main>
+		</div>
 	);
 }
