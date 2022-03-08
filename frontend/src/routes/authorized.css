@@ -1,0 +1,24 @@
+@font-face {
+	font-family: SimpleFont;
+	src: url('../assets/fonts/Fredoka-Regular.ttf');
+}
+.authorizedBase {
+	height: 100vh;
+	background-color: #f07167;
+}
+#mainNav {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+}
+#mainNav #left {
+	text-transform: none;
+	color: white;
+	font-family: SimpleFont;
+}
+
+#mainNav #logOutButton {
+	text-transform: none;
+	color: white;
+	font-family: SimpleFont;
+}

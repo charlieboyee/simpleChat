@@ -1,26 +1,16 @@
-import React from 'react';
+import React, { createContext } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import CreateAccount from './pages/unauthenticated/CreateAccount';
-import ForgotPassword from './pages/unauthenticated/ForgotPassword';
-import Landing from './pages/unauthenticated/Landing';
-import NotFound from './pages/NotFound';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
+export const LoggedInContext = createContext();
+
 ReactDOM.render(
 	<React.StrictMode>
 		<BrowserRouter>
-			<Routes>
-				<Route path='/' element={<App />}>
-					<Route index element={<Landing />} />
-					<Route path='/createAccount' element={<CreateAccount />} />
-					<Route path='/forgotPassword' element={<ForgotPassword />} />
-
-					<Route path='*' element={<NotFound />} />
-				</Route>
-			</Routes>
+			<App />
 		</BrowserRouter>
 	</React.StrictMode>,
 	document.getElementById('root')

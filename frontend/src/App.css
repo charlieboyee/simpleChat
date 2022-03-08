@@ -2,7 +2,7 @@
 	font-family: SimpleFont;
 	src: url('./assets/fonts/Fredoka-Regular.ttf');
 }
-.App {
+.base {
 	height: 100vh;
 	background-color: #f07167;
 }

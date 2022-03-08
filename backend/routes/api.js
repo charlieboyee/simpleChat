@@ -12,7 +12,7 @@ router.post('/logIn', (req, res) => {
 		.then((result) => {
 			if (result) {
 				req.session.cookie.token = result;
-				return res.json({ status: true });
+				return res.json({ status: [req.sessionID, result] });
 			}
 			res.json({ status: false });
 		})

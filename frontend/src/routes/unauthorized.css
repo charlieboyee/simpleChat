@@ -1,0 +1,10 @@
+@font-face {
+	font-family: SimpleFont;
+	src: url('../assets/fonts/Fredoka-Regular.ttf');
+}
+.unauthorizedBase {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	background-color: #f07167;
+}

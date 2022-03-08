@@ -1,14 +1,22 @@
-import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import AuthorizedRoutes from './routes/authorized';
+import UnauthorizedRoutes from './routes/unauthorized';
+import { LoggedInContext } from './index';
 import './App.css';
-import NotFound from './pages/NotFound';
 
-function App() {
+export default function App() {
+	const [loggedIn, setLoggedIn] = useState(false);
+
+	if (loggedIn) {
+		return (
+			<LoggedInContext.Provider value={[loggedIn, setLoggedIn]}>
+				<AuthorizedRoutes />
+			</LoggedInContext.Provider>
+		);
+	}
 	return (
-		<div className='App'>
-			<Outlet />
-		</div>
+		<LoggedInContext.Provider value={[loggedIn, setLoggedIn]}>
+			<UnauthorizedRoutes />
+		</LoggedInContext.Provider>
 	);
 }
-
-export default App;
