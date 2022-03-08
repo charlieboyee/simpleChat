@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DBUSER}:${process.env.DBPW}@cluster0.tc23e.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -28,7 +29,8 @@ const logIn = async (user) => {
 	if (!result) return result;
 	const match = await bcrypt.compare(user.password, result.password);
 	if (!match) return match;
-	return true;
+	const access_token = jwt.sign(user.username, process.env.ACCESS_SECRET);
+	return access_token;
 };
 const runDb = async () => {
 	try {
