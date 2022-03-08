@@ -19,11 +19,16 @@ const createAccount = async (user) => {
 		username: user.username,
 		password: hash,
 		inception: Date(),
-		friends: [],
+		followers: [],
+		following: [],
+		profilePhoto: '',
 	});
 	return result;
 };
-
+const getUserData = async (user) => {
+	let result = await users.findOne({ username: user });
+	return result;
+};
 const logIn = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (!result) return result;
@@ -45,6 +50,7 @@ const runDb = async () => {
 
 module.exports = {
 	createAccount,
+	getUserData,
 	logIn,
 	runDb,
 };

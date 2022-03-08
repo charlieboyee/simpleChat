@@ -2,8 +2,10 @@ const express = require('express');
 const database = require('../database');
 const { isAuthorized } = require('../middlewares');
 const bcrypt = require('bcrypt');
+const userRoute = require('./userRoutes.js');
 const router = express.Router();
 
+router.use('/user', userRoute);
 router.post('/logOut', isAuthorized, (req, res) => {
 	req.session.destroy().sendStatus(200);
 });
@@ -13,6 +15,7 @@ router.post('/logIn', (req, res) => {
 		.then((result) => {
 			if (result) {
 				req.session.token = result;
+				req.session.user = req.body.username;
 				return res.json({ status: [req.sessionID, result] });
 			}
 			res.json({ status: false });

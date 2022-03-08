@@ -6,6 +6,7 @@ const isAuthorized = (req, res, next) => {
 	const token = req.session.token;
 	return jwt.verify(token, process.env.ACCESS_SECRET, (err, decoded) => {
 		if (err || !decoded) return res.sendStatus(401);
+
 		return next();
 	});
 };
