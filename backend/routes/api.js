@@ -1,22 +1,23 @@
 const express = require('express');
 const database = require('../database');
+const { isAuthorized } = require('../middlewares');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
-router.get('/test', (req, res) => {
-	res.json(req.session);
+router.post('/logOut', isAuthorized, (req, res) => {
+	res.sendStatus(200);
 });
 router.post('/logIn', (req, res) => {
 	database
 		.logIn(req.body)
 		.then((result) => {
 			if (result) {
-				req.session.cookie.token = result;
+				req.session.token = result;
 				return res.json({ status: [req.sessionID, result] });
 			}
 			res.json({ status: false });
 		})
-		.catch((err) => res.status(500));
+		.catch((err) => res.sendStatus(500));
 });
 
 router.post('/createAccount', (req, res) => {
@@ -28,7 +29,7 @@ router.post('/createAccount', (req, res) => {
 			}
 			res.json({ status: false });
 		})
-		.catch((err) => res.status(500));
+		.catch((err) => res.sendStatus(500));
 });
 
 router.get('/', (req, res) => {

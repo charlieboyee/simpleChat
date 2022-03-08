@@ -7,20 +7,22 @@ const database = require('./database');
 const api = require('./routes/api');
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(
 	session({
 		secret: 'jjong',
+		resave: false,
 		genid: () => {
 			return uuidv4(); // use UUIDs for session IDs
 		},
 		cookie: {
-			maxAge: 30000,
+			httpOnly: true,
+			maxAge: 300000,
 		},
 		saveUninitialized: false,
 	})
 );
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 database.runDb().then(() => {
 	app.use('/api', api);

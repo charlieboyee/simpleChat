@@ -5,6 +5,7 @@ import { Avatar, Button, IconButton, Menu, MenuItem } from '@mui/material';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
+
 export default function NavBar() {
 	const navigate = useNavigate();
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
@@ -19,9 +20,17 @@ export default function NavBar() {
 		setAnchorEl(null);
 	};
 
-	const logOut = () => {
-		localStorage.clear();
-		setLoggedIn(false);
+	const logOut = async () => {
+		const result = await fetch('/api/logOut', {
+			method: 'POST',
+		});
+		if (result.status === 200) {
+			localStorage.clear();
+			setLoggedIn(false);
+			console.log('sucessfully logged out');
+			return;
+		}
+		return;
 	};
 	return (
 		<nav id='mainNav'>
@@ -43,9 +52,6 @@ export default function NavBar() {
 				<IconButton onClick={handleMenuClick}>
 					<Avatar src='' />
 				</IconButton>
-				<Button id='logOutButton' onClick={logOut}>
-					Log Out
-				</Button>
 			</span>
 			<Menu anchorEl={anchorEl} onClose={handleMenuClose} open={open}>
 				<MenuItem
@@ -55,6 +61,22 @@ export default function NavBar() {
 					}}
 				>
 					Profile
+				</MenuItem>
+				<MenuItem
+					onClick={() => {
+						handleMenuClose();
+						navigate('edit');
+					}}
+				>
+					Edit Profile
+				</MenuItem>
+				<MenuItem
+					onClick={() => {
+						logOut();
+						handleMenuClose();
+					}}
+				>
+					Log Out
 				</MenuItem>
 			</Menu>
 		</nav>

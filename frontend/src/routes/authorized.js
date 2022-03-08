@@ -1,6 +1,7 @@
 import { Routes, Route, Outlet } from 'react-router-dom';
 import Home from '../pages/authenticated/Home';
 import Profile from '../pages/authenticated/Profile';
+import EditProfile from '../pages/authenticated/EditProfile';
 import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
 import './authorized.css';
@@ -20,6 +21,7 @@ export default function AuthorizedRoutes() {
 			<Route path='/' element={<Base />}>
 				<Route index element={<Home />} />
 				<Route path='profile' element={<Profile />} />
+				<Route path='edit' element={<EditProfile />} />
 				<Route path='*' element={<NotFound />} />
 			</Route>
 		</Routes>
