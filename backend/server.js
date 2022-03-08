@@ -1,13 +1,21 @@
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 const express = require('express');
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
-const database = require('./database').runDb();
+const database = require('./database');
 const api = require('./routes/api');
+
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.use('/', api);
+database.runDb().then(({ users }) => {
+	app.use('/api', api);
 
-app.listen(process.env.PORT, () => {
-	console.log(`Connected to port ${process.env.PORT}`);
+	app.get('/', (req, res) => {
+		res.json({ data: 'this is the root route' });
+	});
+
+	app.listen(process.env.PORT, () => {
+		console.log(`Connected to port ${process.env.PORT}`);
+	});
 });
