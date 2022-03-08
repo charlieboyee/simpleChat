@@ -25,7 +25,6 @@ export default function NavBar() {
 			method: 'POST',
 		});
 		if (result.status === 200) {
-			localStorage.clear();
 			setLoggedIn(false);
 			console.log('sucessfully logged out');
 			return;

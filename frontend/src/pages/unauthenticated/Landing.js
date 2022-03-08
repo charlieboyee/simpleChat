@@ -45,7 +45,6 @@ export default function Landing() {
 		if (result.status === 200) {
 			const { status } = await result.json();
 			if (status) {
-				localStorage.setItem(status[0], status[1]);
 				setLoggedIn(true);
 				return;
 			}

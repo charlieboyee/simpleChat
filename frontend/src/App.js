@@ -7,6 +7,17 @@ import './App.css';
 export default function App() {
 	const [loggedIn, setLoggedIn] = useState(false);
 
+	useEffect(() => {
+		(async () => {
+			const result = await fetch('/api');
+			if (result.status === 200) {
+				setLoggedIn(true);
+				return;
+			}
+			return setLoggedIn(false);
+		})();
+	}, []);
+
 	if (loggedIn) {
 		return (
 			<LoggedInContext.Provider value={[loggedIn, setLoggedIn]}>

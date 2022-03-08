@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 
 router.post('/logOut', isAuthorized, (req, res) => {
-	res.sendStatus(200);
+	req.session.destroy().sendStatus(200);
 });
 router.post('/logIn', (req, res) => {
 	database
@@ -32,7 +32,7 @@ router.post('/createAccount', (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/', (req, res) => {
-	res.json({ status: 'hello' });
+router.get('/', isAuthorized, (req, res) => {
+	res.sendStatus(200);
 });
 module.exports = router;

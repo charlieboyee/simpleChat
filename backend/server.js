@@ -9,6 +9,8 @@ const api = require('./routes/api');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+let minute = 1000 * 60;
 app.use(
 	session({
 		secret: 'jjong',
@@ -18,7 +20,7 @@ app.use(
 		},
 		cookie: {
 			httpOnly: true,
-			maxAge: 300000,
+			maxAge: minute * 60,
 		},
 		saveUninitialized: false,
 	})
