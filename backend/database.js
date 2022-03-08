@@ -13,7 +13,7 @@ let users;
 const createAccount = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (result) return result;
-	let hash = await bcrypt.hash(user.password, saltRounds);
+	const hash = await bcrypt.hash(user.password, saltRounds);
 	result = users.insertOne({
 		username: user.username,
 		password: hash,
@@ -23,13 +23,19 @@ const createAccount = async (user) => {
 	return result;
 };
 
+const logIn = async (user) => {
+	let result = await users.findOne({ username: user.username });
+	if (!result) return result;
+	const match = await bcrypt.compare(user.password, result.password);
+	if (!match) return match;
+	return true;
+};
 const runDb = async () => {
 	try {
 		await client.connect();
 		let db = await client.db('simpleChat');
 		users = db.collection('users');
 		console.log('connected to db');
-		return { db, users };
 	} catch (error) {
 		console.log(error);
 	}
@@ -37,5 +43,6 @@ const runDb = async () => {
 
 module.exports = {
 	createAccount,
+	logIn,
 	runDb,
 };

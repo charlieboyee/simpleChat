@@ -8,7 +8,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-database.runDb().then(({ users }) => {
+database.runDb().then(() => {
 	app.use('/api', api);
 
 	app.get('/', (req, res) => {
