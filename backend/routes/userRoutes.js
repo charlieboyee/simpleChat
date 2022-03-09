@@ -13,4 +13,8 @@ router.get('/data', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
+router.put('/profilePhoto', isAuthorized, (req, res) => {
+	//store into s3 bucket, get presigned, store url into db, return results
+});
+
 module.exports = router;
