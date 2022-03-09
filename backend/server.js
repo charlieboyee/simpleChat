@@ -5,6 +5,7 @@ const express = require('express');
 const session = require('express-session');
 const database = require('./database');
 const api = require('./routes/api');
+const { run } = require('./aws/aws-s3');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +27,7 @@ app.use(
 	})
 );
 
+run();
 database.runDb().then(() => {
 	app.use('/api', api);
 
