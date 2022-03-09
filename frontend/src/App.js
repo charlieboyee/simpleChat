@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthorizedRoutes from './routes/authorized';
 import UnauthorizedRoutes from './routes/unauthorized';
 import { LoggedInContext } from './index';
 import './App.css';
 
 export default function App() {
+	const navigate = useNavigate();
 	const [loggedIn, setLoggedIn] = useState(false);
 
 	useEffect(() => {
@@ -14,7 +16,9 @@ export default function App() {
 				setLoggedIn(true);
 				return;
 			}
-			return setLoggedIn(false);
+			setLoggedIn(false);
+			navigate('/', { replace: true });
+			return;
 		})();
 	}, []);
 

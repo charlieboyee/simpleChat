@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
 	Card,
@@ -9,23 +9,25 @@ import {
 	Avatar,
 } from '@mui/material';
 import './design/profile.css';
-import { useEffect } from 'react';
 
 export default function Profile() {
 	const [userData, setUserData] = useOutletContext();
 	const [photoToUpload, setPhotoToUpload] = useState('');
-	const profilePhotoRef = useRef();
+	const profilePhotoRef = useRef(null);
 
-	const changeProfilePhoto = (e) => {
+	const changeProfilePhoto = async (e) => {
 		e.preventDefault();
-		console.log('hiii');
-		// const result = await fetch('/api/user/profilePhoto', {
-		// 	method: 'PUT',
-		// 	headers:{
-		// 		'content-type': 'application/json'
-		// 	},
-		// 	body: JSON.stringify()
-		// })
+		let formData = new FormData();
+		formData.append('file', photoToUpload);
+		const result = await fetch('/api/user/profilePhoto', {
+			method: 'PUT',
+
+			body: formData,
+		});
+		if (result.status === 200) {
+			return;
+		}
+		return;
 	};
 
 	useEffect(() => {
