@@ -1,34 +1,33 @@
 require('dotenv').config();
+
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
 const database = require('./database');
 const api = require('./routes/api');
-const { run } = require('./aws/aws-s3');
-
 const app = express();
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 let minute = 1000 * 60;
-app.use(
-	session({
-		secret: 'jjong',
-		resave: false,
-		genid: () => {
-			return uuidv4(); // use UUIDs for session IDs
-		},
-		cookie: {
-			httpOnly: true,
-			maxAge: minute * 60,
-		},
-		saveUninitialized: false,
-	})
-);
 
-run();
 database.runDb().then(() => {
+	app.use(
+		session({
+			secret: 'jjong',
+			resave: false,
+			genid: () => {
+				return uuidv4(); // use UUIDs for session IDs
+			},
+			cookie: {
+				httpOnly: true,
+				maxAge: minute * 60,
+			},
+			saveUninitialized: false,
+		})
+	);
 	app.use('/api', api);
 
 	app.get('/', (req, res) => {

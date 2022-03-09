@@ -25,8 +25,17 @@ const createAccount = async (user) => {
 	});
 	return result;
 };
+
+const editProfilePhoto = async (user, filePath) => {
+	const update = {
+		$set: { profilePhoto: filePath },
+	};
+	const result = await users.updateOne({ username: user }, update);
+	return result;
+};
+
 const getUserData = async (user) => {
-	let result = await users.findOne({ username: user });
+	const result = await users.findOne({ username: user });
 	return result;
 };
 const logIn = async (user) => {
@@ -50,6 +59,7 @@ const runDb = async () => {
 
 module.exports = {
 	createAccount,
+	editProfilePhoto,
 	getUserData,
 	logIn,
 	runDb,

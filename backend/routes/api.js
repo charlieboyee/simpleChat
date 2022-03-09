@@ -7,7 +7,8 @@ const router = express.Router();
 
 router.use('/user', userRoute);
 router.post('/logOut', isAuthorized, (req, res) => {
-	req.session.destroy().sendStatus(200);
+	req.session.destroy();
+	res.sendStatus(200);
 });
 router.post('/logIn', (req, res) => {
 	database
