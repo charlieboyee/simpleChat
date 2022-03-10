@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import {
 	Card,
@@ -13,6 +13,7 @@ import {
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import PhotoLibraryRoundedIcon from '@mui/icons-material/PhotoLibraryRounded';
 import './design/createPostModal.css';
+
 export default function CreatePostModal(props) {
 	const { modalOpen, setModalOpen } = props;
 
@@ -21,12 +22,26 @@ export default function CreatePostModal(props) {
 	const [crop, setCrop] = useState({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState(1);
 
+	const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+		console.log(croppedArea, croppedAreaPixels);
+	}, []);
+
+	const toStageZero = () => {
+		setImage(null);
+		setStage(0);
+	};
+
 	const handleClose = () => {
 		setModalOpen(false);
 	};
 
 	const handleFileChange = (e) => {
-		setImage(e.target.files[0]);
+		const reader = new FileReader();
+		reader.readAsDataURL(e.target.files[0]);
+
+		reader.onload = (evt) => {
+			setImage(reader.result);
+		};
 	};
 
 	useEffect(() => {
@@ -36,9 +51,9 @@ export default function CreatePostModal(props) {
 	}, [image]);
 	if (stage === 0) {
 		return (
-			<Modal id='createPostModal' onClose={handleClose} open={modalOpen}>
-				<Card>
-					<CardHeader fullWidth title='Create New Post' />
+			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
+				<Card id='choosePhotoCard'>
+					<CardHeader title='Create New Post' />
 					<CardMedia>
 						<PhotoLibraryRoundedIcon />
 					</CardMedia>
@@ -65,20 +80,28 @@ export default function CreatePostModal(props) {
 
 	if (stage === 1) {
 		return (
-			<Modal id='createPostModal' onClose={handleClose} open={modalOpen}>
-				<Card>
+			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
+				<Card id='cropPhotoCard'>
 					<CardHeader
-						fullWidth
 						title='Crop'
 						avatar={
-							<IconButton>
+							<IconButton onClick={toStageZero}>
 								<ArrowBackRoundedIcon />
 							</IconButton>
 						}
 						action={<Button>Next</Button>}
 					/>
 					<CardMedia>
-						<Cropper image={image} crop={crop} zoom={zoom} aspect={1 / 1} />
+						<Cropper
+							image={image}
+							crop={crop}
+							zoom={zoom}
+							aspect={1 / 1}
+							onCropChange={setCrop}
+							onCropComplete={onCropComplete}
+							onZoomChange={setZoom}
+							objectFit='vertical-cover'
+						/>
 					</CardMedia>
 				</Card>
 			</Modal>

@@ -1,44 +1,61 @@
-#createPostModal {
+.createPostModal {
 	display: flex;
 	justify-content: center;
-	margin: auto 0;
-	height: 50%;
+	align-items: center;
 }
 
-#createPostModal .MuiCard-root {
+#choosePhotoCard {
+	width: 30vw;
+	height: 30vw;
+	min-width: 300px;
+	min-height: 300px;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	justify-content: space-between;
-	min-width: 20vw;
-	min-height: 20vw;
 }
 
-#createPostModal .MuiCard-root .MuiCardHeader-root {
+#choosePhotoCard .MuiCardHeader-root {
 	border-bottom: solid 2px black;
 	text-align: center;
-	width: 100%;
+}
+#choosePhotoCard .MuiCardHeader-root .MuiCardHeader-title {
+	font-size: 2em;
 }
 
-#createPostModal .MuiCard-root .MuiCardMedia-root .MuiSvgIcon-root {
+#choosePhotoCard .MuiCardMedia-root {
+	align-self: center;
+}
+#choosePhotoCard .MuiCardMedia-root .MuiSvgIcon-root {
 	font-size: 6em;
 }
 
-#createPostModal .MuiCard-root .MuiCardHeader-root .MuiCardHeader-title {
-	font-size: 2em;
-}
-#createPostModal .MuiCard-root .MuiCardContent-root {
+#choosePhotoCard .MuiCardContent-root {
 	text-align: center;
 }
 
-#createPostModal .MuiCardContent-root div label:last-child {
+#choosePhotoCard .MuiCardContent-root div label:last-child {
 	font-size: 1em;
 }
 
-#createPostModal .MuiCardContent-root div:last-child {
+#choosePhotoCard .MuiCardContent-root div:last-child {
 	text-align: center;
 }
 
 #dragDropButton {
 	display: none;
+}
+
+#cropPhotoCard {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 30vw;
+	height: 30vw;
+	min-width: 300px;
+	min-height: 300px;
+}
+
+#cropPhotoCard .MuiCardMedia-root {
+	position: relative;
+	height: 100%;
 }

@@ -42,9 +42,7 @@ const getUserData = async (user) => {
 
 const getUserPosts = async (user) => {
 	const result = await posts.find({ owner: user });
-	console.log(user);
 	const cursor = await result.toArray();
-	console.log(cursor);
 	return cursor;
 };
 const logIn = async (user) => {
