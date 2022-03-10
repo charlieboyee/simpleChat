@@ -20,10 +20,6 @@ export default function Profile() {
 	const [ownerPosts, setOwnerPosts] = userPosts;
 	const [modalOpen, setModalOpen] = useState(false);
 
-	useEffect(() => {
-		console.log(ownerData);
-	}, []);
-
 	const handleModalOpen = () => {
 		setModalOpen(true);
 	};
@@ -109,6 +105,7 @@ export default function Profile() {
 								component='span'
 							>
 								<Avatar
+									id='profilePhoto'
 									src={`${process.env.REACT_APP_S3_URL}${ownerData.profilePhoto}`}
 								/>
 							</IconButton>
@@ -123,20 +120,22 @@ export default function Profile() {
 								/>
 
 								<IconButton disableRipple component='span'>
-									<Avatar />
+									<Avatar id='profilePhoto' />
 								</IconButton>
 							</label>
 						)}
 					</CardMedia>
 					<CardContent>
 						<div>
-							<span>{ownerData.username}</span>
-							<Button variant='contained'>Edit Profile</Button>
-						</div>
-						<div>
-							<span>{ownerPosts.length} posts</span>
-							<span>{ownerData.following.length} following</span>
-							<span>{ownerData.followers.length} followers</span>
+							<div>
+								<span>{ownerData.username}</span>
+								<Button variant='contained'>Edit Profile</Button>
+							</div>
+							<div>
+								<span>{ownerPosts?.length} posts</span>
+								<span>{ownerData.following?.length} following</span>
+								<span>{ownerData.followers?.length} followers</span>
+							</div>
 						</div>
 					</CardContent>
 				</Card>

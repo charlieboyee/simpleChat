@@ -50,8 +50,8 @@ export default function AuthorizedRoutes() {
 	}, []);
 
 	useEffect(() => {
-		console.log(userPosts);
-	}, [userPosts]);
+		console.log(userData);
+	}, [userData]);
 	return (
 		<Routes>
 			<Route
