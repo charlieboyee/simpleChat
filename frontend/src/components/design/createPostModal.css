@@ -1,23 +1,44 @@
 #createPostModal {
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	margin: auto 0;
+	height: 50%;
 }
 
 #createPostModal .MuiCard-root {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: space-between;
+	min-width: 20vw;
+	min-height: 20vw;
 }
-#createPostModal .MuiCardContent-root {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	align-items: center;
-	min-width: 30vw;
-	min-height: 30vw;
+
+#createPostModal .MuiCard-root .MuiCardHeader-root {
+	border-bottom: solid 2px black;
+	text-align: center;
+	width: 100%;
+}
+
+#createPostModal .MuiCard-root .MuiCardMedia-root .MuiSvgIcon-root {
+	font-size: 6em;
+}
+
+#createPostModal .MuiCard-root .MuiCardHeader-root .MuiCardHeader-title {
+	font-size: 2em;
+}
+#createPostModal .MuiCard-root .MuiCardContent-root {
+	text-align: center;
+}
+
+#createPostModal .MuiCardContent-root div label:last-child {
+	font-size: 1em;
 }
 
 #createPostModal .MuiCardContent-root div:last-child {
 	text-align: center;
+}
+
+#dragDropButton {
+	display: none;
 }
