@@ -10,6 +10,7 @@ const client = new MongoClient(uri, {
 });
 
 let users;
+let posts;
 
 const createAccount = async (user) => {
 	let result = await users.findOne({ username: user.username });
@@ -38,6 +39,14 @@ const getUserData = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;
 };
+
+const getUserPosts = async (user) => {
+	const result = await posts.find({ owner: user });
+	console.log(user);
+	const cursor = await result.toArray();
+	console.log(cursor);
+	return cursor;
+};
 const logIn = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (!result) return result;
@@ -51,6 +60,7 @@ const runDb = async () => {
 		await client.connect();
 		let db = await client.db('simpleChat');
 		users = db.collection('users');
+		posts = db.collection('posts');
 		console.log('connected to db');
 	} catch (error) {
 		console.log(error);
@@ -61,6 +71,7 @@ module.exports = {
 	createAccount,
 	editProfilePhoto,
 	getUserData,
+	getUserPosts,
 	logIn,
 	runDb,
 };

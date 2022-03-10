@@ -12,17 +12,25 @@ router.get('/data', isAuthorized, (req, res) => {
 	database
 		.getUserData(req.session.user)
 		.then((result) => {
-			if (!result) return res.json({ data: false });
 			return res.json({ data: result });
 		})
 		.catch((err) => res.sendStatus(500));
 });
 
+router.get('/posts', isAuthorized, (req, res) => {
+	database
+		.getUserPosts(req.session.user)
+		.then((posts) => {
+			return res.json({ posts });
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
 router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
-	//store into s3 bucket, get presigned, store url into db, return results
-	console.log('hi');
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
+			console.log(filePath);
+
 			database
 				.editProfilePhoto(req.session.user, filePath)
 				.then((result) => {
@@ -39,7 +47,7 @@ router.delete('/profilePhoto', isAuthorized, (req, res) => {
 	//store into s3 bucket, get presigned, store url into db, return results
 	console.log('hi');
 	s3.deletePhoto(req.body.profilePhoto)
-		.then(
+		.then(() => {
 			database
 				.editProfilePhoto(req.session.user)
 				.then((result) => {
@@ -47,8 +55,8 @@ router.delete('/profilePhoto', isAuthorized, (req, res) => {
 						return res.sendStatus(200);
 					}
 				})
-				.catch((err) => res.sendStatus(500))
-		)
+				.catch((err) => res.sendStatus(500));
+		})
 		.catch((err) => res.sendStatus(500));
 });
 

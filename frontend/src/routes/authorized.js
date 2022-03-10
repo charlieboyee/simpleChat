@@ -8,39 +8,62 @@ import NotFound from '../pages/NotFound';
 import './authorized.css';
 
 function Base(props) {
-	const { userData, setUserData } = props;
+	const { userData, setUserData, userPosts, setUserPosts } = props;
 	return (
 		<div className='authorizedBase'>
 			<NavBar userData={userData} setUserData={setUserData} />
-			<Outlet context={[userData, setUserData]} />
+			<Outlet
+				context={{
+					userData: [userData, setUserData],
+					userPosts: [userPosts, setUserPosts],
+				}}
+			/>
 		</div>
 	);
 }
 
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
+	const [userPosts, setUserPosts] = useState([]);
 
 	useEffect(() => {
-		(async () => {
-			const result = await fetch('/api/user/data');
-			if (result.status === 200) {
-				let { data } = await result.json();
-				if (data) {
-					setUserData(data);
-					return;
+		fetch('/api/user/data')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
 				}
-			}
-		})();
+			})
+			.then(({ data }) => {
+				setUserData(data);
+				return;
+			});
+		fetch('/api/user/posts')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ posts }) => {
+				setUserPosts(posts);
+				return;
+			});
 	}, []);
 
 	useEffect(() => {
-		console.log(userData);
-	}, [userData]);
+		console.log(userPosts);
+	}, [userPosts]);
 	return (
 		<Routes>
 			<Route
 				path='/'
-				element={<Base userData={userData} setUserData={setUserData} />}
+				element={
+					<Base
+						userData={userData}
+						setUserData={setUserData}
+						userPosts={userPosts}
+						setUserPosts={setUserPosts}
+					/>
+				}
 			>
 				<Route index element={<Home />} />
 				<Route path='profile' element={<Profile />} />

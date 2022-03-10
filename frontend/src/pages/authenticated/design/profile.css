@@ -1,0 +1,15 @@
+#profile {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	align-items: center;
+}
+
+#upperSection {
+	max-width: 935px;
+	width: 100%;
+}
+
+#upperSection .MuiCard-root {
+	display: flex;
+}

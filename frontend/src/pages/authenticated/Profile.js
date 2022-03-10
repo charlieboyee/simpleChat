@@ -15,8 +15,14 @@ import {
 import './design/profile.css';
 
 export default function Profile() {
-	const [userData, setUserData] = useOutletContext();
+	const { userData, userPosts } = useOutletContext();
+	const [ownerData, setOwnerData] = userData;
+	const [ownerPosts, setOwnerPosts] = userPosts;
 	const [modalOpen, setModalOpen] = useState(false);
+
+	useEffect(() => {
+		console.log(ownerData);
+	}, []);
 
 	const handleModalOpen = () => {
 		setModalOpen(true);
@@ -33,7 +39,7 @@ export default function Profile() {
 				headers: {
 					'content-type': 'application/json',
 				},
-				body: JSON.stringify({ profilePhoto: userData.profilePhoto }),
+				body: JSON.stringify({ profilePhoto: ownerData.profilePhoto }),
 			});
 
 			let formData = new FormData();
@@ -47,7 +53,7 @@ export default function Profile() {
 			if (result.status === 200) {
 				const { profilePhoto } = await result.json();
 
-				setUserData({ ...userData, profilePhoto });
+				setOwnerData({ ...ownerData, profilePhoto });
 				setModalOpen(false);
 				return;
 			}
@@ -68,7 +74,7 @@ export default function Profile() {
 		if (result.status === 200) {
 			const { profilePhoto } = await result.json();
 			console.log(profilePhoto);
-			setUserData({ ...userData, profilePhoto });
+			setOwnerData({ ...ownerData, profilePhoto });
 
 			return;
 		}
@@ -81,29 +87,29 @@ export default function Profile() {
 			headers: {
 				'content-type': 'application/json',
 			},
-			body: JSON.stringify({ profilePhoto: userData.profilePhoto }),
+			body: JSON.stringify({ profilePhoto: ownerData.profilePhoto }),
 		});
 		if (result.status === 200) {
 			console.log('successfully delted');
 			setModalOpen(false);
-			setUserData({ ...userData, profilePhoto: '' });
+			setOwnerData({ ...ownerData, profilePhoto: '' });
 			return;
 		}
 	};
 
 	return (
-		<main>
+		<main id='profile'>
 			<section id='upperSection'>
 				<Card>
 					<CardMedia>
-						{userData.profilePhoto ? (
+						{ownerData.profilePhoto ? (
 							<IconButton
 								onClick={handleModalOpen}
 								disableRipple
 								component='span'
 							>
 								<Avatar
-									src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}
+									src={`${process.env.REACT_APP_S3_URL}${ownerData.profilePhoto}`}
 								/>
 							</IconButton>
 						) : (
@@ -122,7 +128,17 @@ export default function Profile() {
 							</label>
 						)}
 					</CardMedia>
-					<CardContent></CardContent>
+					<CardContent>
+						<div>
+							<span>{ownerData.username}</span>
+							<Button variant='contained'>Edit Profile</Button>
+						</div>
+						<div>
+							<span>{ownerPosts.length} posts</span>
+							<span>{ownerData.following.length} following</span>
+							<span>{ownerData.followers.length} followers</span>
+						</div>
+					</CardContent>
 				</Card>
 				<Modal onClose={handleModalClose} open={modalOpen}>
 					<Card>

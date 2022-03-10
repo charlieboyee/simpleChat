@@ -44,14 +44,15 @@ export default function NavBar(props) {
 				simpleChat
 			</Button>
 			<span id='right'>
-				<IconButton onClick={() => navigate('/')}>
-					<HomeRoundedIcon />
+				<IconButton disableRipple onClick={() => navigate('/')}>
+					<HomeRoundedIcon className='mainNavButtons' />
 				</IconButton>
-				<IconButton>
-					<SendRoundedIcon />
+				<IconButton disableRipple>
+					<SendRoundedIcon className='mainNavButtons' />
 				</IconButton>
-				<IconButton onClick={handleMenuClick}>
+				<IconButton disableRipple onClick={handleMenuClick}>
 					<Avatar
+						className='mainNavButtons'
 						src={
 							userData.profilePhoto
 								? `${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`

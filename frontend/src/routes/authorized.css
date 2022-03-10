@@ -4,6 +4,8 @@
 }
 .authorizedBase {
 	height: 100vh;
+	display: flex;
+	flex-direction: column;
 	background-color: #f07167;
 }
 #mainNav {
@@ -17,8 +19,17 @@
 	font-family: SimpleFont;
 }
 
-#mainNav #logOutButton {
-	text-transform: none;
-	color: white;
-	font-family: SimpleFont;
+#mainNav #right {
+	align-self: center;
+}
+#right .MuiIconButton-root {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	margin-right: 15px;
+}
+#right .mainNavButtons {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }
