@@ -1,6 +1,4 @@
 require('dotenv').config();
-
-const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');

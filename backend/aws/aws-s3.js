@@ -1,6 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 const {
+	DeleteObjectCommand,
 	ListBucketsCommand,
+	ListObjectsCommand,
 	PutObjectCommand,
 	S3Client,
 } = require('@aws-sdk/client-s3');
@@ -14,7 +16,21 @@ const s3 = new S3Client({
 	credentials: fromIni({ profile: IAM }),
 });
 
-const bucketParams = { Bucket: bucket };
+const deletePhoto = async (key) => {
+	const bucketParams = { Bucket: bucket, Key: key };
+
+	const data = await s3.send(new DeleteObjectCommand(bucketParams));
+	console.log('Success. Object deleted.', data);
+	return;
+};
+
+const listObjects = async () => {
+	const bucketParams = { Bucket: bucket };
+
+	const data = await s3.send(new ListObjectsCommand(bucketParams));
+	console.log('Success', data);
+	return data;
+};
 
 const uploadPhoto = async (user, content, filename) => {
 	//need to have uuid for filename and return the filename for databse storage
@@ -28,25 +44,12 @@ const uploadPhoto = async (user, content, filename) => {
 		Body: content.buffer,
 	};
 
-	try {
-		await s3.send(new PutObjectCommand(uploadParams));
-		return name;
-	} catch (err) {
-		return err;
-	}
-};
-
-const run = async () => {
-	try {
-		const data = await s3.send(new ListBucketsCommand({}));
-		console.log('Success', data.Buckets);
-		return data; // For unit tests.
-	} catch (err) {
-		console.log('Error', err);
-	}
+	await s3.send(new PutObjectCommand(uploadParams));
+	return uploadParams.Key;
 };
 
 module.exports = {
-	run,
+	deletePhoto,
+	listObjects,
 	uploadPhoto,
 };

@@ -26,7 +26,7 @@ const createAccount = async (user) => {
 	return result;
 };
 
-const editProfilePhoto = async (user, filePath) => {
+const editProfilePhoto = async (user, filePath = '') => {
 	const update = {
 		$set: { profilePhoto: filePath },
 	};

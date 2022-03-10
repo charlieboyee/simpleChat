@@ -11,7 +11,7 @@ function Base(props) {
 	const { userData, setUserData } = props;
 	return (
 		<div className='authorizedBase'>
-			<NavBar />
+			<NavBar userData={userData} setUserData={setUserData} />
 			<Outlet context={[userData, setUserData]} />
 		</div>
 	);

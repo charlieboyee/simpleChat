@@ -6,7 +6,8 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
 
-export default function NavBar() {
+export default function NavBar(props) {
+	const { userData, setUserData } = props;
 	const navigate = useNavigate();
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 
@@ -26,6 +27,7 @@ export default function NavBar() {
 		});
 		if (result.status === 200) {
 			setLoggedIn(false);
+			navigate('/', { replace: true });
 			console.log('sucessfully logged out');
 			return;
 		}
@@ -49,7 +51,13 @@ export default function NavBar() {
 					<SendRoundedIcon />
 				</IconButton>
 				<IconButton onClick={handleMenuClick}>
-					<Avatar src='' />
+					<Avatar
+						src={
+							userData.profilePhoto
+								? `${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`
+								: null
+						}
+					/>
 				</IconButton>
 			</span>
 			<Menu anchorEl={anchorEl} onClose={handleMenuClose} open={open}>
