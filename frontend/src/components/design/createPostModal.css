@@ -1,0 +1,23 @@
+#createPostModal {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#createPostModal .MuiCard-root {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+#createPostModal .MuiCardContent-root {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	min-width: 30vw;
+	min-height: 30vw;
+}
+
+#createPostModal .MuiCardContent-root div:last-child {
+	text-align: center;
+}

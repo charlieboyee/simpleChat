@@ -1,16 +1,21 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInContext } from '../index';
+import CreatePostModal from '../components/CreatePostModal';
 import { Avatar, Button, IconButton, Menu, MenuItem } from '@mui/material';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
 
 export default function NavBar(props) {
 	const { userData, setUserData } = props;
+
 	const navigate = useNavigate();
+
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 
+	const [modalOpen, setModalOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
 
@@ -20,6 +25,8 @@ export default function NavBar(props) {
 	const handleMenuClose = () => {
 		setAnchorEl(null);
 	};
+
+	const openCreatePostModal = () => setModalOpen(true);
 
 	const logOut = async () => {
 		const result = await fetch('/api/logOut', {
@@ -35,6 +42,7 @@ export default function NavBar(props) {
 	};
 	return (
 		<nav id='mainNav'>
+			<CreatePostModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
 			<Button
 				onClick={() => navigate('/')}
 				disableRipple
@@ -49,6 +57,9 @@ export default function NavBar(props) {
 				</IconButton>
 				<IconButton disableRipple>
 					<SendRoundedIcon className='mainNavButtons' />
+				</IconButton>
+				<IconButton disableRipple onClick={openCreatePostModal}>
+					<FileUploadRoundedIcon className='mainNavButtons' />
 				</IconButton>
 				<IconButton disableRipple onClick={handleMenuClick}>
 					<Avatar

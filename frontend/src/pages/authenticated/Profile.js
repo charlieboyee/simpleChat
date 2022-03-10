@@ -11,14 +11,27 @@ import {
 	Modal,
 	CardHeader,
 	CardActions,
+	Tab,
+	Tabs,
 } from '@mui/material';
 import './design/profile.css';
 
+function TabPanel(props) {
+	const { value, index, children } = props;
+	return (
+		<div className='tabPanel' hidden={value !== index}>
+			{children}
+		</div>
+	);
+}
 export default function Profile() {
 	const { userData, userPosts } = useOutletContext();
 	const [ownerData, setOwnerData] = userData;
 	const [ownerPosts, setOwnerPosts] = userPosts;
 	const [modalOpen, setModalOpen] = useState(false);
+	const [tabValue, setTabValue] = useState(0);
+
+	const handleTabChange = (e, newValue) => setTabValue(newValue);
 
 	const handleModalOpen = () => {
 		setModalOpen(true);
@@ -163,7 +176,18 @@ export default function Profile() {
 					</Card>
 				</Modal>
 			</section>
-			<section id='lowerSection'></section>
+			<section id='lowerSection'>
+				<Tabs value={tabValue} onChange={handleTabChange}>
+					<Tab label='Photos' />
+					<Tab label='Videos' />
+				</Tabs>
+				<TabPanel value={tabValue} index={0}>
+					photos
+				</TabPanel>
+				<TabPanel value={tabValue} index={1}>
+					videos
+				</TabPanel>
+			</section>
 		</main>
 	);
 }
