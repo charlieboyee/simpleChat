@@ -42,7 +42,11 @@ export default function NavBar(props) {
 	};
 	return (
 		<nav id='mainNav'>
-			<CreatePostModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+			<CreatePostModal
+				userData={userData}
+				modalOpen={modalOpen}
+				setModalOpen={setModalOpen}
+			/>
 			<Button
 				onClick={() => navigate('/')}
 				disableRipple

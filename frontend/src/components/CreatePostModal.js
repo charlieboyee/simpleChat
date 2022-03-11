@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import {
+	Avatar,
 	Card,
 	CardContent,
 	CardMedia,
@@ -8,6 +10,7 @@ import {
 	Input,
 	IconButton,
 	Modal,
+	TextField,
 	Button,
 } from '@mui/material';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
@@ -15,15 +18,21 @@ import PhotoLibraryRoundedIcon from '@mui/icons-material/PhotoLibraryRounded';
 import './design/createPostModal.css';
 
 export default function CreatePostModal(props) {
-	const { modalOpen, setModalOpen } = props;
+	const { modalOpen, setModalOpen, userData } = props;
 
-	const [image, setImage] = useState(null);
+	const [caption, setCaption] = useState(null);
 	const [stage, setStage] = useState(0);
+	const [image, setImage] = useState(null);
 	const [crop, setCrop] = useState({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState(1);
+	const [cropArea, setCropArea] = useState(null);
+	const [croppedImg, setCroppedImg] = useState(null);
+	const [testCrop, setTestCrop] = useState(null);
 
 	const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
 		console.log(croppedArea, croppedAreaPixels);
+		setTestCrop(croppedArea);
+		setCropArea(croppedAreaPixels);
 	}, []);
 
 	const toStageZero = () => {
@@ -44,11 +53,44 @@ export default function CreatePostModal(props) {
 		};
 	};
 
+	const showCroppedImg = () => {
+		const img = new Image();
+		img.src = image;
+
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d');
+		canvas.width = cropArea.width;
+		canvas.height = cropArea.height;
+		ctx.drawImage(
+			img,
+			cropArea.x,
+			cropArea.y,
+			cropArea.width,
+			cropArea.height,
+			0,
+			0,
+			cropArea.width,
+			cropArea.height
+		);
+		canvas.toBlob((file) => {
+			if (file) {
+				const imgUrl = URL.createObjectURL(file);
+				return setCroppedImg(imgUrl);
+			}
+		}, 'image/jpg');
+	};
 	useEffect(() => {
 		if (image) {
 			setStage(1);
 		}
 	}, [image]);
+
+	useEffect(() => {
+		if (croppedImg) {
+			setStage(2);
+		}
+	}, [croppedImg]);
+
 	if (stage === 0) {
 		return (
 			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
@@ -89,7 +131,7 @@ export default function CreatePostModal(props) {
 								<ArrowBackRoundedIcon />
 							</IconButton>
 						}
-						action={<Button>Next</Button>}
+						action={<Button onClick={showCroppedImg}>Next</Button>}
 					/>
 					<CardMedia>
 						<Cropper
@@ -103,6 +145,43 @@ export default function CreatePostModal(props) {
 							objectFit='vertical-cover'
 						/>
 					</CardMedia>
+				</Card>
+			</Modal>
+		);
+	}
+
+	if (stage === 2) {
+		return (
+			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
+				<Card id='finishCropCard'>
+					<CardHeader
+						title='Edit'
+						avatar={
+							<IconButton onClick={toStageZero}>
+								<ArrowBackRoundedIcon />
+							</IconButton>
+						}
+						action={<Button>Next</Button>}
+					/>
+					<div id='container'>
+						<CardMedia>
+							<img src={croppedImg} alt='croppedImg' />
+						</CardMedia>
+						<CardContent>
+							<div>
+								<Avatar
+									src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}
+								/>
+								<span>{userData.username}</span>
+							</div>
+							<Input
+								multiline
+								placeholder='caption'
+								value={caption}
+								onChange={(e) => setCaption(e.target.value)}
+							/>
+						</CardContent>
+					</div>
 				</Card>
 			</Modal>
 		);

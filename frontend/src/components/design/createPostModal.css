@@ -59,3 +59,32 @@
 	position: relative;
 	height: 100%;
 }
+
+#finishCropCard {
+	display: flex;
+	flex-direction: column;
+	min-width: 300px;
+}
+#finishCropCard #container {
+	display: flex;
+}
+
+#finishCropCard #container .MuiCardMedia-root {
+	width: 30vw;
+}
+#finishCropCard #container .MuiCardMedia-root img {
+	width: 100%;
+	height: 100%;
+}
+
+#finishCropCard #container .MuiCardContent-root {
+	width: 15vw;
+	padding: 0 15px;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+#finishCropCard #container .MuiCardContent-root div:first-child {
+	display: flex;
+}
