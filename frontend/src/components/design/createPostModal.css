@@ -54,38 +54,42 @@
 	min-height: 300px;
 }
 
-#cropPhotoCard[croppedImg='false'] .MuiCardMedia-root {
+#cropPhotoCard[croppedimg='false'] .MuiCardMedia-root {
 	position: relative;
 	height: 100%;
 	width: 100%;
 }
 
-#cropPhotoCard[croppedImg='true'] {
+#cropPhotoCard[croppedimg='true'] {
 	position: relative;
 	display: flex;
 	flex-direction: column;
+	transition: 3s all;
 }
-#cropPhotoCard[croppedImg='true'] .MuiCardMedia-root {
+#cropPhotoCard[croppedimg='true'] .MuiCardMedia-root {
 	display: flex;
 }
-#cropPhotoCard[croppedImg='true'] .MuiCardMedia-root #croppedImg {
+#cropPhotoCard[croppedimg='true'] .MuiCardMedia-root #croppedImg {
 	width: 30vw;
 }
-#cropPhotoCard[croppedImg='true'] .MuiCardMedia-root .MuiCardContent-root {
+
+#cropPhotoCard[croppedimg='true'] .MuiCardMedia-root .MuiCardContent-root {
+	position: relative;
+
 	display: flex;
 	flex-direction: column;
 }
-#cropPhotoCard[croppedImg='true']
+
+#cropPhotoCard[croppedimg='true']
 	.MuiCardMedia-root
 	.MuiCardContent-root
 	textarea {
 	height: 50%;
 }
 
-#cropPhotoCard[croppedImg='true']
+#cropPhotoCard[croppedimg='true']
 	.MuiCardMedia-root
 	.MuiCardContent-root
 	section {
 	display: flex;
-	width: 15vw;
 }

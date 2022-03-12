@@ -132,7 +132,7 @@ export default function CreatePostModal(props) {
 	if (stage === 1) {
 		return (
 			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
-				<Card croppedImg={croppedImg ? 'true' : 'false'} id='cropPhotoCard'>
+				<Card croppedimg={croppedImg ? 'true' : 'false'} id='cropPhotoCard'>
 					<CardHeader
 						title='Crop'
 						avatar={
@@ -152,7 +152,7 @@ export default function CreatePostModal(props) {
 					{croppedImg ? (
 						<CardMedia>
 							<img src={croppedImg} id='croppedImg' alt='croppedImg' />
-							<CardContent>
+							<CardContent className={croppedImg ? 'slide' : null}>
 								<section>
 									<Avatar
 										src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}

@@ -6,7 +6,7 @@ const userRoute = require('./userRoutes');
 const postsRoutes = require('./postsRoutes');
 const router = express.Router();
 
-router.use('/posts', postsRoute);
+router.use('/posts', postsRoutes);
 router.use('/user', userRoute);
 
 router.post('/logOut', isAuthorized, (req, res) => {
