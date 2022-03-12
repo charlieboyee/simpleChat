@@ -44,8 +44,7 @@
 #dragDropButton {
 	display: none;
 }
-
-#cropPhotoCard {
+#cropPhotoCard[croppedImg='false'] {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -55,36 +54,38 @@
 	min-height: 300px;
 }
 
-#cropPhotoCard .MuiCardMedia-root {
+#cropPhotoCard[croppedImg='false'] .MuiCardMedia-root {
 	position: relative;
 	height: 100%;
+	width: 100%;
 }
 
-#finishCropCard {
+#cropPhotoCard[croppedImg='true'] {
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	min-width: 300px;
 }
-#finishCropCard #container {
+#cropPhotoCard[croppedImg='true'] .MuiCardMedia-root {
 	display: flex;
 }
-
-#finishCropCard #container .MuiCardMedia-root {
+#cropPhotoCard[croppedImg='true'] .MuiCardMedia-root #croppedImg {
 	width: 30vw;
 }
-#finishCropCard #container .MuiCardMedia-root img {
-	width: 100%;
-	height: 100%;
-}
-
-#finishCropCard #container .MuiCardContent-root {
-	width: 15vw;
-	padding: 0 15px;
+#cropPhotoCard[croppedImg='true'] .MuiCardMedia-root .MuiCardContent-root {
 	display: flex;
 	flex-direction: column;
-	min-height: 0;
+}
+#cropPhotoCard[croppedImg='true']
+	.MuiCardMedia-root
+	.MuiCardContent-root
+	textarea {
+	height: 50%;
 }
 
-#finishCropCard #container .MuiCardContent-root div:first-child {
+#cropPhotoCard[croppedImg='true']
+	.MuiCardMedia-root
+	.MuiCardContent-root
+	section {
 	display: flex;
+	width: 15vw;
 }

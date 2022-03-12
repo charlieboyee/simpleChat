@@ -20,28 +20,37 @@ import './design/createPostModal.css';
 export default function CreatePostModal(props) {
 	const { modalOpen, setModalOpen, userData } = props;
 
-	const [caption, setCaption] = useState(null);
+	const [caption, setCaption] = useState('');
 	const [stage, setStage] = useState(0);
 	const [image, setImage] = useState(null);
 	const [crop, setCrop] = useState({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState(1);
 	const [cropArea, setCropArea] = useState(null);
 	const [croppedImg, setCroppedImg] = useState(null);
-	const [testCrop, setTestCrop] = useState(null);
 
 	const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-		console.log(croppedArea, croppedAreaPixels);
-		setTestCrop(croppedArea);
 		setCropArea(croppedAreaPixels);
 	}, []);
 
+	const createPost = async (e) => {
+		const results = await fetch('/api/post/', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({ croppedImg, caption }),
+		});
+	};
+
 	const toStageZero = () => {
 		setImage(null);
+		setCroppedImg(null);
 		setStage(0);
 	};
 
 	const handleClose = () => {
 		setModalOpen(false);
+		setStage(0);
 	};
 
 	const handleFileChange = (e) => {
@@ -85,11 +94,11 @@ export default function CreatePostModal(props) {
 		}
 	}, [image]);
 
-	useEffect(() => {
-		if (croppedImg) {
-			setStage(2);
-		}
-	}, [croppedImg]);
+	// useEffect(() => {
+	// 	if (croppedImg) {
+	// 		setStage(2);
+	// 	}
+	// }, [croppedImg]);
 
 	if (stage === 0) {
 		return (
@@ -123,7 +132,7 @@ export default function CreatePostModal(props) {
 	if (stage === 1) {
 		return (
 			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
-				<Card id='cropPhotoCard'>
+				<Card croppedImg={croppedImg ? 'true' : 'false'} id='cropPhotoCard'>
 					<CardHeader
 						title='Crop'
 						avatar={
@@ -131,57 +140,47 @@ export default function CreatePostModal(props) {
 								<ArrowBackRoundedIcon />
 							</IconButton>
 						}
-						action={<Button onClick={showCroppedImg}>Next</Button>}
-					/>
-					<CardMedia>
-						<Cropper
-							image={image}
-							crop={crop}
-							zoom={zoom}
-							aspect={1 / 1}
-							onCropChange={setCrop}
-							onCropComplete={onCropComplete}
-							onZoomChange={setZoom}
-							objectFit='vertical-cover'
-						/>
-					</CardMedia>
-				</Card>
-			</Modal>
-		);
-	}
-
-	if (stage === 2) {
-		return (
-			<Modal className='createPostModal' onClose={handleClose} open={modalOpen}>
-				<Card id='finishCropCard'>
-					<CardHeader
-						title='Edit'
-						avatar={
-							<IconButton onClick={toStageZero}>
-								<ArrowBackRoundedIcon />
-							</IconButton>
+						action={
+							croppedImg ? (
+								<Button onClick={createPost}>Share</Button>
+							) : (
+								<Button onClick={showCroppedImg}>Next</Button>
+							)
 						}
-						action={<Button>Next</Button>}
 					/>
-					<div id='container'>
+
+					{croppedImg ? (
 						<CardMedia>
-							<img src={croppedImg} alt='croppedImg' />
-						</CardMedia>
-						<CardContent>
-							<div>
-								<Avatar
-									src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}
+							<img src={croppedImg} id='croppedImg' alt='croppedImg' />
+							<CardContent>
+								<section>
+									<Avatar
+										src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}
+									/>
+									<span>{userData.username}</span>
+								</section>
+
+								<textarea
+									placeholder='caption'
+									value={caption}
+									onChange={(e) => setCaption(e.target.value)}
 								/>
-								<span>{userData.username}</span>
-							</div>
-							<Input
-								multiline
-								placeholder='caption'
-								value={caption}
-								onChange={(e) => setCaption(e.target.value)}
+							</CardContent>
+						</CardMedia>
+					) : (
+						<CardMedia>
+							<Cropper
+								image={image}
+								crop={crop}
+								zoom={zoom}
+								aspect={1 / 1}
+								onCropChange={setCrop}
+								onCropComplete={onCropComplete}
+								onZoomChange={setZoom}
+								objectFit='vertical-cover'
 							/>
-						</CardContent>
-					</div>
+						</CardMedia>
+					)}
 				</Card>
 			</Modal>
 		);

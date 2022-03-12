@@ -2,10 +2,13 @@ const express = require('express');
 const database = require('../database');
 const { isAuthorized } = require('../middlewares');
 const bcrypt = require('bcrypt');
-const userRoute = require('./userRoutes.js');
+const userRoute = require('./userRoutes');
+const postsRoutes = require('./postsRoutes');
 const router = express.Router();
 
+router.use('/posts', postsRoute);
 router.use('/user', userRoute);
+
 router.post('/logOut', isAuthorized, (req, res) => {
 	req.session.destroy();
 	res.sendStatus(200);
