@@ -45,6 +45,7 @@ const uploadPhoto = async (user, content, filename) => {
 	};
 
 	await s3.send(new PutObjectCommand(uploadParams));
+
 	return uploadParams.Key;
 };
 

@@ -27,19 +27,47 @@ export default function CreatePostModal(props) {
 	const [zoom, setZoom] = useState(1);
 	const [cropArea, setCropArea] = useState(null);
 	const [croppedImg, setCroppedImg] = useState(null);
+	const [fileName, setFileName] = useState(null);
 
 	const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
 		setCropArea(croppedAreaPixels);
 	}, []);
 
 	const createPost = async (e) => {
-		const results = await fetch('/api/post/', {
+		const blobResult = await fetch('/api/posts/64toBlob', {
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json',
 			},
-			body: JSON.stringify({ croppedImg, caption }),
+			body: JSON.stringify({
+				croppedImg,
+			}),
 		});
+
+		if (blobResult.status === 200) {
+			const blob = await blobResult.blob();
+			blob.name = fileName;
+
+			const results = await fetch('/api/posts/', {
+				method: 'POST',
+				headers: {
+					'content-type': 'application/json',
+				},
+				body: JSON.stringify({
+					croppedImg: blob,
+					caption,
+				}),
+			});
+
+			if (results.status === 200) {
+				const { status } = await results.json();
+				if (status === true) {
+					handleClose();
+				}
+				return;
+			}
+		}
+		return;
 	};
 
 	const toStageZero = () => {
@@ -57,6 +85,7 @@ export default function CreatePostModal(props) {
 
 	const handleFileChange = (e) => {
 		const reader = new FileReader();
+		setFileName(e.target.files[0].name);
 		reader.readAsDataURL(e.target.files[0]);
 
 		reader.onload = (evt) => {
@@ -64,6 +93,9 @@ export default function CreatePostModal(props) {
 		};
 	};
 
+	useEffect(() => {
+		console.log(fileName);
+	}, [fileName]);
 	const showCroppedImg = () => {
 		const img = new Image();
 		img.src = image;
@@ -91,9 +123,6 @@ export default function CreatePostModal(props) {
 		}, 'image/jpg');
 	};
 
-	useEffect(() => {
-		console.log(image);
-	}, [image]);
 	useEffect(() => {
 		if (image) {
 			setStage(1);
@@ -152,7 +181,7 @@ export default function CreatePostModal(props) {
 					{croppedImg ? (
 						<CardMedia>
 							<img src={croppedImg} id='croppedImg' alt='croppedImg' />
-							<CardContent className={croppedImg ? 'slide' : null}>
+							<CardContent>
 								<section>
 									<Avatar
 										src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}
@@ -161,7 +190,7 @@ export default function CreatePostModal(props) {
 								</section>
 
 								<textarea
-									placeholder='caption'
+									placeholder='Write a caption'
 									value={caption}
 									onChange={(e) => setCaption(e.target.value)}
 								/>
@@ -179,9 +208,7 @@ export default function CreatePostModal(props) {
 								onZoomChange={setZoom}
 								objectFit='vertical-cover'
 							/>
-							<CardContent
-								className={croppedImg ? 'slide' : null}
-							></CardContent>
+							<CardContent></CardContent>
 						</CardMedia>
 					)}
 				</Card>

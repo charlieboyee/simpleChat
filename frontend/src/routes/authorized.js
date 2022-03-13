@@ -49,9 +49,6 @@ export default function AuthorizedRoutes() {
 			});
 	}, []);
 
-	useEffect(() => {
-		console.log(userData);
-	}, [userData]);
 	return (
 		<Routes>
 			<Route

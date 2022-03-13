@@ -27,10 +27,8 @@ router.get('/posts', isAuthorized, (req, res) => {
 });
 
 router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
-	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
+	s3.uploadPhoto(req.session.user, req.file, req.file.fileName)
 		.then((filePath) => {
-			console.log(filePath);
-
 			database
 				.editProfilePhoto(req.session.user, filePath)
 				.then((result) => {

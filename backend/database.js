@@ -27,6 +27,17 @@ const createAccount = async (user) => {
 	return result;
 };
 
+const createPost = async (user, filePath, caption = '') => {
+	const post = await posts.insertOne({
+		owner: user,
+		photo: filePath,
+		inception: Date(),
+		caption,
+		comments: [],
+	});
+	return post;
+};
+
 const editProfilePhoto = async (user, filePath = '') => {
 	const update = {
 		$set: { profilePhoto: filePath },
@@ -67,6 +78,7 @@ const runDb = async () => {
 
 module.exports = {
 	createAccount,
+	createPost,
 	editProfilePhoto,
 	getUserData,
 	getUserPosts,
