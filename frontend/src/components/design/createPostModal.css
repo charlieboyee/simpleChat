@@ -44,27 +44,25 @@
 #dragDropButton {
 	display: none;
 }
+
 #cropPhotoCard[croppedImg='false'] {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	width: 30vw;
-	height: 30vw;
 	min-width: 300px;
 	min-height: 300px;
 }
 
 #cropPhotoCard[croppedimg='false'] .MuiCardMedia-root {
 	position: relative;
-	height: 100%;
-	width: 100%;
+	width: 30vw;
+	height: 30vw;
 }
 
 #cropPhotoCard[croppedimg='true'] {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	transition: 3s all;
 }
 #cropPhotoCard[croppedimg='true'] .MuiCardMedia-root {
 	display: flex;
@@ -72,12 +70,15 @@
 #cropPhotoCard[croppedimg='true'] .MuiCardMedia-root #croppedImg {
 	width: 30vw;
 }
-
+#cropPhotoCard[croppedimg='false'] .MuiCardMedia-root .MuiCardContent-root {
+	width: 0;
+}
 #cropPhotoCard[croppedimg='true'] .MuiCardMedia-root .MuiCardContent-root {
 	position: relative;
-
 	display: flex;
 	flex-direction: column;
+	width: 15vw;
+	transition: 3s all;
 }
 
 #cropPhotoCard[croppedimg='true']
@@ -85,6 +86,7 @@
 	.MuiCardContent-root
 	textarea {
 	height: 50%;
+	resize: none;
 }
 
 #cropPhotoCard[croppedimg='true']

@@ -50,6 +50,8 @@ export default function CreatePostModal(props) {
 
 	const handleClose = () => {
 		setModalOpen(false);
+		setImage(null);
+		setCroppedImg(null);
 		setStage(0);
 	};
 
@@ -88,17 +90,15 @@ export default function CreatePostModal(props) {
 			}
 		}, 'image/jpg');
 	};
+
+	useEffect(() => {
+		console.log(image);
+	}, [image]);
 	useEffect(() => {
 		if (image) {
 			setStage(1);
 		}
 	}, [image]);
-
-	// useEffect(() => {
-	// 	if (croppedImg) {
-	// 		setStage(2);
-	// 	}
-	// }, [croppedImg]);
 
 	if (stage === 0) {
 		return (
@@ -179,6 +179,9 @@ export default function CreatePostModal(props) {
 								onZoomChange={setZoom}
 								objectFit='vertical-cover'
 							/>
+							<CardContent
+								className={croppedImg ? 'slide' : null}
+							></CardContent>
 						</CardMedia>
 					)}
 				</Card>
