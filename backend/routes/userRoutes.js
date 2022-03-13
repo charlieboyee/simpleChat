@@ -1,12 +1,8 @@
 const express = require('express');
 const database = require('../database');
-const { isAuthorized } = require('../middlewares');
+const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
-
-const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 router.get('/data', isAuthorized, (req, res) => {
 	database
@@ -27,7 +23,8 @@ router.get('/posts', isAuthorized, (req, res) => {
 });
 
 router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
-	s3.uploadPhoto(req.session.user, req.file, req.file.fileName)
+	console.log(req.file);
+	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database
 				.editProfilePhoto(req.session.user, filePath)

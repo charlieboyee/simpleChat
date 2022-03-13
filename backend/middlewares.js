@@ -1,4 +1,8 @@
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const isAuthorized = (req, res, next) => {
 	if (!req.session.cookie || !req.session.token) {
 		return res.sendStatus(401);
@@ -13,4 +17,5 @@ const isAuthorized = (req, res, next) => {
 
 module.exports = {
 	isAuthorized,
+	upload,
 };

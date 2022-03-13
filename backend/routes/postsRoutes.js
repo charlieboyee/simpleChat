@@ -1,18 +1,12 @@
 const express = require('express');
 const database = require('../database');
-const { isAuthorized } = require('../middlewares');
+const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
-router.post('/64toBlob', isAuthorized, (req, res) => {
-	res.send(req.body.croppedImg);
-});
-router.post('/', isAuthorized, (req, res) => {
-	s3.uploadPhoto(
-		req.session.user,
-		req.body.croppedImg,
-		req.body.croppedImg.name
-	)
+router.post('/', isAuthorized, upload.single('file'), (req, res) => {
+	console.log(req.file);
+	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database
 				.createPost(req.session.user, filePath, req.body.caption)

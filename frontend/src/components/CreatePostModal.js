@@ -28,46 +28,28 @@ export default function CreatePostModal(props) {
 	const [cropArea, setCropArea] = useState(null);
 	const [croppedImg, setCroppedImg] = useState(null);
 	const [fileName, setFileName] = useState(null);
+	const [blob, setBlob] = useState(null);
 
 	const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
 		setCropArea(croppedAreaPixels);
 	}, []);
 
 	const createPost = async (e) => {
-		const blobResult = await fetch('/api/posts/64toBlob', {
+		let formData = new FormData();
+
+		formData.append('file', blob, fileName);
+		const results = await fetch('/api/posts/', {
 			method: 'POST',
-			headers: {
-				'content-type': 'application/json',
-			},
-			body: JSON.stringify({
-				croppedImg,
-			}),
+			body: formData,
 		});
 
-		if (blobResult.status === 200) {
-			const blob = await blobResult.blob();
-			blob.name = fileName;
-
-			const results = await fetch('/api/posts/', {
-				method: 'POST',
-				headers: {
-					'content-type': 'application/json',
-				},
-				body: JSON.stringify({
-					croppedImg: blob,
-					caption,
-				}),
-			});
-
-			if (results.status === 200) {
-				const { status } = await results.json();
-				if (status === true) {
-					handleClose();
-				}
-				return;
+		if (results.status === 200) {
+			const { status } = await results.json();
+			if (status === true) {
+				handleClose();
 			}
+			return;
 		}
-		return;
 	};
 
 	const toStageZero = () => {
@@ -77,6 +59,7 @@ export default function CreatePostModal(props) {
 	};
 
 	const handleClose = () => {
+		setBlob(null);
 		setModalOpen(false);
 		setImage(null);
 		setCroppedImg(null);
@@ -94,8 +77,9 @@ export default function CreatePostModal(props) {
 	};
 
 	useEffect(() => {
-		console.log(fileName);
-	}, [fileName]);
+		console.log(blob);
+	}, [blob]);
+
 	const showCroppedImg = () => {
 		const img = new Image();
 		img.src = image;
@@ -117,6 +101,7 @@ export default function CreatePostModal(props) {
 		);
 		canvas.toBlob((file) => {
 			if (file) {
+				setBlob(file);
 				const imgUrl = URL.createObjectURL(file);
 				return setCroppedImg(imgUrl);
 			}
@@ -184,7 +169,10 @@ export default function CreatePostModal(props) {
 							<CardContent>
 								<section>
 									<Avatar
-										src={`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`}
+										src={
+											userData.profilePhoto &&
+											`${process.env.REACT_APP_S3_URL}${userData.profilePhoto}`
+										}
 									/>
 									<span>{userData.username}</span>
 								</section>

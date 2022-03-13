@@ -34,3 +34,17 @@
 	height: auto;
 	object-fit: contain;
 }
+
+#lowerSection {
+	max-width: 900px;
+	width: 100%;
+}
+
+#lowerSection {
+	max-width: 900px;
+	width: 100%;
+}
+
+#lowerSection #tabPanel {
+	display: grid;
+}

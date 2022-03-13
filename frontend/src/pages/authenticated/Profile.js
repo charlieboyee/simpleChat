@@ -71,8 +71,6 @@ export default function Profile() {
 		}
 	};
 	const uploadProfilePhoto = async (e) => {
-		e.preventDefault();
-
 		let formData = new FormData();
 		formData.append('file', e.target.files[0]);
 
@@ -90,7 +88,6 @@ export default function Profile() {
 	};
 
 	const removeProfilePhoto = async (e) => {
-		e.preventDefault();
 		const result = await fetch('/api/user/profilePhoto', {
 			method: 'DELETE',
 			headers: {
@@ -106,6 +103,9 @@ export default function Profile() {
 		}
 	};
 
+	useEffect(() => {
+		console.log(ownerPosts);
+	}, [ownerPosts]);
 	return (
 		<main id='profile'>
 			<section id='upperSection'>
@@ -177,12 +177,21 @@ export default function Profile() {
 				</Modal>
 			</section>
 			<section id='lowerSection'>
-				<Tabs value={tabValue} onChange={handleTabChange}>
+				<Tabs centered value={tabValue} onChange={handleTabChange}>
 					<Tab label='Photos' />
 					<Tab label='Videos' />
 				</Tabs>
 				<TabPanel value={tabValue} index={0}>
-					photos
+					{/* need to ge photos here */}
+					{ownerPosts.map((post, index) => {
+						return (
+							<img
+								key={index}
+								src={`${process.env.REACT_APP_S3_URL}${post.photo}`}
+								alt='post'
+							/>
+						);
+					})}
 				</TabPanel>
 				<TabPanel value={tabValue} index={1}>
 					videos
