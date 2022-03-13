@@ -5,7 +5,6 @@ const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
 router.post('/', isAuthorized, upload.single('file'), (req, res) => {
-	console.log(req.file);
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database

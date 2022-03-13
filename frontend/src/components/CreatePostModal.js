@@ -10,7 +10,6 @@ import {
 	Input,
 	IconButton,
 	Modal,
-	TextField,
 	Button,
 } from '@mui/material';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
@@ -75,10 +74,6 @@ export default function CreatePostModal(props) {
 			setImage(reader.result);
 		};
 	};
-
-	useEffect(() => {
-		console.log(blob);
-	}, [blob]);
 
 	const showCroppedImg = () => {
 		const img = new Image();
