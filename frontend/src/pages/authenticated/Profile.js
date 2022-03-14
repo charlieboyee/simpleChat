@@ -182,7 +182,6 @@ export default function Profile() {
 					<Tab label='Videos' />
 				</Tabs>
 				<TabPanel value={tabValue} index={0}>
-					{/* need to ge photos here */}
 					{ownerPosts.map((post, index) => {
 						return (
 							<img
