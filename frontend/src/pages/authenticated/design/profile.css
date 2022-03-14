@@ -3,6 +3,7 @@
 	flex-direction: column;
 	height: 100%;
 	align-items: center;
+	overflow: auto;
 }
 
 #upperSection {
@@ -40,11 +41,17 @@
 	width: 100%;
 }
 
-#lowerSection {
-	max-width: 900px;
+#lowerSection .tabPanel {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: auto;
+	gap: 2em 2em;
+}
+#lowerSection .tabPanel img {
 	width: 100%;
+	object-fit: contain;
 }
 
-#lowerSection #tabPanel {
-	display: grid;
+#lowerSection .tabPanel[hidden] {
+	display: none;
 }
