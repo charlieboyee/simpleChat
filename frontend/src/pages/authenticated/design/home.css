@@ -1,0 +1,13 @@
+#homePage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+#homePage .MuiCard-root {
+	min-width: 400px;
+	width: 30vw;
+}
+
+#homePage #postImage {
+	width: 100%;
+}

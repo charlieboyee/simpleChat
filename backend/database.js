@@ -36,6 +36,7 @@ const createPost = async (user, filePath, caption = '') => {
 		photo: filePath,
 		inception: Date(),
 		caption,
+		likes: 0,
 		comments: [],
 	});
 	return post;
