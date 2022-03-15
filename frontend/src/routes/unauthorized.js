@@ -12,11 +12,12 @@ function Base() {
 		</div>
 	);
 }
-export default function UnauthorizedRoutes() {
+export default function UnauthorizedRoutes(props) {
+	const { setLoggedInUser } = props;
 	return (
 		<Routes>
 			<Route path='/' element={<Base />}>
-				<Route index element={<Landing />} />
+				<Route index element={<Landing setLoggedInUser={setLoggedInUser} />} />
 				<Route path='/createAccount' element={<CreateAccount />} />
 				<Route path='/forgotPassword' element={<ForgotPassword />} />
 

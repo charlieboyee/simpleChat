@@ -53,7 +53,6 @@ export default function CreateAccount() {
 					<form onSubmit={createAccount}>
 						<TextField
 							error={usernameError}
-							helperText='Username already exists'
 							value={username}
 							onChange={handleUsernameChange}
 							placeholder='Username'

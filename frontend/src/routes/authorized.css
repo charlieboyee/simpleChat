@@ -3,10 +3,11 @@
 	src: url('../assets/fonts/Fredoka-Regular.ttf');
 }
 .authorizedBase {
-	height: 100%;
+	height: 100vh;
 	display: flex;
 	flex-direction: column;
 	background-color: #3d348b;
+	overflow: auto;
 }
 #mainNav {
 	display: flex;
@@ -14,6 +15,8 @@
 	justify-content: space-between;
 	position: sticky;
 	top: 0;
+	background-color: #3d348b;
+	z-index: 99;
 }
 #mainNav #left {
 	text-transform: none;
@@ -24,14 +27,14 @@
 #mainNav #right {
 	align-self: center;
 }
-#right .MuiIconButton-root {
+#mainNav #right .MuiIconButton-root {
 	width: 28px;
 	height: 28px;
 	padding: 0;
 	margin-right: 15px;
 }
-#right .mainNavButtons {
+
+#mainNav #right .MuiAvatar-root {
 	width: 100%;
 	height: 100%;
-	object-fit: contain;
 }

@@ -8,6 +8,7 @@ import './App.css';
 export default function App() {
 	const navigate = useNavigate();
 	const [loggedIn, setLoggedIn] = useState(false);
+	const [loggedInUser, setLoggedInUser] = useState('');
 
 	useEffect(() => {
 		(async () => {
@@ -25,13 +26,13 @@ export default function App() {
 	if (loggedIn) {
 		return (
 			<LoggedInContext.Provider value={[loggedIn, setLoggedIn]}>
-				<AuthorizedRoutes />
+				<AuthorizedRoutes loggedInUser={loggedInUser} />
 			</LoggedInContext.Provider>
 		);
 	}
 	return (
 		<LoggedInContext.Provider value={[loggedIn, setLoggedIn]}>
-			<UnauthorizedRoutes />
+			<UnauthorizedRoutes setLoggedInUser={setLoggedInUser} />
 		</LoggedInContext.Provider>
 	);
 }

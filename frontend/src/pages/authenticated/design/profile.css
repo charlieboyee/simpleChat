@@ -15,21 +15,19 @@
 
 #upperSection .MuiCard-root .MuiCardMedia-root {
 	flex: 1;
+	min-width: 150px;
+	min-height: 150px;
+}
+
+#upperSection .MuiCard-root .MuiCardMedia-root label .MuiIconButton-root {
+	width: 100%;
+	height: 100%;
 }
 #upperSection .MuiCard-root .MuiCardContent-root {
 	flex: 3;
 }
 
-#upperSection .MuiCard-root .MuiCardMedia-root .MuiIconButton-root {
-	min-width: 150px;
-	min-height: 150px;
-}
-
-#upperSection
-	.MuiCard-root
-	.MuiCardMedia-root
-	.MuiIconButton-root
-	#profilePhoto {
+#profilePhoto {
 	width: 100%;
 	height: auto;
 	object-fit: contain;
@@ -38,6 +36,7 @@
 #lowerSection {
 	max-width: 900px;
 	width: 100%;
+	height: 100%;
 }
 
 #lowerSection .tabPanel {

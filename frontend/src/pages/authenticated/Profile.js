@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useOutletContext, useParams } from 'react-router-dom';
 import {
 	Avatar,
 	Button,
@@ -24,10 +24,12 @@ function TabPanel(props) {
 		</div>
 	);
 }
+
 export default function Profile() {
 	const { userData, userPosts } = useOutletContext();
 	const [ownerData, setOwnerData] = userData;
 	const [ownerPosts, setOwnerPosts] = userPosts;
+
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tabValue, setTabValue] = useState(0);
 
@@ -103,9 +105,6 @@ export default function Profile() {
 		}
 	};
 
-	useEffect(() => {
-		console.log(ownerPosts);
-	}, [ownerPosts]);
 	return (
 		<main id='profile'>
 			<section id='upperSection'>

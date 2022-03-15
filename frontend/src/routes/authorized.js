@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import Home from '../pages/authenticated/Home';
 import Profile from '../pages/authenticated/Profile';
+import OtherProfile from '../pages/authenticated/OtherProfile';
 import EditProfile from '../pages/authenticated/EditProfile';
 import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
@@ -27,7 +28,7 @@ export default function AuthorizedRoutes() {
 	const [userPosts, setUserPosts] = useState([]);
 
 	useEffect(() => {
-		fetch('/api/user/data')
+		fetch(`/api/user/data`)
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -64,6 +65,7 @@ export default function AuthorizedRoutes() {
 			>
 				<Route index element={<Home />} />
 				<Route path='profile' element={<Profile />} />
+				<Route path='profile/:otherUser' element={<OtherProfile />} />
 				<Route path='edit' element={<EditProfile />} />
 				<Route path='*' element={<NotFound />} />
 			</Route>

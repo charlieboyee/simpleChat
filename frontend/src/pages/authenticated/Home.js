@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import {
 	Avatar,
 	Button,
