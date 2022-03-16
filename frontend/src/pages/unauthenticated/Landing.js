@@ -19,10 +19,6 @@ export default function Landing() {
 	const [usernameError, setUsernameError] = useState(false);
 	const [passwordError, setPasswordError] = useState(false);
 
-	useEffect(() => {
-		console.log(loggedIn);
-	}, []);
-
 	const handleUsernameChange = (e) => {
 		setUsernameError(false);
 		setUsername(e.target.value);

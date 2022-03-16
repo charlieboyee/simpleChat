@@ -67,6 +67,15 @@ const getAllPosts = async () => {
 	const cursor = await result.toArray();
 	return cursor;
 };
+
+const getAllUsers = async () => {
+	const projection = { username: 1 };
+	const result = await users.find({}).project(projection);
+
+	const cursor = await result.toArray();
+	console.log(cursor);
+	return cursor;
+};
 const getUserData = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;
@@ -104,6 +113,7 @@ module.exports = {
 	createPost,
 	editProfilePhoto,
 	getAllPosts,
+	getAllUsers,
 	getUserData,
 	getUserPosts,
 	logIn,

@@ -19,7 +19,6 @@ export default function Home() {
 	const { userData, followingPosts } = useOutletContext();
 	const [data] = userData;
 	const followingPostList = followingPosts;
-	console.log(followingPostList);
 	return (
 		<main id='homePage'>
 			{followingPostList?.map((post, index) => {

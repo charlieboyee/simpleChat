@@ -1,8 +1,17 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInContext } from '../index';
 import CreatePostModal from '../components/CreatePostModal';
-import { Avatar, Button, IconButton, Menu, MenuItem } from '@mui/material';
+import {
+	Autocomplete,
+	Avatar,
+	Button,
+	Input,
+	IconButton,
+	Menu,
+	MenuItem,
+	TextField,
+} from '@mui/material';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
@@ -14,6 +23,10 @@ export default function NavBar(props) {
 	const navigate = useNavigate();
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
+
+	const [searchOpen, setSearchOpen] = useState(false);
+	const [searchOptions, setSearchOptions] = useState([]);
+	const searchLoading = searchOpen && searchOptions.length === 0;
 
 	const [modalOpen, setModalOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -40,6 +53,11 @@ export default function NavBar(props) {
 		}
 		return;
 	};
+
+	useEffect(() => {
+		console.log(searchLoading);
+	}, [searchLoading]);
+
 	return (
 		<nav id='mainNav'>
 			<CreatePostModal
@@ -55,6 +73,18 @@ export default function NavBar(props) {
 			>
 				simpleChat
 			</Button>
+			<Autocomplete
+				sx={{ width: 400 }}
+				open={searchOpen}
+				onOpen={() => setSearchOpen(true)}
+				onClose={() => setSearchOpen(false)}
+				loading={searchLoading}
+				options={searchOptions}
+				getOptionLabel={(option) => option.username}
+				renderInput={(params) => (
+					<TextField {...params} InputProps={params.InputProps} />
+				)}
+			/>
 			<span id='right'>
 				<IconButton disableRipple onClick={() => navigate('/')}>
 					<HomeRoundedIcon className='mainNavButtons' />

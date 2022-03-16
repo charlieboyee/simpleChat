@@ -110,17 +110,15 @@ export default function OtherProfile() {
 							<div>
 								<div>
 									<span>{otherUserData.username}</span>
-									<Button
-										disabled={
-											loggedInUser.following?.includes(otherUser) ? true : false
-										}
-										variant='contained'
-										onClick={followUser}
-									>
-										{loggedInUser.following?.includes(otherUser)
-											? 'Following'
-											: 'Follow'}
-									</Button>
+									{loggedInUser.following?.includes(otherUser) ? (
+										<Button variant='contained' disabled>
+											Following
+										</Button>
+									) : (
+										<Button variant='contained' onClick={followUser}>
+											Follow
+										</Button>
+									)}
 								</div>
 								<div>
 									<span>{otherUserPosts?.length} posts</span>

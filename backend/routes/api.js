@@ -11,6 +11,13 @@ router.use('/posts', postsRoutes);
 router.use('/user', userRoute);
 router.use('/otherUser', otherUserRoutes);
 
+router.get('/users', isAuthorized, (req, res) => {
+	database
+		.getAllUsers()
+		.then((users) => res.json({ options: users }))
+		.catch((err) => res.sendStatus(500));
+});
+
 router.post('/logOut', isAuthorized, (req, res) => {
 	req.session.destroy();
 	res.sendStatus(200);
