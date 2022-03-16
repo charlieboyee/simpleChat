@@ -12,6 +12,19 @@ const client = new MongoClient(uri, {
 let users;
 let posts;
 
+const addFollower = async (user, follower) => {
+	console.log(user, follower);
+	const update = { $addToSet: { followers: follower } };
+	const result = users.findOneAndUpdate({ username: user }, update);
+	const update2 = { $addToSet: { following: user } };
+	const result2 = users.findOneAndUpdate({ username: follower }, update2);
+
+	const prom = await Promise.all([result, result2]);
+	console.log(prom);
+
+	return prom;
+};
+
 const createAccount = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (result) return result;
@@ -49,7 +62,12 @@ const editProfilePhoto = async (user, filePath = '') => {
 	const result = await users.updateOne({ username: user }, update);
 	return result;
 };
-
+const getAllPosts = async () => {
+	const result = await posts.find({});
+	const cursor = await result.toArray();
+	console.log(cursor);
+	return cursor;
+};
 const getUserData = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;
@@ -81,9 +99,11 @@ const runDb = async () => {
 };
 
 module.exports = {
+	addFollower,
 	createAccount,
 	createPost,
 	editProfilePhoto,
+	getAllPosts,
 	getUserData,
 	getUserPosts,
 	logIn,

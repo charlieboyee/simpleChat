@@ -4,8 +4,19 @@ const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
-router.get('/:user/data', (req, res) => {
-	console.log(req.params);
+router.post('/:user/follow', isAuthorized, (req, res) => {
+	console.log(req.params.user, req.body.follower);
+	database
+		.addFollower(req.params.user, req.body.follower)
+		.then((result) => {
+			if (result[0].ok && result[1].ok) {
+				return res.json({ status: true });
+			}
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
+router.get('/:user/data', isAuthorized, (req, res) => {
 	database
 		.getUserData(req.params.user)
 		.then((result) => {
@@ -14,8 +25,7 @@ router.get('/:user/data', (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/:user/posts', (req, res) => {
-	console.log(req.params);
+router.get('/:user/posts', isAuthorized, (req, res) => {
 	database
 		.getUserPosts(req.params.user)
 		.then((result) => {

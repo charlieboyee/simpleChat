@@ -9,12 +9,14 @@ import NotFound from '../pages/NotFound';
 import './authorized.css';
 
 function Base(props) {
-	const { userData, setUserData, userPosts, setUserPosts } = props;
+	const { userData, setUserData, userPosts, setUserPosts, followingPosts } =
+		props;
 	return (
 		<div className='authorizedBase'>
 			<NavBar userData={userData} setUserData={setUserData} />
 			<Outlet
 				context={{
+					followingPosts,
 					userData: [userData, setUserData],
 					userPosts: [userPosts, setUserPosts],
 				}}
@@ -26,6 +28,7 @@ function Base(props) {
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [userPosts, setUserPosts] = useState([]);
+	const [followingPosts, setFollowingPosts] = useState([]);
 
 	useEffect(() => {
 		fetch(`/api/user/data`)
@@ -48,6 +51,9 @@ export default function AuthorizedRoutes() {
 				setUserPosts(posts);
 				return;
 			});
+		fetch('/api/posts')
+			.then((result) => result.json())
+			.then(({ posts }) => setFollowingPosts(posts));
 	}, []);
 
 	return (
@@ -60,6 +66,7 @@ export default function AuthorizedRoutes() {
 						setUserData={setUserData}
 						userPosts={userPosts}
 						setUserPosts={setUserPosts}
+						followingPosts={followingPosts}
 					/>
 				}
 			>

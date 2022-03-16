@@ -4,6 +4,12 @@ const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
+router.get('/', isAuthorized, (req, res) => {
+	database
+		.getAllPosts()
+		.then((result) => res.json({ posts: result }))
+		.catch((err) => res.sendStatus(500));
+});
 router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {

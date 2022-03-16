@@ -60,6 +60,19 @@ export default function OtherProfile() {
 		return;
 	};
 
+	const followUser = async () => {
+		const results = await fetch(`/api/otherUser/${otherUser}/follow`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ follower: loggedInUser.username }),
+		});
+		if (results.status === 200) {
+			const { data } = await results.json();
+			console.log(data);
+			return;
+		}
+	};
+
 	useEffect(() => {
 		if (otherUser === loggedInUser.username) {
 			return navigate('/profile');
@@ -97,10 +110,21 @@ export default function OtherProfile() {
 							<div>
 								<div>
 									<span>{otherUserData.username}</span>
-									<Button variant='contained'>Edit Profile</Button>
+
+									<Button
+										variant='contained'
+										disabled={
+											loggedInUser.following.includes(otherUser) ? true : false
+										}
+										onClick={followUser}
+									>
+										{loggedInUser.following.includes(otherUser)
+											? 'Following'
+											: 'Follow'}
+									</Button>
 								</div>
 								<div>
-									{/* <span>{ownerPosts?.length} posts</span> */}
+									<span>{otherUserPosts?.length} posts</span>
 									<span>{otherUserData.following?.length} following</span>
 									<span>{otherUserData.followers?.length} followers</span>
 								</div>

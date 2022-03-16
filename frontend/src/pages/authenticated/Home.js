@@ -16,19 +16,23 @@ import './design/home.css';
 
 export default function Home() {
 	const [comment, setComment] = useState('');
-	const { userPosts, userData } = useOutletContext();
-	const [posts] = userPosts;
+	const { userData, followingPosts } = useOutletContext();
 	const [data] = userData;
-
+	const followingPostList = followingPosts;
+	console.log(followingPostList);
 	return (
 		<main id='homePage'>
-			{posts.map((post, index) => {
+			{followingPostList?.map((post, index) => {
 				return (
 					<Card key={index}>
 						<CardHeader
 							avatar={
 								<Avatar
-									src={`${process.env.REACT_APP_S3_URL}${data.profilePhoto}`}
+									src={
+										data.profilePhoto
+											? `${process.env.REACT_APP_S3_URL}${data.profilePhoto}`
+											: null
+									}
 								/>
 							}
 							title={post.owner}
