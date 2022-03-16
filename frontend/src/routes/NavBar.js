@@ -5,6 +5,7 @@ import CreatePostModal from '../components/CreatePostModal';
 import {
 	Autocomplete,
 	Avatar,
+	CircularProgress,
 	Button,
 	Input,
 	IconButton,
@@ -26,6 +27,7 @@ export default function NavBar(props) {
 
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchOptions, setSearchOptions] = useState([]);
+	const [searchValue, setSearchValue] = useState('');
 	const searchLoading = searchOpen && searchOptions.length === 0;
 
 	const [modalOpen, setModalOpen] = useState(false);
@@ -55,8 +57,29 @@ export default function NavBar(props) {
 	};
 
 	useEffect(() => {
-		console.log(searchLoading);
+		if (searchLoading) {
+			fetch('/api/users')
+				.then((res) => {
+					if (res.status === 200) {
+						return res.json();
+					}
+				})
+				.then(({ options }) => {
+					console.log(options);
+					setSearchOptions(options);
+				});
+		}
 	}, [searchLoading]);
+
+	useEffect(() => {
+		if (!searchOpen) {
+			return setSearchOptions([]);
+		}
+	}, [searchOpen]);
+
+	useEffect(() => {
+		console.log(searchValue);
+	}, [searchValue]);
 
 	return (
 		<nav id='mainNav'>
@@ -74,15 +97,35 @@ export default function NavBar(props) {
 				simpleChat
 			</Button>
 			<Autocomplete
-				sx={{ width: 400 }}
+				inputValue={searchValue}
+				onInputChange={(e, newInputValue) => setSearchValue(newInputValue)}
 				open={searchOpen}
+				isOptionEqualToValue={(option) => option.username}
 				onOpen={() => setSearchOpen(true)}
 				onClose={() => setSearchOpen(false)}
 				loading={searchLoading}
 				options={searchOptions}
 				getOptionLabel={(option) => option.username}
 				renderInput={(params) => (
-					<TextField {...params} InputProps={params.InputProps} />
+					<TextField
+						{...params}
+						variant='filled'
+						onKeyDown={(e) => {
+							if (e.key === 'Enter') {
+								navigate(`profile/${searchValue}`);
+							}
+						}}
+						placeholder={searchLoading ? 'Loading...' : 'Search'}
+						InputProps={{
+							disableUnderline: true,
+							...params.InputProps,
+							endAdornment: searchLoading ? (
+								<CircularProgress />
+							) : (
+								params.InputProps.endAdornment
+							),
+						}}
+					/>
 				)}
 			/>
 			<span id='right'>

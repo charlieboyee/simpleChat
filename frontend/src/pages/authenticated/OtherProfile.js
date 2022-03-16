@@ -82,7 +82,7 @@ export default function OtherProfile() {
 			setOtherUserPosts(result[1]);
 			setLoading(false);
 		});
-	}, []);
+	}, [otherUser]);
 
 	if (loading) {
 		return <LinearProgress />;

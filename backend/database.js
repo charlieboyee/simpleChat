@@ -41,9 +41,6 @@ const createAccount = async (user) => {
 };
 
 const createPost = async (user, filePath, caption = '') => {
-	console.log(user);
-	console.log(filePath);
-	console.log(caption);
 	const post = await posts.insertOne({
 		owner: user,
 		photo: filePath,
@@ -69,11 +66,10 @@ const getAllPosts = async () => {
 };
 
 const getAllUsers = async () => {
-	const projection = { username: 1 };
+	const projection = { username: 1, _id: 0 };
 	const result = await users.find({}).project(projection);
 
 	const cursor = await result.toArray();
-	console.log(cursor);
 	return cursor;
 };
 const getUserData = async (user) => {

@@ -17,6 +17,15 @@
 	top: 0;
 	background-color: #3d348b;
 	z-index: 99;
+	margin-bottom: 1rem;
+}
+
+#mainNav .MuiAutocomplete-root .MuiFilledInput-root {
+	background-color: white;
+	border-radius: 10px;
+	min-width: 300px;
+	padding: 0;
+	margin: 1rem 0;
 }
 #mainNav #left {
 	text-transform: none;
