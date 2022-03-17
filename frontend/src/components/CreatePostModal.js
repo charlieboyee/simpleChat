@@ -37,7 +37,7 @@ export default function CreatePostModal(props) {
 		let formData = new FormData();
 
 		formData.append('file', blob, fileName);
-		const results = await fetch('/api/posts/', {
+		const results = await fetch('/api/user/post', {
 			method: 'POST',
 			body: formData,
 		});

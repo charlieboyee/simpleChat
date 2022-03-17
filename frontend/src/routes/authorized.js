@@ -27,11 +27,9 @@ function Base(props) {
 
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
-	const [userPosts, setUserPosts] = useState([]);
-	const [followingPosts, setFollowingPosts] = useState([]);
 
 	useEffect(() => {
-		fetch(`/api/user/data`)
+		fetch(`/api/user`)
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -41,34 +39,23 @@ export default function AuthorizedRoutes() {
 				setUserData(data);
 				return;
 			});
-		fetch('/api/user/posts')
+
+		fetch(`/api/allPosts`)
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
 				}
 			})
 			.then(({ posts }) => {
-				setUserPosts(posts);
 				return;
 			});
-		fetch('/api/posts')
-			.then((result) => result.json())
-			.then(({ posts }) => setFollowingPosts(posts));
 	}, []);
 
 	return (
 		<Routes>
 			<Route
 				path='/'
-				element={
-					<Base
-						userData={userData}
-						setUserData={setUserData}
-						userPosts={userPosts}
-						setUserPosts={setUserPosts}
-						followingPosts={followingPosts}
-					/>
-				}
+				element={<Base userData={userData} setUserData={setUserData} />}
 			>
 				<Route index element={<Home />} />
 				<Route path='profile' element={<Profile />} />

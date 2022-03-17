@@ -11,6 +11,7 @@ import {
 	Menu,
 	MenuItem,
 	TextField,
+	CircularProgress,
 } from '@mui/material';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
@@ -24,6 +25,7 @@ export default function NavBar(props) {
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 
+	const [searchInput, setSearchInput] = useState('');
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchOptions, setSearchOptions] = useState([]);
 	const searchLoading = searchOpen && searchOptions.length === 0;
@@ -55,8 +57,23 @@ export default function NavBar(props) {
 	};
 
 	useEffect(() => {
-		console.log(searchLoading);
+		if (!searchLoading) {
+			return;
+		}
+		fetch('/api/allUsers')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ options }) => setSearchOptions(options));
 	}, [searchLoading]);
+
+	useEffect(() => {
+		if (!searchOpen) {
+			return setSearchOptions([]);
+		}
+	}, [searchOpen]);
 
 	return (
 		<nav id='mainNav'>
@@ -76,13 +93,36 @@ export default function NavBar(props) {
 			<Autocomplete
 				sx={{ width: 400 }}
 				open={searchOpen}
+				inputValue={searchInput}
+				onInputChange={(e, newInputValue) => {
+					setSearchInput(newInputValue);
+				}}
+				isOptionEqualToValue={(option) => option.username}
 				onOpen={() => setSearchOpen(true)}
 				onClose={() => setSearchOpen(false)}
 				loading={searchLoading}
 				options={searchOptions}
 				getOptionLabel={(option) => option.username}
 				renderInput={(params) => (
-					<TextField {...params} InputProps={params.InputProps} />
+					<TextField
+						variant='filled'
+						{...params}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter') {
+								return navigate(`/profile/${searchInput}`);
+							}
+						}}
+						placeholder={searchLoading ? 'Loading...' : 'Search'}
+						InputProps={{
+							disableUnderline: true,
+							...params.InputProps,
+							endAdornment: searchLoading ? (
+								<CircularProgress />
+							) : (
+								params.InputProps.endAdornment
+							),
+						}}
+					/>
 				)}
 			/>
 			<span id='right'>

@@ -10,28 +10,18 @@ router.post('/:user/follow', isAuthorized, (req, res) => {
 		.addFollower(req.params.user, req.body.follower)
 		.then((result) => {
 			if (result[0].ok && result[1].ok) {
-				return res.json({ status: true });
+				return res.json({ data: [result[0].value, result[1].value] });
 			}
 		})
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/:user/data', isAuthorized, (req, res) => {
+router.get('/:user', isAuthorized, (req, res) => {
 	database
-		.getUserData(req.params.user)
+		.getUser(req.params.user)
 		.then((result) => {
 			return res.json({ data: result });
 		})
 		.catch((err) => res.sendStatus(500));
 });
-
-router.get('/:user/posts', isAuthorized, (req, res) => {
-	database
-		.getUserPosts(req.params.user)
-		.then((result) => {
-			return res.json({ data: result });
-		})
-		.catch((err) => res.sendStatus(500));
-});
-
 module.exports = router;

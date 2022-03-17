@@ -26,9 +26,8 @@ function TabPanel(props) {
 }
 
 export default function Profile() {
-	const { userData, userPosts } = useOutletContext();
+	const { userData } = useOutletContext();
 	const [ownerData, setOwnerData] = userData;
-	const [ownerPosts, setOwnerPosts] = userPosts;
 
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tabValue, setTabValue] = useState(0);
@@ -144,7 +143,7 @@ export default function Profile() {
 								<Button variant='contained'>Edit Profile</Button>
 							</div>
 							<div>
-								<span>{ownerPosts?.length} posts</span>
+								<span>{ownerData.posts?.length} posts</span>
 								<span>{ownerData.following?.length} following</span>
 								<span>{ownerData.followers?.length} followers</span>
 							</div>
@@ -181,7 +180,7 @@ export default function Profile() {
 					<Tab label='Videos' />
 				</Tabs>
 				<TabPanel value={tabValue} index={0}>
-					{ownerPosts.map((post, index) => {
+					{ownerData.posts?.map((post, index) => {
 						return (
 							<img
 								key={index}

@@ -13,15 +13,19 @@ let users;
 let posts;
 
 const addFollower = async (user, follower) => {
-	console.log(user, follower);
+	const options = { returnDocument: 'after' };
+
 	const update = { $addToSet: { followers: follower } };
-	const result = users.findOneAndUpdate({ username: user }, update);
+	const result = users.findOneAndUpdate({ username: user }, update, options);
 	const update2 = { $addToSet: { following: user } };
-	const result2 = users.findOneAndUpdate({ username: follower }, update2);
+	const result2 = users.findOneAndUpdate(
+		{ username: follower },
+		update2,
+		options
+	);
 
 	const prom = await Promise.all([result, result2]);
 	console.log(prom);
-
 	return prom;
 };
 
@@ -41,18 +45,17 @@ const createAccount = async (user) => {
 };
 
 const createPost = async (user, filePath, caption = '') => {
-	console.log(user);
-	console.log(filePath);
-	console.log(caption);
-	const post = await posts.insertOne({
-		owner: user,
+	const post = {
 		photo: filePath,
 		inception: Date(),
 		caption,
 		likes: 0,
 		comments: [],
-	});
-	return post;
+	};
+
+	const update = { $push: { posts: post } };
+	const result = await users.findOneAndUpdate({ username: user }, update);
+	return result;
 };
 
 const editProfilePhoto = async (user, filePath = '') => {
@@ -62,21 +65,24 @@ const editProfilePhoto = async (user, filePath = '') => {
 	const result = await users.updateOne({ username: user }, update);
 	return result;
 };
-const getAllPosts = async () => {
-	const result = await posts.find({}).sort({ inception: -1 });
-	const cursor = await result.toArray();
-	return cursor;
-};
 
 const getAllUsers = async () => {
 	const projection = { username: 1 };
 	const result = await users.find({}).project(projection);
-
 	const cursor = await result.toArray();
-	console.log(cursor);
 	return cursor;
 };
-const getUserData = async (user) => {
+
+const getAllPosts = async () => {
+	const projection = {
+		posts: 1,
+		profilePhoto: 1,
+	};
+	const result = await users.find({}).project(projection);
+	const cursor = await result.toArray();
+	return cursor;
+};
+const getUser = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;
 };
@@ -112,9 +118,9 @@ module.exports = {
 	createAccount,
 	createPost,
 	editProfilePhoto,
-	getAllPosts,
 	getAllUsers,
-	getUserData,
+	getAllPosts,
+	getUser,
 	getUserPosts,
 	logIn,
 	runDb,

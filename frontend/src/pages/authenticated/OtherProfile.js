@@ -33,26 +33,17 @@ export default function OtherProfile() {
 
 	const { userData } = useOutletContext();
 
-	const [loggedInUser] = userData;
+	const [loggedInUser, setLoggedInUser] = userData;
 
 	const [tabValue, setTabValue] = useState(0);
 
 	const [otherUserData, setOtherUserData] = useState(null);
-	const [otherUserPosts, setOtherUserPosts] = useState(null);
 	const [loading, setLoading] = useState(true);
 
 	const handleTabChange = (e, newValue) => setTabValue(newValue);
 
 	const getOtherUserData = async () => {
-		const result = await fetch(`/api/otherUser/${otherUser}/data`);
-		if (result.status === 200) {
-			const { data } = await result.json();
-			return data;
-		}
-		return;
-	};
-	const getOtherUserPosts = async () => {
-		const result = await fetch(`/api/otherUser/${otherUser}/posts`);
+		const result = await fetch(`/api/otherUser/${otherUser}`);
 		if (result.status === 200) {
 			const { data } = await result.json();
 			return data;
@@ -69,6 +60,9 @@ export default function OtherProfile() {
 		if (results.status === 200) {
 			const { data } = await results.json();
 			console.log(data);
+			setLoggedInUser(data[1]);
+			setOtherUserData(data[0]);
+
 			return;
 		}
 	};
@@ -77,12 +71,12 @@ export default function OtherProfile() {
 		if (otherUser === loggedInUser.username) {
 			return navigate('/profile');
 		}
-		Promise.all([getOtherUserData(), getOtherUserPosts()]).then((result) => {
-			setOtherUserData(result[0]);
-			setOtherUserPosts(result[1]);
+
+		getOtherUserData().then((result) => {
+			setOtherUserData(result);
 			setLoading(false);
 		});
-	}, []);
+	}, [otherUser]);
 
 	if (loading) {
 		return <LinearProgress />;
@@ -121,7 +115,7 @@ export default function OtherProfile() {
 									)}
 								</div>
 								<div>
-									<span>{otherUserPosts?.length} posts</span>
+									<span>{otherUserData?.length} posts</span>
 									<span>{otherUserData.following?.length} following</span>
 									<span>{otherUserData.followers?.length} followers</span>
 								</div>
@@ -135,7 +129,7 @@ export default function OtherProfile() {
 						<Tab label='Videos' />
 					</Tabs>
 					<TabPanel value={tabValue} index={0}>
-						{otherUserPosts.map((post, index) => {
+						{otherUserData.posts.map((post, index) => {
 							return (
 								<img
 									key={index}
