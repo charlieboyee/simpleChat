@@ -73,8 +73,16 @@ const getAllUsers = async () => {
 	return cursor;
 };
 
-const getAllPosts = async () => {
-	const cursor = await posts.find({}).sort({ inception: -1 });
+const getAllPosts = async (username) => {
+	const user = await users.findOne(
+		{ username },
+		{ projection: { following: 1 } }
+	);
+	const cursor = await posts
+		.find({
+			owner: { $in: [...user.following, username] },
+		})
+		.sort({ inception: -1 });
 	const result = await cursor.toArray();
 	return result;
 };

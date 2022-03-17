@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/allPosts', isAuthorized, (req, res) => {
 	database
-		.getAllPosts()
+		.getAllPosts(req.session.user)
 		.then((posts) => res.json({ posts }))
 		.catch((err) => res.sendStatus(500));
 });
