@@ -51,10 +51,10 @@ const createPost = async (user, filePath, caption = '') => {
 		caption,
 		likes: 0,
 		comments: [],
+		owner: user,
 	};
 
-	const update = { $push: { posts: post } };
-	const result = await users.findOneAndUpdate({ username: user }, update);
+	const result = await posts.insertOne(post);
 	return result;
 };
 
@@ -68,19 +68,15 @@ const editProfilePhoto = async (user, filePath = '') => {
 
 const getAllUsers = async () => {
 	const projection = { username: 1, _id: 0 };
-	const result = await users.find({}).project(projection);
+	const result = await posts.find({}).project(projection);
 	const cursor = await result.toArray();
 	return cursor;
 };
 
 const getAllPosts = async () => {
-	const projection = {
-		posts: 1,
-		profilePhoto: 1,
-	};
-	const result = await users.find({}).project(projection);
-	const cursor = await result.toArray();
-	return cursor;
+	const cursor = await posts.find({}).sort({ inception: -1 });
+	const result = await cursor.toArray();
+	return result;
 };
 const getUser = async (user) => {
 	const result = await users.findOne({ username: user });
@@ -88,10 +84,11 @@ const getUser = async (user) => {
 };
 
 const getUserPosts = async (user) => {
-	const result = await posts.find({ owner: user });
-	const cursor = await result.toArray();
+	const cursor = await posts.find({ owner: user }).sort({ inception: -1 });
+	const result = await cursor.toArray();
+	console.log(result);
 
-	return cursor;
+	return result;
 };
 const logIn = async (user) => {
 	let result = await users.findOne({ username: user.username });

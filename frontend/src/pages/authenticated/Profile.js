@@ -29,8 +29,13 @@ export default function Profile() {
 	const { userData } = useOutletContext();
 	const [ownerData, setOwnerData] = userData;
 
+	const [posts, setPosts] = useState([]);
+
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tabValue, setTabValue] = useState(0);
+
+	const controller = new AbortController();
+	const signal = controller.signal;
 
 	const handleTabChange = (e, newValue) => setTabValue(newValue);
 
@@ -104,6 +109,21 @@ export default function Profile() {
 		}
 	};
 
+	useEffect(() => {
+		fetch('/api/user/post', {
+			signal,
+		})
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then((result) => {
+				console.log(result.posts);
+				setPosts(result.posts);
+			});
+	}, []);
+
 	return (
 		<main id='profile'>
 			<section id='upperSection'>
@@ -143,7 +163,7 @@ export default function Profile() {
 								<Button variant='contained'>Edit Profile</Button>
 							</div>
 							<div>
-								<span>{ownerData.posts?.length} posts</span>
+								<span>{posts.length ? posts.length : 0} posts</span>
 								<span>{ownerData.following?.length} following</span>
 								<span>{ownerData.followers?.length} followers</span>
 							</div>
@@ -180,7 +200,7 @@ export default function Profile() {
 					<Tab label='Videos' />
 				</Tabs>
 				<TabPanel value={tabValue} index={0}>
-					{ownerData.posts?.map((post, index) => {
+					{posts?.map((post, index) => {
 						return (
 							<img
 								key={index}

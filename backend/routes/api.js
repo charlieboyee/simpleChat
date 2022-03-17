@@ -3,23 +3,18 @@ const database = require('../database');
 const { isAuthorized } = require('../middlewares');
 const bcrypt = require('bcrypt');
 const userRoute = require('./userRoutes');
+const postRoutes = require('./postRoutes');
 const otherUserRoutes = require('./otherUserRoutes');
 const router = express.Router();
 
 router.use('/user', userRoute);
 router.use('/otherUser', otherUserRoutes);
+router.use('/post', postRoutes);
 
 router.get('/allUsers', isAuthorized, (req, res) => {
 	database
 		.getAllUsers()
 		.then((users) => res.json({ options: users }))
-		.catch((err) => res.sendStatus(500));
-});
-
-router.get('/allPosts', isAuthorized, (req, res) => {
-	database
-		.getAllPosts()
-		.then((posts) => res.json({ posts }))
 		.catch((err) => res.sendStatus(500));
 });
 

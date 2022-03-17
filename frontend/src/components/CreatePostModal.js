@@ -37,7 +37,7 @@ export default function CreatePostModal(props) {
 		let formData = new FormData();
 
 		formData.append('file', blob, fileName);
-		const results = await fetch('/api/user/post', {
+		const results = await fetch('/api/post', {
 			method: 'POST',
 			body: formData,
 		});
@@ -45,7 +45,7 @@ export default function CreatePostModal(props) {
 		if (results.status === 200) {
 			const { status } = await results.json();
 			if (status === true) {
-				handleClose();
+				return handleClose();
 			}
 			return;
 		}
@@ -59,10 +59,11 @@ export default function CreatePostModal(props) {
 
 	const handleClose = () => {
 		setBlob(null);
-		setModalOpen(false);
+
 		setImage(null);
 		setCroppedImg(null);
 		setStage(0);
+		setModalOpen(false);
 	};
 
 	const handleFileChange = (e) => {

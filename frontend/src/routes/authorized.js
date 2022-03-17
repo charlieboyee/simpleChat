@@ -27,6 +27,7 @@ function Base(props) {
 
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
+	const [homeFeed, setHomeFeed] = useState({});
 
 	useEffect(() => {
 		fetch(`/api/user`)
@@ -40,13 +41,14 @@ export default function AuthorizedRoutes() {
 				return;
 			});
 
-		fetch(`/api/allPosts`)
+		fetch(`/api/post/allPosts`)
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
 				}
 			})
 			.then(({ posts }) => {
+				setHomeFeed(posts);
 				return;
 			});
 	}, []);
@@ -57,7 +59,7 @@ export default function AuthorizedRoutes() {
 				path='/'
 				element={<Base userData={userData} setUserData={setUserData} />}
 			>
-				<Route index element={<Home />} />
+				<Route index element={<Home homeFeed={homeFeed} />} />
 				<Route path='profile' element={<Profile />} />
 				<Route path='profile/:otherUser' element={<OtherProfile />} />
 				<Route path='edit' element={<EditProfile />} />
