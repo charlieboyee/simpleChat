@@ -17,10 +17,15 @@ router.post('/:user/follow', isAuthorized, (req, res) => {
 });
 
 router.get('/:user', isAuthorized, (req, res) => {
-	database
-		.getUser(req.params.user)
+	Promise.all([
+		database.getUser(req.params.user),
+		database.getUserPosts(req.params.user),
+	])
 		.then((result) => {
-			return res.json({ data: result });
+			if (!result[0]) {
+				return res.json({ data: false });
+			}
+			res.json({ data: result });
 		})
 		.catch((err) => res.sendStatus(500));
 });

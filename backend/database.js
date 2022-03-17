@@ -68,7 +68,7 @@ const editProfilePhoto = async (user, filePath = '') => {
 
 const getAllUsers = async () => {
 	const projection = { username: 1, _id: 0 };
-	const result = await posts.find({}).project(projection);
+	const result = await users.find({}).project(projection);
 	const cursor = await result.toArray();
 	return cursor;
 };
@@ -86,8 +86,6 @@ const getUser = async (user) => {
 const getUserPosts = async (user) => {
 	const cursor = await posts.find({ owner: user }).sort({ inception: -1 });
 	const result = await cursor.toArray();
-	console.log(result);
-
 	return result;
 };
 const logIn = async (user) => {

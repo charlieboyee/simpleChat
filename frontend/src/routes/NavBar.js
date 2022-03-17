@@ -25,7 +25,6 @@ export default function NavBar(props) {
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 
-	const [searchInput, setSearchInput] = useState('');
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchOptions, setSearchOptions] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
@@ -95,10 +94,6 @@ export default function NavBar(props) {
 				inputValue={searchValue}
 				onInputChange={(e, newInputValue) => setSearchValue(newInputValue)}
 				open={searchOpen}
-				inputValue={searchInput}
-				onInputChange={(e, newInputValue) => {
-					setSearchInput(newInputValue);
-				}}
 				isOptionEqualToValue={(option) => option.username}
 				onOpen={() => setSearchOpen(true)}
 				onClose={() => setSearchOpen(false)}
@@ -111,7 +106,7 @@ export default function NavBar(props) {
 						{...params}
 						onKeyDown={(e) => {
 							if (e.key === 'Enter') {
-								return navigate(`/profile/${searchInput}`);
+								return navigate(`/profile/${searchValue}`);
 							}
 						}}
 						placeholder={searchLoading ? 'Loading...' : 'Search'}

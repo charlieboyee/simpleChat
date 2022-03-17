@@ -59,9 +59,13 @@ export default function OtherProfile() {
 		});
 		if (results.status === 200) {
 			const { data } = await results.json();
-			console.log(data);
 			setLoggedInUser(data[1]);
-			setOtherUserData(data[0]);
+
+			setOtherUserData((prev) => {
+				let newArr = prev.slice(1);
+				newArr.unshift(data[0]);
+				return newArr;
+			});
 
 			return;
 		}
@@ -115,9 +119,9 @@ export default function OtherProfile() {
 									)}
 								</div>
 								<div>
-									<span>{otherUserData?.length} posts</span>
-									<span>{otherUserData.following?.length} following</span>
-									<span>{otherUserData.followers?.length} followers</span>
+									<span>{otherUserData[1].length} posts</span>
+									<span>{otherUserData[0].following.length} following</span>
+									<span>{otherUserData[0].followers.length} followers</span>
 								</div>
 							</div>
 						</CardContent>
@@ -129,15 +133,19 @@ export default function OtherProfile() {
 						<Tab label='Videos' />
 					</Tabs>
 					<TabPanel value={tabValue} index={0}>
-						{otherUserData.posts.map((post, index) => {
-							return (
-								<img
-									key={index}
-									src={`${process.env.REACT_APP_S3_URL}${post.photo}`}
-									alt='post'
-								/>
-							);
-						})}
+						{otherUserData[1].length ? (
+							otherUserData[1].map((post, index) => {
+								return (
+									<img
+										key={index}
+										src={`${process.env.REACT_APP_S3_URL}${post.photo}`}
+										alt='post'
+									/>
+								);
+							})
+						) : (
+							<div>No posts yet</div>
+						)}
 					</TabPanel>
 					<TabPanel value={tabValue} index={1}>
 						videos
