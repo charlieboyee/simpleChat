@@ -5,13 +5,13 @@ import CreatePostModal from '../components/CreatePostModal';
 import {
 	Autocomplete,
 	Avatar,
+	CircularProgress,
 	Button,
 	Input,
 	IconButton,
 	Menu,
 	MenuItem,
 	TextField,
-	CircularProgress,
 } from '@mui/material';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
@@ -28,6 +28,7 @@ export default function NavBar(props) {
 	const [searchInput, setSearchInput] = useState('');
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchOptions, setSearchOptions] = useState([]);
+	const [searchValue, setSearchValue] = useState('');
 	const searchLoading = searchOpen && searchOptions.length === 0;
 
 	const [modalOpen, setModalOpen] = useState(false);
@@ -91,7 +92,8 @@ export default function NavBar(props) {
 				simpleChat
 			</Button>
 			<Autocomplete
-				sx={{ width: 400 }}
+				inputValue={searchValue}
+				onInputChange={(e, newInputValue) => setSearchValue(newInputValue)}
 				open={searchOpen}
 				inputValue={searchInput}
 				onInputChange={(e, newInputValue) => {
