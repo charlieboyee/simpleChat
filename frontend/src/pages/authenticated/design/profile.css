@@ -27,6 +27,21 @@
 	flex: 3;
 }
 
+#upperSection
+	.MuiCard-root
+	.MuiCardContent-root
+	div
+	div:nth-child(2)
+	.MuiButton-root {
+	text-transform: none;
+}
+
+#upperSection .MuiCard-root .MuiCardContent-root div div:nth-child(2) span {
+	font-family: Roboto, Helvetica, Arial, sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+}
+
 #profilePhoto {
 	width: 100%;
 	height: auto;
@@ -54,13 +69,13 @@
 	display: none;
 }
 
-#followersModal {
+.ffModal {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-#followersModal .MuiCard-root {
+.ffModal .MuiCard-root {
 	width: 20vw;
 	height: 20vw;
 	min-width: 300px;
@@ -68,7 +83,7 @@
 	max-height: 500px;
 	max-width: 500px;
 }
-#followersModal .MuiCard-root .MuiCardHeader-root {
+.ffModal .MuiCard-root .MuiCardHeader-root {
 	text-align: center;
 	border-bottom: black 1px solid;
 }

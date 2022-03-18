@@ -30,14 +30,62 @@ function TabPanel(props) {
 	);
 }
 
-function FollowersModal(props) {
+function FollowingModal(props) {
 	const { followingModalOpen, setFollowingModalOpen } = props;
 
-	const [followers, setFollowers] = useState([]);
+	const [following, setFollowing] = useState([]);
 
 	const handleClose = () => {
 		setFollowingModalOpen(false);
 	};
+
+	const stopFollowing = async () => {};
+
+	useEffect(() => {
+		fetch('/api/user/following')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ following }) => {
+				setFollowing(following);
+			});
+	}, []);
+	return (
+		<Modal className='ffModal' onClose={handleClose} open={followingModalOpen}>
+			<Card>
+				<CardHeader title='Following' />
+				<List>
+					{following?.map((user, index) => {
+						return (
+							<ListItem key={index}>
+								<ListItemAvatar>
+									<Avatar src={user.profilePhoto} />
+								</ListItemAvatar>
+								<ListItemText primary={user.username} />
+
+								<Button onClick={stopFollowing} variant='outlined'>
+									Unfollow
+								</Button>
+							</ListItem>
+						);
+					})}
+				</List>
+			</Card>
+		</Modal>
+	);
+}
+function FollowersModal(props) {
+	const { followersModalOpen, setFollowersModalOpen } = props;
+
+	const [followers, setFollowers] = useState([]);
+
+	const handleClose = () => {
+		setFollowersModalOpen(false);
+	};
+
+	const removeFollower = async () => {};
 
 	useEffect(() => {
 		fetch('/api/user/followers')
@@ -51,7 +99,7 @@ function FollowersModal(props) {
 			});
 	}, []);
 	return (
-		<Modal id='followersModal' onClose={handleClose} open={followingModalOpen}>
+		<Modal className='ffModal' onClose={handleClose} open={followersModalOpen}>
 			<Card>
 				<CardHeader title='Followers' />
 				<List>
@@ -62,9 +110,10 @@ function FollowersModal(props) {
 									<Avatar src={follower.profilePhoto} />
 								</ListItemAvatar>
 								<ListItemText primary={follower.username} />
-								<ListItemButton>
-									<Button variant='outlined'>Remove</Button>
-								</ListItemButton>
+
+								<Button onClick={removeFollower} variant='outlined'>
+									Remove
+								</Button>
 							</ListItem>
 						);
 					})}
@@ -74,28 +123,27 @@ function FollowersModal(props) {
 	);
 }
 
-export default function Profile() {
-	const { userData } = useOutletContext();
-	const [ownerData, setOwnerData] = userData;
+function ChangePhotoModal(props) {
+	const { modalOpen, setModalOpen, ownerData, setOwnerData } = props;
 
-	const [posts, setPosts] = useState([]);
-
-	const [followersModalOpen, setFollowersModalOpen] = useState(false);
-	const [followingModalOpen, setFollowingModalOpen] = useState(false);
-
-	const [modalOpen, setModalOpen] = useState(false);
-	const [tabValue, setTabValue] = useState(0);
-
-	const controller = new AbortController();
-	const signal = controller.signal;
-
-	const handleTabChange = (e, newValue) => setTabValue(newValue);
-
-	const handleModalOpen = () => {
-		setModalOpen(true);
-	};
 	const handleModalClose = () => {
 		setModalOpen(false);
+	};
+
+	const removeProfilePhoto = async (e) => {
+		const result = await fetch('/api/user/profilePhoto', {
+			method: 'DELETE',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({ profilePhoto: ownerData.profilePhoto }),
+		});
+		if (result.status === 200) {
+			console.log('successfully delted');
+			setModalOpen(false);
+			setOwnerData({ ...ownerData, profilePhoto: '' });
+			return;
+		}
 	};
 
 	const changeProfilePhoto = async (e) => {
@@ -128,6 +176,48 @@ export default function Profile() {
 			console.log(err);
 		}
 	};
+
+	return (
+		<Modal onClose={handleModalClose} open={modalOpen}>
+			<Card>
+				<CardHeader title='Change Profile Photo' />
+				<CardActions>
+					<Input
+						sx={{ display: 'none' }}
+						accept='image/*'
+						type='file'
+						id='changeProfilePhoto'
+						onChange={changeProfilePhoto}
+					/>
+
+					<Button htmlFor='changeProfilePhoto' component='label'>
+						Change Photo
+					</Button>
+					<Button onClick={removeProfilePhoto} type='submit'>
+						Remove Current Photo
+					</Button>
+
+					<Button onClick={handleModalClose}>Cancel</Button>
+				</CardActions>
+			</Card>
+		</Modal>
+	);
+}
+
+export default function Profile() {
+	const { userData } = useOutletContext();
+	const [ownerData, setOwnerData] = userData;
+
+	const [posts, setPosts] = useState([]);
+
+	const [followersModalOpen, setFollowersModalOpen] = useState(false);
+	const [followingModalOpen, setFollowingModalOpen] = useState(false);
+
+	const [modalOpen, setModalOpen] = useState(false);
+	const [tabValue, setTabValue] = useState(0);
+
+	const handleTabChange = (e, newValue) => setTabValue(newValue);
+
 	const uploadProfilePhoto = async (e) => {
 		let formData = new FormData();
 		formData.append('file', e.target.files[0]);
@@ -144,26 +234,8 @@ export default function Profile() {
 		}
 	};
 
-	const removeProfilePhoto = async (e) => {
-		const result = await fetch('/api/user/profilePhoto', {
-			method: 'DELETE',
-			headers: {
-				'content-type': 'application/json',
-			},
-			body: JSON.stringify({ profilePhoto: ownerData.profilePhoto }),
-		});
-		if (result.status === 200) {
-			console.log('successfully delted');
-			setModalOpen(false);
-			setOwnerData({ ...ownerData, profilePhoto: '' });
-			return;
-		}
-	};
-
 	useEffect(() => {
-		fetch('/api/user/post', {
-			signal,
-		})
+		fetch('/api/user/post')
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -177,18 +249,25 @@ export default function Profile() {
 	return (
 		<main id='profile'>
 			<FollowersModal
-				ownerData={ownerData}
 				followersModalOpen={followersModalOpen}
 				setFollowersModalOpen={setFollowersModalOpen}
+			/>
+			<FollowingModal
 				followingModalOpen={followingModalOpen}
 				setFollowingModalOpen={setFollowingModalOpen}
+			/>
+			<ChangePhotoModal
+				ownerData={ownerData}
+				setOwnerData={setOwnerData}
+				modalOpen={modalOpen}
+				setModalOpen={setModalOpen}
 			/>
 			<section id='upperSection'>
 				<Card>
 					<CardMedia>
 						{ownerData.profilePhoto ? (
 							<IconButton
-								onClick={handleModalOpen}
+								onClick={() => setModalOpen(true)}
 								disableRipple
 								component='span'
 							>
@@ -220,44 +299,25 @@ export default function Profile() {
 								<Button variant='contained'>Edit Profile</Button>
 							</div>
 							<div>
-								<span>{posts.length ? posts.length : 0} posts</span>
+								<span>{posts.length ? posts.length : 0} Posts</span>
+								<Button
+									onClick={() => setFollowersModalOpen(true)}
+									disableRipple
+									variant='string'
+								>
+									{ownerData.followers?.length} Followers
+								</Button>
 								<Button
 									onClick={() => setFollowingModalOpen(true)}
 									disableRipple
-									variant='standard'
+									variant='string'
 								>
-									{ownerData.following?.length} following
-								</Button>
-								<Button disableRipple variant='standard'>
-									{ownerData.followers?.length} followers
+									{ownerData.following?.length} Following
 								</Button>
 							</div>
 						</div>
 					</CardContent>
 				</Card>
-				<Modal onClose={handleModalClose} open={modalOpen}>
-					<Card>
-						<CardHeader title='Change Profile Photo' />
-						<CardActions>
-							<Input
-								sx={{ display: 'none' }}
-								accept='image/*'
-								type='file'
-								id='changeProfilePhoto'
-								onChange={changeProfilePhoto}
-							/>
-
-							<Button htmlFor='changeProfilePhoto' component='label'>
-								Change Photo
-							</Button>
-							<Button onClick={removeProfilePhoto} type='submit'>
-								Remove Current Photo
-							</Button>
-
-							<Button onClick={handleModalClose}>Cancel</Button>
-						</CardActions>
-					</Card>
-				</Modal>
 			</section>
 			<section id='lowerSection'>
 				<Tabs centered value={tabValue} onChange={handleTabChange}>
