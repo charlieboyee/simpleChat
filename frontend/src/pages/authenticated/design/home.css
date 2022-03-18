@@ -6,6 +6,7 @@
 #homePage .MuiCard-root {
 	min-width: 400px;
 	width: 30vw;
+	margin-bottom: 1rem;
 }
 
 #homePage #postImage {

@@ -53,3 +53,22 @@
 #lowerSection .tabPanel[hidden] {
 	display: none;
 }
+
+#followersModal {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#followersModal .MuiCard-root {
+	width: 20vw;
+	height: 20vw;
+	min-width: 300px;
+	min-height: 300px;
+	max-height: 500px;
+	max-width: 500px;
+}
+#followersModal .MuiCard-root .MuiCardHeader-root {
+	text-align: center;
+	border-bottom: black 1px solid;
+}

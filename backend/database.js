@@ -99,6 +99,24 @@ const getAllPosts = async (username) => {
 	return cursor;
 };
 
+const getFollowers = async (username) => {
+	const user = await users.findOne(
+		{ username },
+		{ projection: { followers: 1 } }
+	);
+	const pipeline = [
+		{
+			$match: {
+				username: { $in: [...user.followers] },
+			},
+		},
+	];
+
+	const cursor = await users.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
+};
+
 const getUser = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;
@@ -136,6 +154,7 @@ module.exports = {
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
+	getFollowers,
 	getUser,
 	getUserPosts,
 	logIn,

@@ -10,9 +10,14 @@ import {
 	IconButton,
 	Modal,
 	CardHeader,
+	List,
+	ListItem,
 	CardActions,
 	Tab,
 	Tabs,
+	ListItemButton,
+	ListItemText,
+	ListItemAvatar,
 } from '@mui/material';
 import './design/profile.css';
 
@@ -25,11 +30,58 @@ function TabPanel(props) {
 	);
 }
 
+function FollowersModal(props) {
+	const { followingModalOpen, setFollowingModalOpen } = props;
+
+	const [followers, setFollowers] = useState([]);
+
+	const handleClose = () => {
+		setFollowingModalOpen(false);
+	};
+
+	useEffect(() => {
+		fetch('/api/user/followers')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ followers }) => {
+				setFollowers(followers);
+			});
+	}, []);
+	return (
+		<Modal id='followersModal' onClose={handleClose} open={followingModalOpen}>
+			<Card>
+				<CardHeader title='Followers' />
+				<List>
+					{followers?.map((follower, index) => {
+						return (
+							<ListItem key={index}>
+								<ListItemAvatar>
+									<Avatar src={follower.profilePhoto} />
+								</ListItemAvatar>
+								<ListItemText primary={follower.username} />
+								<ListItemButton>
+									<Button variant='outlined'>Remove</Button>
+								</ListItemButton>
+							</ListItem>
+						);
+					})}
+				</List>
+			</Card>
+		</Modal>
+	);
+}
+
 export default function Profile() {
 	const { userData } = useOutletContext();
 	const [ownerData, setOwnerData] = userData;
 
 	const [posts, setPosts] = useState([]);
+
+	const [followersModalOpen, setFollowersModalOpen] = useState(false);
+	const [followingModalOpen, setFollowingModalOpen] = useState(false);
 
 	const [modalOpen, setModalOpen] = useState(false);
 	const [tabValue, setTabValue] = useState(0);
@@ -86,7 +138,6 @@ export default function Profile() {
 		});
 		if (result.status === 200) {
 			const { profilePhoto } = await result.json();
-			console.log(profilePhoto);
 			setOwnerData({ ...ownerData, profilePhoto });
 
 			return;
@@ -119,13 +170,19 @@ export default function Profile() {
 				}
 			})
 			.then((result) => {
-				console.log(result.posts);
 				setPosts(result.posts);
 			});
 	}, []);
 
 	return (
 		<main id='profile'>
+			<FollowersModal
+				ownerData={ownerData}
+				followersModalOpen={followersModalOpen}
+				setFollowersModalOpen={setFollowersModalOpen}
+				followingModalOpen={followingModalOpen}
+				setFollowingModalOpen={setFollowingModalOpen}
+			/>
 			<section id='upperSection'>
 				<Card>
 					<CardMedia>
@@ -164,8 +221,16 @@ export default function Profile() {
 							</div>
 							<div>
 								<span>{posts.length ? posts.length : 0} posts</span>
-								<span>{ownerData.following?.length} following</span>
-								<span>{ownerData.followers?.length} followers</span>
+								<Button
+									onClick={() => setFollowingModalOpen(true)}
+									disableRipple
+									variant='standard'
+								>
+									{ownerData.following?.length} following
+								</Button>
+								<Button disableRipple variant='standard'>
+									{ownerData.followers?.length} followers
+								</Button>
 							</div>
 						</div>
 					</CardContent>

@@ -48,7 +48,6 @@ export default function AuthorizedRoutes() {
 				}
 			})
 			.then(({ posts }) => {
-				console.log(posts);
 				setHomeFeed(posts);
 				return;
 			});

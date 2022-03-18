@@ -23,7 +23,6 @@ export default function Home(props) {
 		return (
 			<main id='homePage'>
 				{homeFeed?.map((post, index) => {
-					console.log(post.owner[0].profilePhoto);
 					return (
 						<Card key={index}>
 							<CardHeader
@@ -46,6 +45,7 @@ export default function Home(props) {
 								/>
 							</CardMedia>
 							<CardContent>
+								<FavoriteBorderRoundedIcon />
 								<div>{post.likes} likes</div>
 								<div>{post.caption}</div>
 							</CardContent>
