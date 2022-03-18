@@ -78,14 +78,27 @@ const getAllPosts = async (username) => {
 		{ username },
 		{ projection: { following: 1 } }
 	);
-	const cursor = await posts
-		.find({
-			owner: { $in: [...user.following, username] },
-		})
-		.sort({ inception: -1 });
-	const result = await cursor.toArray();
-	return result;
+	const pipeline = [
+		{
+			$match: {
+				owner: { $in: [...user.following, username] },
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'owner',
+				foreignField: 'username',
+				as: 'owner',
+			},
+		},
+	];
+
+	const agg = await posts.aggregate(pipeline);
+	const cursor = await agg.toArray();
+	return cursor;
 };
+
 const getUser = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;

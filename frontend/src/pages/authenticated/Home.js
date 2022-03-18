@@ -17,29 +17,26 @@ import './design/home.css';
 
 export default function Home(props) {
 	const { homeFeed } = props;
-
-	const { userData } = useOutletContext();
-	const [data] = userData;
-
 	const [comment, setComment] = useState('');
 
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
 				{homeFeed?.map((post, index) => {
+					console.log(post.owner[0].profilePhoto);
 					return (
 						<Card key={index}>
 							<CardHeader
 								avatar={
 									<Avatar
 										src={
-											data.profilePhoto
-												? `${process.env.REACT_APP_S3_URL}${data.profilePhoto}`
+											post.owner[0].profilePhoto
+												? `${process.env.REACT_APP_S3_URL}${post.owner[0].profilePhoto}`
 												: null
 										}
 									/>
 								}
-								title={post.owner}
+								title={post.owner[0].username}
 							/>
 							<CardMedia>
 								<img
@@ -49,7 +46,6 @@ export default function Home(props) {
 								/>
 							</CardMedia>
 							<CardContent>
-								<FavoriteBorderRoundedIcon />
 								<div>{post.likes} likes</div>
 								<div>{post.caption}</div>
 							</CardContent>
