@@ -57,6 +57,19 @@ const createPost = async (user, filePath, caption = '') => {
 	return result;
 };
 
+const deleteComment = async (postId, commentId) => {
+	console.log(postId);
+	const update = { $pull: { comments: { _id: new ObjectId(commentId) } } };
+	const options = { returnDocument: 'after' };
+	const result = await posts.findOneAndUpdate(
+		{ _id: new ObjectId(postId) },
+		update,
+		options
+	);
+	console.log(result);
+	return result;
+};
+
 const editProfilePhoto = async (user, filePath = '') => {
 	const update = {
 		$set: { profilePhoto: filePath },
@@ -155,6 +168,7 @@ const logIn = async (user) => {
 
 const postComment = async (comment, postId, user) => {
 	const commentObj = {
+		_id: new ObjectId(),
 		owner: user,
 		comment,
 		inception: new Date(),
@@ -185,6 +199,7 @@ module.exports = {
 	addFollower,
 	createAccount,
 	createPost,
+	deleteComment,
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,

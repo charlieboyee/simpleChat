@@ -4,12 +4,23 @@ const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
+router.delete('/comment', isAuthorized, (req, res) => {
+	database
+		.deleteComment(req.body.postId, req.body.commentId)
+		.then((result) => {
+			if (result.lastErrorObject.n) {
+				return res.json({ data: result.value });
+			}
+			res.json({ data: result.value });
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
 router.post('/comment', isAuthorized, (req, res) => {
 	database
 		.postComment(req.body.comment, req.body.postId, req.session.user)
 		.then((result) => {
 			if (result.lastErrorObject.n) {
-				console.log(result);
 				return res.json({ data: result.value });
 			}
 			res.json({ data: result.value });

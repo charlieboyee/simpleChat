@@ -8,10 +8,14 @@ import {
 	CardActions,
 	CardMedia,
 	CardContent,
-	Input,
 	CircularProgress,
+	IconButton,
+	Input,
+	Menu,
+	MenuItem,
 } from '@mui/material';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import './design/home.css';
 
 function CommentInput(props) {
@@ -30,6 +34,7 @@ function CommentInput(props) {
 		});
 		if (result.status === 200) {
 			const { data } = await result.json();
+			setComment('');
 			setHomeFeed((prevState) => {
 				data.owner = prevState[index].owner;
 				prevState[index] = data;
@@ -54,20 +59,66 @@ function CommentInput(props) {
 	);
 }
 
+function DeleteCommentMenu(props) {
+	const { open, anchorEl, setAnchorEl, postId, commentId, index, setHomeFeed } =
+		props;
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+	const deleteComment = async () => {
+		const results = await fetch('/api/post/comment', {
+			method: 'DELETE',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({ postId, commentId }),
+		});
+		if (results.status === 200) {
+			const { data } = await results.json();
+			setAnchorEl(null);
+			setHomeFeed((prevState) => {
+				data.owner = prevState[index].owner;
+				prevState[index] = data;
+				return [...prevState];
+			});
+			return;
+		}
+	};
+
+	return (
+		<Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
+			<MenuItem onClick={deleteComment}>Delete</MenuItem>
+		</Menu>
+	);
+}
+
+const likePost = () => {};
+
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
 
-	const { userData } = useOutletContext();
-
-	const [loggedInUser] = userData;
+	const [commentId, setCommentId] = useState(null);
+	const [postId, setPostId] = useState(null);
+	const [cardIndex, setCardIndex] = useState(null);
+	const [anchorEl, setAnchorEl] = useState(null);
+	let open = Boolean(anchorEl);
 
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
-				{homeFeed?.map((post, cardIndex) => {
-					console.log(homeFeed);
+				<DeleteCommentMenu
+					open={open}
+					anchorEl={anchorEl}
+					setAnchorEl={setAnchorEl}
+					commentId={commentId}
+					postId={postId}
+					index={cardIndex}
+					setHomeFeed={setHomeFeed}
+				/>
+				{homeFeed?.map((post, index) => {
 					return (
-						<Card key={cardIndex}>
+						<Card key={index}>
 							<CardHeader
 								avatar={
 									<Avatar
@@ -88,7 +139,7 @@ export default function Home(props) {
 								/>
 							</CardMedia>
 							<CardContent>
-								<FavoriteBorderRoundedIcon />
+								<FavoriteBorderRoundedIcon onClick={likePost} />
 								<div>{post.likes} likes</div>
 								<div id='postCaption'>
 									{post.caption && (
@@ -98,11 +149,21 @@ export default function Home(props) {
 										</>
 									)}
 								</div>
-								{post.comments.map((comment, commentsIndex) => {
+								{post.comments.map((comment, commentsIndex, arr) => {
 									return (
 										<div className='postComment' key={commentsIndex}>
 											<span>{comment.owner}</span>
-											{comment.comment}
+											<span>{comment.comment}</span>
+											<IconButton
+												disableRipple
+												onClick={(e) => {
+													setAnchorEl(e.currentTarget);
+													setCommentId(comment._id);
+													setPostId(post._id);
+													setCardIndex(index);
+												}}
+												children={<MoreHorizRoundedIcon />}
+											/>
 										</div>
 									);
 								})}
@@ -114,7 +175,7 @@ export default function Home(props) {
 							</CardContent>
 							<CardActions>
 								<CommentInput
-									index={cardIndex}
+									index={index}
 									post={post}
 									homeFeed={homeFeed}
 									setHomeFeed={setHomeFeed}

@@ -8,13 +8,24 @@
 	width: 30vw;
 	margin-bottom: 1rem;
 }
-#homePage .MuiCard-root .MuiCardContent-root .postComment span,
-#homePage .MuiCard-root .MuiCardContent-root #postCaption span {
-	font-weight: bold;
+
+#homePage .MuiCard-root .MuiCardContent-root .postComment {
+	display: flex;
+	align-items: center;
 }
 
-#homePage .MuiCard-root .MuiCardContent-root .commentLine span::after {
-	content: ' ';
+#homePage .MuiCard-root .MuiCardContent-root .postComment .MuiIconButton-root {
+	padding: 0;
+}
+
+#homePage .MuiCard-root .MuiCardContent-root .postComment span:nth-child(2) {
+	flex: 1;
+}
+
+#homePage .MuiCard-root .MuiCardContent-root #postCaption span,
+#homePage .MuiCard-root .MuiCardContent-root .postComment span:first-child {
+	font-weight: bold;
+	margin-right: 0.3rem;
 }
 
 #homePage .MuiCard-root .MuiCardActions-root form {
