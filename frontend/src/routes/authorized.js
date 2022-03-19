@@ -59,7 +59,10 @@ export default function AuthorizedRoutes() {
 				path='/'
 				element={<Base userData={userData} setUserData={setUserData} />}
 			>
-				<Route index element={<Home homeFeed={homeFeed} />} />
+				<Route
+					index
+					element={<Home homeFeed={homeFeed} setHomeFeed={setHomeFeed} />}
+				/>
 				<Route path='profile' element={<Profile />} />
 				<Route path='profile/:otherUser' element={<OtherProfile />} />
 				<Route path='edit' element={<EditProfile />} />

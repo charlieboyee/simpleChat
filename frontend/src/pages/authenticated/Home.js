@@ -8,23 +8,62 @@ import {
 	CardActions,
 	CardMedia,
 	CardContent,
-	TextField,
 	Input,
 	CircularProgress,
 } from '@mui/material';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import './design/home.css';
 
-export default function Home(props) {
-	const { homeFeed } = props;
+function CommentInput(props) {
+	const { post, homeFeed, setHomeFeed, index } = props;
 	const [comment, setComment] = useState('');
+
+	const postComment = async (e, postId) => {
+		e.preventDefault();
+
+		const result = await fetch('/api/post/comment', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({ comment, postId }),
+		});
+		if (result.status === 200) {
+			const { data } = await result.json();
+			setHomeFeed((prevState) => {
+				prevState[index] = data;
+				return [...prevState];
+			});
+			return;
+		}
+		return;
+	};
+
+	return (
+		<form onSubmit={(e) => postComment(e, post._id)}>
+			<Input
+				disableUnderline
+				endAdornment={<Button type='submit'>Comment</Button>}
+				fullWidth
+				placeholder='Comment'
+				value={comment}
+				onChange={(e) => setComment(e.target.value)}
+			/>
+		</form>
+	);
+}
+
+export default function Home(props) {
+	const { homeFeed, setHomeFeed } = props;
+
+	const { userData } = useOutletContext();
 
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
-				{homeFeed?.map((post, index) => {
+				{homeFeed?.map((post, cardIndex) => {
 					return (
-						<Card key={index}>
+						<Card key={cardIndex}>
 							<CardHeader
 								avatar={
 									<Avatar
@@ -47,16 +86,23 @@ export default function Home(props) {
 							<CardContent>
 								<FavoriteBorderRoundedIcon />
 								<div>{post.likes} likes</div>
-								<div>{post.caption}</div>
+								<div>
+									{post.caption && `${post.owner[0].username} ${post.caption}`}
+								</div>
+								{post.comments.map((comment, commentsIndex) => {
+									return (
+										<div
+											key={commentsIndex}
+										>{`${comment.owner} ${comment.comment}`}</div>
+									);
+								})}
 							</CardContent>
 							<CardActions>
-								<Input
-									disableUnderline
-									endAdornment={<Button>Comment</Button>}
-									fullWidth
-									placeholder='Comment'
-									value={comment}
-									onChange={(e) => setComment(e.target.value)}
+								<CommentInput
+									index={cardIndex}
+									post={post}
+									homeFeed={homeFeed}
+									setHomeFeed={setHomeFeed}
 								/>
 							</CardActions>
 						</Card>

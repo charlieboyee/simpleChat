@@ -9,6 +9,10 @@
 	margin-bottom: 1rem;
 }
 
+#homePage .MuiCard-root .MuiCardActions-root form {
+	width: 100%;
+}
+
 #homePage #postImage {
 	width: 100%;
 }
