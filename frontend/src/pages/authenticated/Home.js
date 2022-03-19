@@ -96,7 +96,12 @@ export default function Home(props) {
 										>{`${comment.owner} ${comment.comment}`}</div>
 									);
 								})}
-								<div>{post.inception}</div>
+								<div>
+									{new Date(post.inception).toLocaleString('en-US', {
+										timeZone: new Intl.DateTimeFormat().resolvedOptions()
+											.timeZone,
+									})}
+								</div>
 							</CardContent>
 							<CardActions>
 								<CommentInput

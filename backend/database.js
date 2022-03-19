@@ -35,7 +35,7 @@ const createAccount = async (user) => {
 	result = users.insertOne({
 		username: user.username,
 		password: hash,
-		inception: Date(),
+		inception: new Date(),
 		followers: [],
 		following: [],
 		profilePhoto: '',
@@ -46,7 +46,7 @@ const createAccount = async (user) => {
 const createPost = async (user, filePath, caption = '') => {
 	const post = {
 		photo: filePath,
-		inception: Date(),
+		inception: new Date(),
 		caption,
 		likes: 0,
 		comments: [],
@@ -157,7 +157,7 @@ const postComment = async (comment, postId, user) => {
 	const commentObj = {
 		owner: user,
 		comment,
-		inception: Date(),
+		inception: new Date(),
 	};
 	const update = { $push: { comments: { $each: [commentObj], $position: 0 } } };
 	const options = { returnDocument: 'after' };
