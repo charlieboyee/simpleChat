@@ -4,11 +4,20 @@ const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
+router.get('/following', isAuthorized, (req, res) => {
+	database
+		.getFollowing(req.session.user)
+		.then((following) => {
+			console.log(following);
+			return res.json({ following });
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
 router.get('/followers', isAuthorized, (req, res) => {
 	database
 		.getFollowers(req.session.user)
 		.then((followers) => {
-			console.log(followers);
 			return res.json({ followers });
 		})
 		.catch((err) => res.sendStatus(500));

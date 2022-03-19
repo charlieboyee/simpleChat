@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DBUSER}:${process.env.DBPW}@cluster0.tc23e.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
 	useNewUrlParser: true,
@@ -25,7 +25,6 @@ const addFollower = async (user, follower) => {
 	);
 
 	const prom = await Promise.all([result, result2]);
-	console.log(prom);
 	return prom;
 };
 
@@ -99,6 +98,24 @@ const getAllPosts = async (username) => {
 	return cursor;
 };
 
+const getFollowing = async (username) => {
+	const user = await users.findOne(
+		{ username },
+		{ projection: { following: 1 } }
+	);
+	const pipeline = [
+		{
+			$match: {
+				username: { $in: [...user.following] },
+			},
+		},
+	];
+
+	const cursor = await users.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
+};
+
 const getFollowers = async (username) => {
 	const user = await users.findOne(
 		{ username },
@@ -135,6 +152,23 @@ const logIn = async (user) => {
 	const access_token = jwt.sign(user.username, process.env.ACCESS_SECRET);
 	return access_token;
 };
+
+const postComment = async (comment, postId, user) => {
+	const commentObj = {
+		owner: user,
+		comment,
+		inception: Date(),
+	};
+	const update = { $push: { comments: { $each: [commentObj], $position: 0 } } };
+	const options = { returnDocument: 'after' };
+	const result = await posts.findOneAndUpdate(
+		{ _id: new ObjectId(postId) },
+		update,
+		options
+	);
+
+	return result;
+};
 const runDb = async () => {
 	try {
 		await client.connect();
@@ -154,9 +188,11 @@ module.exports = {
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
+	getFollowing,
 	getFollowers,
 	getUser,
 	getUserPosts,
+	postComment,
 	logIn,
 	runDb,
 };

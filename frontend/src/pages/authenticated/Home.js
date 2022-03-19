@@ -31,6 +31,7 @@ function CommentInput(props) {
 		if (result.status === 200) {
 			const { data } = await result.json();
 			setHomeFeed((prevState) => {
+				data.owner = prevState[index].owner;
 				prevState[index] = data;
 				return [...prevState];
 			});
@@ -56,12 +57,11 @@ function CommentInput(props) {
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
 
-	const { userData } = useOutletContext();
-
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
 				{homeFeed?.map((post, cardIndex) => {
+					console.log(homeFeed);
 					return (
 						<Card key={cardIndex}>
 							<CardHeader
