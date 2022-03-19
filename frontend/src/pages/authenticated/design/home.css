@@ -8,6 +8,14 @@
 	width: 30vw;
 	margin-bottom: 1rem;
 }
+#homePage .MuiCard-root .MuiCardContent-root .postComment span,
+#homePage .MuiCard-root .MuiCardContent-root #postCaption span {
+	font-weight: bold;
+}
+
+#homePage .MuiCard-root .MuiCardContent-root .commentLine span::after {
+	content: ' ';
+}
 
 #homePage .MuiCard-root .MuiCardActions-root form {
 	width: 100%;

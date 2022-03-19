@@ -57,6 +57,10 @@ function CommentInput(props) {
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
 
+	const { userData } = useOutletContext();
+
+	const [loggedInUser] = userData;
+
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
@@ -86,22 +90,27 @@ export default function Home(props) {
 							<CardContent>
 								<FavoriteBorderRoundedIcon />
 								<div>{post.likes} likes</div>
-								<div>
-									{post.caption && `${post.owner[0].username} ${post.caption}`}
+								<div id='postCaption'>
+									{post.caption && (
+										<>
+											<span>{post.owner[0].username}</span>
+											{post.caption}
+										</>
+									)}
 								</div>
 								{post.comments.map((comment, commentsIndex) => {
 									return (
-										<div
-											key={commentsIndex}
-										>{`${comment.owner} ${comment.comment}`}</div>
+										<div className='postComment' key={commentsIndex}>
+											<span>{comment.owner}</span>
+											{comment.comment}
+										</div>
 									);
 								})}
-								<div>
-									{new Date(post.inception).toLocaleString('en-US', {
-										timeZone: new Intl.DateTimeFormat().resolvedOptions()
-											.timeZone,
-									})}
-								</div>
+
+								{new Date(post.inception).toLocaleString('en-US', {
+									timeZone: new Intl.DateTimeFormat().resolvedOptions()
+										.timeZone,
+								})}
 							</CardContent>
 							<CardActions>
 								<CommentInput
