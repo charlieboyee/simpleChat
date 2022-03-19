@@ -15,7 +15,7 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import './design/home.css';
 
 function CommentInput(props) {
-	const { post, homeFeed, setHomeFeed, index } = props;
+	const { post, setHomeFeed, index } = props;
 	const [comment, setComment] = useState('');
 
 	const postComment = async (e, postId) => {
@@ -96,6 +96,7 @@ export default function Home(props) {
 										>{`${comment.owner} ${comment.comment}`}</div>
 									);
 								})}
+								<div>{post.inception}</div>
 							</CardContent>
 							<CardActions>
 								<CommentInput
