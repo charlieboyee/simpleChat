@@ -15,6 +15,7 @@ import {
 	MenuItem,
 } from '@mui/material';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import './design/home.css';
 
@@ -93,16 +94,50 @@ function DeleteCommentMenu(props) {
 	);
 }
 
-const likePost = () => {};
-
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
+
+	const { userData } = useOutletContext();
+	const [loggedInUser] = userData;
 
 	const [commentId, setCommentId] = useState(null);
 	const [postId, setPostId] = useState(null);
 	const [cardIndex, setCardIndex] = useState(null);
 	const [anchorEl, setAnchorEl] = useState(null);
 	let open = Boolean(anchorEl);
+
+	const dislikePost = async (postId, index) => {
+		const result = await fetch(`/api/post/dislike/?id=${postId}`, {
+			method: 'PUT',
+		});
+
+		if (result.status === 200) {
+			const { data } = await result.json();
+			setHomeFeed((prevState) => {
+				data.owner = prevState[index].owner;
+				prevState[index] = data;
+				return [...prevState];
+			});
+			return;
+		}
+		return;
+	};
+
+	const likePost = async (postId, index) => {
+		const result = await fetch(`/api/post/like/?id=${postId}`, {
+			method: 'PUT',
+		});
+		if (result.status === 200) {
+			const { data } = await result.json();
+			setHomeFeed((prevState) => {
+				data.owner = prevState[index].owner;
+				prevState[index] = data;
+				return [...prevState];
+			});
+			return;
+		}
+		return;
+	};
 
 	if (homeFeed.length) {
 		return (
@@ -139,8 +174,23 @@ export default function Home(props) {
 								/>
 							</CardMedia>
 							<CardContent>
-								<FavoriteBorderRoundedIcon onClick={likePost} />
-								<div>{post.likes} likes</div>
+								{post.likes.includes(loggedInUser.username) ? (
+									<IconButton
+										disableRipple
+										onClick={() => dislikePost(post._id, index)}
+									>
+										<FavoriteRoundedIcon sx={{ color: 'red' }} />
+									</IconButton>
+								) : (
+									<IconButton
+										disableRipple
+										onClick={() => likePost(post._id, index)}
+									>
+										<FavoriteBorderRoundedIcon />
+									</IconButton>
+								)}
+
+								<div>{post.likes && post.likes.length} likes</div>
 								<div id='postCaption'>
 									{post.caption && (
 										<>

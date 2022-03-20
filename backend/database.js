@@ -48,7 +48,7 @@ const createPost = async (user, filePath, caption = '') => {
 		photo: filePath,
 		inception: new Date(),
 		caption,
-		likes: 0,
+		likes: [],
 		comments: [],
 		owner: user,
 	};
@@ -58,7 +58,6 @@ const createPost = async (user, filePath, caption = '') => {
 };
 
 const deleteComment = async (postId, commentId) => {
-	console.log(postId);
 	const update = { $pull: { comments: { _id: new ObjectId(commentId) } } };
 	const options = { returnDocument: 'after' };
 	const result = await posts.findOneAndUpdate(
@@ -66,6 +65,20 @@ const deleteComment = async (postId, commentId) => {
 		update,
 		options
 	);
+	return result;
+};
+
+const dislikePost = async (postId, liker) => {
+	const query = {
+		_id: new ObjectId(postId),
+	};
+	const update = {
+		$pull: { likes: { $in: [liker] } },
+	};
+	const options = {
+		returnDocument: 'after',
+	};
+	const result = await posts.findOneAndUpdate(query, update, options);
 	console.log(result);
 	return result;
 };
@@ -157,6 +170,16 @@ const getUserPosts = async (user) => {
 	const result = await cursor.toArray();
 	return result;
 };
+
+const likePost = async (postId, liker) => {
+	//add a like user to the likes array
+	const query = { _id: new ObjectId(postId) };
+	const update = { $addToSet: { likes: liker } };
+	const options = { returnDocument: 'after' };
+	const result = await posts.findOneAndUpdate(query, update, options);
+
+	return result;
+};
 const logIn = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (!result) return result;
@@ -200,6 +223,7 @@ module.exports = {
 	createAccount,
 	createPost,
 	deleteComment,
+	dislikePost,
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
@@ -207,7 +231,8 @@ module.exports = {
 	getFollowers,
 	getUser,
 	getUserPosts,
-	postComment,
+	likePost,
 	logIn,
+	postComment,
 	runDb,
 };

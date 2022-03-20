@@ -9,6 +9,10 @@
 	margin-bottom: 1rem;
 }
 
+#homePage .MuiCard-root .MuiCardContent-root .MuiIconButton-root {
+	padding: 0;
+}
+
 #homePage .MuiCard-root .MuiCardContent-root .postComment {
 	display: flex;
 	align-items: center;

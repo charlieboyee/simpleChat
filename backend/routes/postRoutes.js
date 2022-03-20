@@ -4,6 +4,31 @@ const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
+router.put('/dislike', isAuthorized, (req, res) => {
+	console.log(req.query);
+	database
+		.dislikePost(req.query.id, req.session.user)
+		.then((result) => {
+			if (result.lastErrorObject.n) {
+				return res.json({ data: result.value });
+			}
+			res.sendStatus(204);
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
+router.put('/like', isAuthorized, (req, res) => {
+	database
+		.likePost(req.query.id, req.session.user)
+		.then((result) => {
+			if (result.lastErrorObject.n) {
+				return res.json({ data: result.value });
+			}
+			res.sendStatus(204);
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
 router.delete('/comment', isAuthorized, (req, res) => {
 	database
 		.deleteComment(req.body.postId, req.body.commentId)
@@ -11,7 +36,6 @@ router.delete('/comment', isAuthorized, (req, res) => {
 			if (result.lastErrorObject.n) {
 				return res.json({ data: result.value });
 			}
-			res.json({ data: result.value });
 		})
 		.catch((err) => res.sendStatus(500));
 });
@@ -23,7 +47,6 @@ router.post('/comment', isAuthorized, (req, res) => {
 			if (result.lastErrorObject.n) {
 				return res.json({ data: result.value });
 			}
-			res.json({ data: result.value });
 		})
 		.catch((err) => res.sendStatus(500));
 });
