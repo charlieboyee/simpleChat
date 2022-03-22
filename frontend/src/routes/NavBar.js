@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInContext } from '../index';
 import CreatePostModal from '../components/CreatePostModal';
+import PostModal from '../components/PostModal';
 import {
 	Autocomplete,
 	Avatar,
@@ -35,8 +36,22 @@ export default function NavBar(props) {
 	const searchLoading = searchOpen && searchOptions.length === 0;
 
 	const [modalOpen, setModalOpen] = useState(false);
+	const [postModalOpen, setPostModalOpen] = useState(false);
+
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
+
+	const [postToView, setPostToView] = useState(null);
+
+	const handleMenuClick = (event) => {
+		setAnchorEl(event.currentTarget);
+		setTimeout(() => {
+			setNotificationCount(0);
+		}, 2000);
+	};
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
 
 	const setNotificationText = (type) => {
 		switch (type) {
@@ -47,13 +62,9 @@ export default function NavBar(props) {
 		}
 	};
 
-	const handleMenuClick = (event) => {
-		setAnchorEl(event.currentTarget);
-		setTimeout(() => {
-			setNotificationCount(0);
-		}, 2000);
-	};
-	const handleMenuClose = () => {
+	const goToPost = (id) => {
+		setPostModalOpen(true);
+		setPostToView(id);
 		setAnchorEl(null);
 	};
 
@@ -115,11 +126,6 @@ export default function NavBar(props) {
 
 	return (
 		<nav id='mainNav'>
-			<CreatePostModal
-				userData={userData}
-				modalOpen={modalOpen}
-				setModalOpen={setModalOpen}
-			/>
 			<Button
 				onClick={() => navigate('/')}
 				disableRipple
@@ -194,6 +200,17 @@ export default function NavBar(props) {
 					/>
 				</IconButton>
 			</span>
+			<PostModal
+				postModalOpen={postModalOpen}
+				setPostModalOpen={setPostModalOpen}
+				post={postToView}
+				setPostToView={setPostToView}
+			/>
+			<CreatePostModal
+				userData={userData}
+				modalOpen={modalOpen}
+				setModalOpen={setModalOpen}
+			/>
 			<Menu anchorEl={anchorEl} onClose={handleMenuClose} open={open}>
 				{anchorEl?.id === 'profilePhotoButton' ? (
 					<div>
@@ -226,7 +243,10 @@ export default function NavBar(props) {
 					notifications?.map((notification, index) => {
 						if (!notification.read) {
 							return (
-								<MenuItem onClick={() => console.log('hi')} key={index}>
+								<MenuItem
+									key={index}
+									onClick={() => goToPost(notification.ref)}
+								>
 									<Avatar
 										src={
 											notification.sender[0].profilePhoto &&

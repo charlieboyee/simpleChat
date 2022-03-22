@@ -117,11 +117,12 @@ const getAllPosts = async (username) => {
 				as: 'owner',
 			},
 		},
+		{ $sort: { inception: -1 } },
 	];
 
-	const agg = await posts.aggregate(pipeline);
-	const cursor = await agg.toArray();
-	return cursor;
+	const cursor = await posts.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
 };
 
 const getFollowing = async (username) => {
@@ -160,6 +161,23 @@ const getFollowers = async (username) => {
 	return result;
 };
 
+const getPost = async (id) => {
+	const pipeline = [
+		{ $match: { _id: new ObjectId(id) } },
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'likes',
+				foreignField: 'username',
+				as: 'likes',
+			},
+		},
+	];
+	const cursor = await posts.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
+};
+
 const getUser = async (user) => {
 	const result = await users.findOne({ username: user });
 	return result;
@@ -182,6 +200,7 @@ const getUserNotifications = async (user) => {
 				as: 'sender',
 			},
 		},
+		{ $sort: { inception: -1 } },
 	];
 	const cursor = await notifications.aggregate(pipeline);
 	const result = await cursor.toArray();
@@ -266,6 +285,7 @@ module.exports = {
 	getUserNotificationCount,
 	getFollowing,
 	getFollowers,
+	getPost,
 	getUser,
 	getUserPosts,
 	likePost,

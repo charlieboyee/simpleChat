@@ -66,10 +66,18 @@ router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/', isAuthorized, (req, res) => {
+router.get('/all', isAuthorized, (req, res) => {
 	database
 		.getAllPosts(req.session.user)
 		.then((posts) => res.json({ posts }))
+		.catch((err) => res.sendStatus(500));
+});
+
+router.get('/', isAuthorized, (req, res) => {
+	console.log(req.query.id);
+	database
+		.getPost(req.query.id)
+		.then((post) => res.json({ post: post[0] }))
 		.catch((err) => res.sendStatus(500));
 });
 module.exports = router;

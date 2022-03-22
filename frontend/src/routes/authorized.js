@@ -50,7 +50,7 @@ export default function AuthorizedRoutes() {
 				return;
 			});
 
-		fetch(`/api/post/`)
+		fetch(`/api/post/all`)
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
