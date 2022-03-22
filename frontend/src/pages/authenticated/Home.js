@@ -21,6 +21,7 @@ import './design/home.css';
 
 function CommentInput(props) {
 	const { post, setHomeFeed, index } = props;
+
 	const [comment, setComment] = useState('');
 
 	const postComment = async (e, postId) => {

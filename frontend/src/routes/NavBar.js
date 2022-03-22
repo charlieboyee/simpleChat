@@ -5,25 +5,29 @@ import CreatePostModal from '../components/CreatePostModal';
 import {
 	Autocomplete,
 	Avatar,
+	Badge,
 	CircularProgress,
 	Button,
-	Input,
 	IconButton,
+	ListItemText,
 	Menu,
 	MenuItem,
 	TextField,
 } from '@mui/material';
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
 
 export default function NavBar(props) {
-	const { userData, setUserData } = props;
-
+	const { userData, socket } = props;
 	const navigate = useNavigate();
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
+
+	const [notifications, setNotifications] = useState([]);
+	const [notificationCount, setNotificationCount] = useState(0);
 
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchOptions, setSearchOptions] = useState([]);
@@ -36,6 +40,9 @@ export default function NavBar(props) {
 
 	const handleMenuClick = (event) => {
 		setAnchorEl(event.currentTarget);
+		setTimeout(() => {
+			setNotificationCount(0);
+		}, 2000);
 	};
 	const handleMenuClose = () => {
 		setAnchorEl(null);
@@ -57,6 +64,16 @@ export default function NavBar(props) {
 	};
 
 	useEffect(() => {
+		fetch('/api/notifications/count')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ count }) => setNotificationCount(count));
+	}, []);
+
+	useEffect(() => {
 		if (!searchLoading) {
 			return;
 		}
@@ -74,6 +91,27 @@ export default function NavBar(props) {
 			return setSearchOptions([]);
 		}
 	}, [searchOpen]);
+
+	useEffect(() => {
+		if (anchorEl?.id === 'notificationButton') {
+			fetch('/api/notifications')
+				.then((res) => {
+					if (res.status === 200) {
+						return res.json();
+					}
+				})
+				.then((result) => setNotifications(result.notifications));
+		}
+	}, [anchorEl]);
+
+	const setNotificationText = (type) => {
+		switch (type) {
+			case 'like':
+				return 'liked your post.';
+			default:
+				return;
+		}
+	};
 
 	return (
 		<nav id='mainNav'>
@@ -132,7 +170,20 @@ export default function NavBar(props) {
 				<IconButton disableRipple onClick={openCreatePostModal}>
 					<FileUploadRoundedIcon className='mainNavButtons' />
 				</IconButton>
-				<IconButton disableRipple onClick={handleMenuClick}>
+				<IconButton
+					disableRipple
+					id='notificationButton'
+					onClick={handleMenuClick}
+				>
+					<Badge badgeContent={notificationCount} color='primary'>
+						<NotificationsRoundedIcon className='mainNavButtons' />
+					</Badge>
+				</IconButton>
+				<IconButton
+					disableRipple
+					id='profilePhotoButton'
+					onClick={handleMenuClick}
+				>
 					<Avatar
 						className='mainNavButtons'
 						src={
@@ -144,30 +195,54 @@ export default function NavBar(props) {
 				</IconButton>
 			</span>
 			<Menu anchorEl={anchorEl} onClose={handleMenuClose} open={open}>
-				<MenuItem
-					onClick={() => {
-						handleMenuClose();
-						navigate('profile');
-					}}
-				>
-					Profile
-				</MenuItem>
-				<MenuItem
-					onClick={() => {
-						handleMenuClose();
-						navigate('edit');
-					}}
-				>
-					Edit Profile
-				</MenuItem>
-				<MenuItem
-					onClick={() => {
-						logOut();
-						handleMenuClose();
-					}}
-				>
-					Log Out
-				</MenuItem>
+				{anchorEl?.id === 'profilePhotoButton' ? (
+					<div>
+						<MenuItem
+							onClick={() => {
+								handleMenuClose();
+								navigate('profile');
+							}}
+						>
+							Profile
+						</MenuItem>
+						<MenuItem
+							onClick={() => {
+								handleMenuClose();
+								navigate('edit');
+							}}
+						>
+							Edit Profile
+						</MenuItem>
+						<MenuItem
+							onClick={() => {
+								logOut();
+								handleMenuClose();
+							}}
+						>
+							Log Out
+						</MenuItem>
+					</div>
+				) : anchorEl?.id === 'notificationButton' ? (
+					notifications?.map((notification, index) => {
+						if (!notification.read) {
+							return (
+								<MenuItem key={index}>
+									<Avatar
+										src={
+											notification.sender[0].profilePhoto &&
+											`${process.env.REACT_APP_S3_URL}${notification.sender[0].profilePhoto}`
+										}
+									/>
+
+									<ListItemText
+										primary={notification.sender[0].username}
+										secondary={setNotificationText(notification.type)}
+									/>
+								</MenuItem>
+							);
+						}
+					})
+				) : null}
 			</Menu>
 		</nav>
 	);

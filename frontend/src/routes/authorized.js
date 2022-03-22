@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import Home from '../pages/authenticated/Home';
 import Profile from '../pages/authenticated/Profile';
@@ -8,12 +8,20 @@ import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
 import './authorized.css';
 
+import { io } from 'socket.io-client';
+
 function Base(props) {
-	const { userData, setUserData, userPosts, setUserPosts, followingPosts } =
-		props;
+	const {
+		userData,
+		setUserData,
+		userPosts,
+		setUserPosts,
+		followingPosts,
+		socket,
+	} = props;
 	return (
 		<div className='authorizedBase'>
-			<NavBar userData={userData} setUserData={setUserData} />
+			<NavBar userData={userData} socket={socket} />
 			<Outlet
 				context={{
 					followingPosts,
@@ -24,12 +32,13 @@ function Base(props) {
 		</div>
 	);
 }
-
+export const SocketContext = createContext();
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
-
+	const [socket, setSocket] = useState();
 	useEffect(() => {
+		setSocket(io());
 		fetch(`/api/user`)
 			.then((res) => {
 				if (res.status === 200) {
@@ -41,7 +50,7 @@ export default function AuthorizedRoutes() {
 				return;
 			});
 
-		fetch(`/api/post/allPosts`)
+		fetch(`/api/post/`)
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -57,7 +66,9 @@ export default function AuthorizedRoutes() {
 		<Routes>
 			<Route
 				path='/'
-				element={<Base userData={userData} setUserData={setUserData} />}
+				element={
+					<Base socket={socket} userData={userData} setUserData={setUserData} />
+				}
 			>
 				<Route
 					index
