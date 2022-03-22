@@ -3,11 +3,13 @@ const database = require('../database');
 const { isAuthorized } = require('../middlewares');
 const bcrypt = require('bcrypt');
 const userRoute = require('./userRoutes');
+const notificationRoutes = require('./notificationRoutes');
 const postRoutes = require('./postRoutes');
 const otherUserRoutes = require('./otherUserRoutes');
 const router = express.Router();
 
 router.use('/user', userRoute);
+router.use('/notifications', notificationRoutes);
 router.use('/otherUser', otherUserRoutes);
 router.use('/post', postRoutes);
 
@@ -22,6 +24,7 @@ router.post('/logOut', isAuthorized, (req, res) => {
 	req.session.destroy();
 	res.sendStatus(200);
 });
+
 router.post('/logIn', (req, res) => {
 	database
 		.logIn(req.body)
@@ -51,4 +54,5 @@ router.post('/createAccount', (req, res) => {
 router.get('/', isAuthorized, (req, res) => {
 	res.sendStatus(200);
 });
+
 module.exports = router;

@@ -8,7 +8,6 @@ router.get('/following', isAuthorized, (req, res) => {
 	database
 		.getFollowing(req.session.user)
 		.then((following) => {
-			console.log(following);
 			return res.json({ following });
 		})
 		.catch((err) => res.sendStatus(500));
@@ -33,7 +32,6 @@ router.get('/post', isAuthorized, (req, res) => {
 });
 
 router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
-	console.log(req.file);
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database
@@ -49,7 +47,6 @@ router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
 });
 
 router.delete('/profilePhoto', isAuthorized, (req, res) => {
-	console.log('hi');
 	s3.deletePhoto(req.body.profilePhoto)
 		.then(() => {
 			database

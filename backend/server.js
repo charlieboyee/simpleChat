@@ -2,13 +2,25 @@ require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
+const { Server } = require('socket.io');
+const { createServer } = require('http');
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+
 const database = require('./database');
 const api = require('./routes/api');
-const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.set('io', io);
+
+io.on('connection', (sock) => {
+	console.log(`Server socket ${sock.id}`);
+	app.set('socket', sock);
+});
 let minute = 1000 * 60;
 
 database.runDb().then(() => {
@@ -28,11 +40,7 @@ database.runDb().then(() => {
 	);
 	app.use('/api', api);
 
-	app.get('/', (req, res) => {
-		res.json({ data: 'this is the root route' });
-	});
-
-	app.listen(process.env.PORT, () => {
+	httpServer.listen(process.env.PORT, () => {
 		console.log(`Connected to port ${process.env.PORT}`);
 	});
 });

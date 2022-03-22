@@ -5,7 +5,6 @@ const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
 router.put('/dislike', isAuthorized, (req, res) => {
-	console.log(req.query);
 	database
 		.dislikePost(req.query.id, req.session.user)
 		.then((result) => {
@@ -50,12 +49,6 @@ router.post('/comment', isAuthorized, (req, res) => {
 		})
 		.catch((err) => res.sendStatus(500));
 });
-router.get('/allPosts', isAuthorized, (req, res) => {
-	database
-		.getAllPosts(req.session.user)
-		.then((posts) => res.json({ posts }))
-		.catch((err) => res.sendStatus(500));
-});
 
 router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
@@ -73,4 +66,10 @@ router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
+router.get('/', isAuthorized, (req, res) => {
+	database
+		.getAllPosts(req.session.user)
+		.then((posts) => res.json({ posts }))
+		.catch((err) => res.sendStatus(500));
+});
 module.exports = router;

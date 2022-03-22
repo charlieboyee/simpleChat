@@ -11,6 +11,7 @@ const client = new MongoClient(uri, {
 
 let users;
 let posts;
+let notifications;
 
 const addFollower = async (user, follower) => {
 	const options = { returnDocument: 'after' };
@@ -79,7 +80,6 @@ const dislikePost = async (postId, liker) => {
 		returnDocument: 'after',
 	};
 	const result = await posts.findOneAndUpdate(query, update, options);
-	console.log(result);
 	return result;
 };
 
@@ -171,13 +171,47 @@ const getUserPosts = async (user) => {
 	return result;
 };
 
+const getUserNotifications = async (user) => {
+	const pipeline = [
+		{ $match: { recipient: user } },
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'sender',
+				foreignField: 'username',
+				as: 'sender',
+			},
+		},
+	];
+	const cursor = await notifications.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
+};
+
+const getUserNotificationCount = async (user) => {
+	const result = await notifications.countDocuments({
+		recipient: user,
+		read: false,
+	});
+	return result;
+};
+
 const likePost = async (postId, liker) => {
-	//add a like user to the likes array
 	const query = { _id: new ObjectId(postId) };
 	const update = { $addToSet: { likes: liker } };
 	const options = { returnDocument: 'after' };
 	const result = await posts.findOneAndUpdate(query, update, options);
 
+	if (result.lastErrorObject.n) {
+		notifications.insertOne({
+			sender: liker,
+			recipient: result.value.owner,
+			inception: new Date(),
+			type: 'like',
+			read: false,
+			ref: new ObjectId(postId),
+		});
+	}
 	return result;
 };
 const logIn = async (user) => {
@@ -212,6 +246,7 @@ const runDb = async () => {
 		let db = await client.db('simpleChat');
 		users = db.collection('users');
 		posts = db.collection('posts');
+		notifications = db.collection('notifications');
 		console.log('connected to db');
 	} catch (error) {
 		console.log(error);
@@ -227,6 +262,8 @@ module.exports = {
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
+	getUserNotifications,
+	getUserNotificationCount,
 	getFollowing,
 	getFollowers,
 	getUser,
