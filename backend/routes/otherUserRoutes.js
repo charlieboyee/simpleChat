@@ -5,7 +5,6 @@ const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
 router.post('/:user/follow', isAuthorized, (req, res) => {
-	console.log(req.params.user, req.body.follower);
 	database
 		.addFollower(req.params.user, req.body.follower)
 		.then((result) => {

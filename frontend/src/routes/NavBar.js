@@ -38,6 +38,15 @@ export default function NavBar(props) {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
 
+	const setNotificationText = (type) => {
+		switch (type) {
+			case 'like':
+				return 'liked your post.';
+			default:
+				return;
+		}
+	};
+
 	const handleMenuClick = (event) => {
 		setAnchorEl(event.currentTarget);
 		setTimeout(() => {
@@ -103,15 +112,6 @@ export default function NavBar(props) {
 				.then((result) => setNotifications(result.notifications));
 		}
 	}, [anchorEl]);
-
-	const setNotificationText = (type) => {
-		switch (type) {
-			case 'like':
-				return 'liked your post.';
-			default:
-				return;
-		}
-	};
 
 	return (
 		<nav id='mainNav'>
@@ -226,7 +226,7 @@ export default function NavBar(props) {
 					notifications?.map((notification, index) => {
 						if (!notification.read) {
 							return (
-								<MenuItem key={index}>
+								<MenuItem onClick={() => console.log('hi')} key={index}>
 									<Avatar
 										src={
 											notification.sender[0].profilePhoto &&
