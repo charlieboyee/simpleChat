@@ -77,7 +77,7 @@ router.get('/', isAuthorized, (req, res) => {
 	console.log(req.query.id);
 	database
 		.getPost(req.query.id)
-		.then((post) => res.json({ post: post[0] }))
+		.then((post) => res.json({ post }))
 		.catch((err) => res.sendStatus(500));
 });
 module.exports = router;

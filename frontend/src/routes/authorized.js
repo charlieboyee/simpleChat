@@ -18,10 +18,17 @@ function Base(props) {
 		setUserPosts,
 		followingPosts,
 		socket,
+		homeFeed,
+		setHomeFeed,
 	} = props;
 	return (
 		<div className='authorizedBase'>
-			<NavBar userData={userData} socket={socket} />
+			<NavBar
+				homeFeed={homeFeed}
+				setHomeFeed={setHomeFeed}
+				userData={userData}
+				socket={socket}
+			/>
 			<Outlet
 				context={{
 					followingPosts,
@@ -37,9 +44,13 @@ export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
 	const [socket, setSocket] = useState();
+
+	const controller = new AbortController();
+	const signal = controller.signal;
+
 	useEffect(() => {
 		setSocket(io());
-		fetch(`/api/user`)
+		fetch(`/api/user`, { signal })
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -50,7 +61,7 @@ export default function AuthorizedRoutes() {
 				return;
 			});
 
-		fetch(`/api/post/all`)
+		fetch(`/api/post/all`, { signal })
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -60,6 +71,10 @@ export default function AuthorizedRoutes() {
 				setHomeFeed(posts);
 				return;
 			});
+
+		return () => {
+			controller.abort();
+		};
 	}, []);
 
 	return (

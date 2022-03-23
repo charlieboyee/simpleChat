@@ -1,24 +1,34 @@
 #postModal {
 	display: flex;
+	height: 50%;
+	margin: auto 0;
 	justify-content: center;
-	align-items: center;
 }
 
 #postModal .MuiCard-root {
-	width: 35vw;
-	min-width: 300px;
 	display: flex;
-}
-
-#postModal .MuiCard-root .MuiCardMedia-root {
-	flex: 3;
-}
-
-#postModal .MuiCard-root .MuiCardMedia-root img {
+	max-width: 900px;
 	width: 100%;
-	height: 100%;
+}
+
+#postModal .MuiCard-root img {
+	flex: 1;
 	object-fit: cover;
 }
 #postModal .MuiCard-root .MuiCardContent-root {
-	flex: 2;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+#postModal .MuiCard-root .MuiCardContent-root div:first-child {
+	display: flex;
+}
+#postModal .MuiCard-root .MuiCardContent-root form {
+}
+
+#postModal .MuiCard-root .MuiCardContent-root .MuiList-root {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
 }

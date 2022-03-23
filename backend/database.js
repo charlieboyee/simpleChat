@@ -165,11 +165,31 @@ const getPost = async (id) => {
 	const pipeline = [
 		{ $match: { _id: new ObjectId(id) } },
 		{
+			$unwind: {
+				path: '$comments',
+			},
+		},
+		{
 			$lookup: {
 				from: 'users',
-				localField: 'likes',
+				localField: 'comments.owner',
 				foreignField: 'username',
-				as: 'likes',
+				as: 'comments.owner',
+			},
+		},
+
+		{
+			$group: {
+				_id: {
+					_id: '$_id',
+					photo: '$photo',
+					caption: '$caption',
+					owner: '$owner',
+					likes: '$likes',
+				},
+				postComments: {
+					$push: '$comments',
+				},
 			},
 		},
 	];

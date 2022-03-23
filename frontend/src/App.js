@@ -9,9 +9,11 @@ export default function App() {
 	const navigate = useNavigate();
 	const [loggedIn, setLoggedIn] = useState(false);
 
+	const controller = new AbortController();
+	const signal = controller.signal;
 	useEffect(() => {
 		(async () => {
-			const result = await fetch('/api');
+			const result = await fetch('/api', { signal });
 			if (result.status === 200) {
 				setLoggedIn(true);
 				return;
@@ -20,6 +22,9 @@ export default function App() {
 			navigate('/', { replace: true });
 			return;
 		})();
+		return () => {
+			controller.abort();
+		};
 	}, []);
 
 	if (loggedIn) {

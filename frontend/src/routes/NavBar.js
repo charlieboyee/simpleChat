@@ -22,7 +22,7 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
 
 export default function NavBar(props) {
-	const { userData, socket } = props;
+	const { userData, socket, homeFeed, setHomeFeed } = props;
 	const navigate = useNavigate();
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
@@ -43,11 +43,16 @@ export default function NavBar(props) {
 
 	const [postToView, setPostToView] = useState(null);
 
+	const controller = new AbortController();
+	const signal = controller.signal;
+
 	const handleMenuClick = (event) => {
 		setAnchorEl(event.currentTarget);
-		setTimeout(() => {
-			setNotificationCount(0);
-		}, 2000);
+		if (event.currentTarget.id === 'notificationButton') {
+			setTimeout(() => {
+				setNotificationCount(0);
+			}, 2000);
+		}
 	};
 	const handleMenuClose = () => {
 		setAnchorEl(null);
@@ -75,6 +80,7 @@ export default function NavBar(props) {
 			method: 'POST',
 		});
 		if (result.status === 200) {
+			handleMenuClose();
 			setLoggedIn(false);
 			navigate('/', { replace: true });
 			console.log('sucessfully logged out');
@@ -84,20 +90,23 @@ export default function NavBar(props) {
 	};
 
 	useEffect(() => {
-		fetch('/api/notifications/count')
+		fetch('/api/notifications/count', { signal })
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
 				}
 			})
 			.then(({ count }) => setNotificationCount(count));
+		return () => {
+			controller.abort();
+		};
 	}, []);
 
 	useEffect(() => {
 		if (!searchLoading) {
 			return;
 		}
-		fetch('/api/allUsers')
+		fetch('/api/allUsers', { signal })
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -113,8 +122,8 @@ export default function NavBar(props) {
 	}, [searchOpen]);
 
 	useEffect(() => {
-		if (anchorEl?.id === 'notificationButton') {
-			fetch('/api/notifications')
+		if (anchorEl && anchorEl.id === 'notificationButton') {
+			fetch('/api/notifications', { signal })
 				.then((res) => {
 					if (res.status === 200) {
 						return res.json();
@@ -205,6 +214,9 @@ export default function NavBar(props) {
 				setPostModalOpen={setPostModalOpen}
 				post={postToView}
 				setPostToView={setPostToView}
+				loggedInUser={userData}
+				homeFeed={homeFeed}
+				setHomeFeed={setHomeFeed}
 			/>
 			<CreatePostModal
 				userData={userData}
@@ -233,7 +245,6 @@ export default function NavBar(props) {
 						<MenuItem
 							onClick={() => {
 								logOut();
-								handleMenuClose();
 							}}
 						>
 							Log Out
