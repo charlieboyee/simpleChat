@@ -8,10 +8,9 @@ router.put('/dislike', isAuthorized, (req, res) => {
 	database
 		.dislikePost(req.query.id, req.session.user)
 		.then((result) => {
-			if (result.lastErrorObject.n) {
-				return res.json({ data: result.value });
+			if (result) {
+				return res.json({ data: result });
 			}
-			res.sendStatus(204);
 		})
 		.catch((err) => res.sendStatus(500));
 });
@@ -20,10 +19,9 @@ router.put('/like', isAuthorized, (req, res) => {
 	database
 		.likePost(req.query.id, req.session.user)
 		.then((result) => {
-			if (result.lastErrorObject.n) {
-				return res.json({ data: result.value });
+			if (result) {
+				return res.json({ data: result });
 			}
-			res.sendStatus(204);
 		})
 		.catch((err) => res.sendStatus(500));
 });
@@ -42,15 +40,23 @@ router.delete('/comment', isAuthorized, (req, res) => {
 router.post('/comment', isAuthorized, (req, res) => {
 	database
 		.postComment(req.body.comment, req.body.postId, req.session.user)
-		.then((result) => {
-			if (result.lastErrorObject.n) {
-				return res.json({ data: result.value });
+		.then((commentDoc) => {
+			if (commentDoc) {
+				return res.json({ data: commentDoc });
 			}
 		})
 		.catch((err) => res.sendStatus(500));
 });
 
+router.get('/all', isAuthorized, (req, res) => {
+	database
+		.getAllPosts(req.session.user)
+		.then((posts) => res.json({ posts }))
+		.catch((err) => res.sendStatus(500));
+});
+
 router.post('/', isAuthorized, upload.single('file'), (req, res) => {
+	console.log(req.body.caption);
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database
@@ -66,18 +72,15 @@ router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/all', isAuthorized, (req, res) => {
-	database
-		.getAllPosts(req.session.user)
-		.then((posts) => res.json({ posts }))
-		.catch((err) => res.sendStatus(500));
-});
-
 router.get('/', isAuthorized, (req, res) => {
 	console.log(req.query.id);
 	database
 		.getPost(req.query.id)
-		.then((post) => res.json({ post }))
+		.then((result) => {
+			if (result.length) {
+				res.json(result);
+			}
+		})
 		.catch((err) => res.sendStatus(500));
 });
 module.exports = router;

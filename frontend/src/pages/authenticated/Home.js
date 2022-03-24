@@ -8,24 +8,21 @@ import {
 	CardActions,
 	CardMedia,
 	CardContent,
-	CircularProgress,
-	IconButton,
 	Input,
-	Menu,
-	MenuItem,
+	IconButton,
+	CircularProgress,
 } from '@mui/material';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import './design/home.css';
 
 function CommentInput(props) {
-	const { post, setHomeFeed, index } = props;
-
+	const { post, homeFeed, setHomeFeed, index } = props;
 	const [comment, setComment] = useState('');
 
 	const postComment = async (e, postId) => {
 		e.preventDefault();
+		console.log(index);
 
 		const result = await fetch('/api/post/comment', {
 			method: 'POST',
@@ -38,8 +35,7 @@ function CommentInput(props) {
 			const { data } = await result.json();
 			setComment('');
 			setHomeFeed((prevState) => {
-				data.owner = prevState[index].owner;
-				prevState[index] = data;
+				prevState[index].comments = [data, ...prevState[index].comments];
 				return [...prevState];
 			});
 			return;
@@ -61,172 +57,95 @@ function CommentInput(props) {
 	);
 }
 
-function DeleteCommentMenu(props) {
-	const { open, anchorEl, setAnchorEl, postId, commentId, index, setHomeFeed } =
-		props;
-
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-	const deleteComment = async () => {
-		const results = await fetch('/api/post/comment', {
-			method: 'DELETE',
-			headers: {
-				'content-type': 'application/json',
-			},
-			body: JSON.stringify({ postId, commentId }),
-		});
-		if (results.status === 200) {
-			const { data } = await results.json();
-			setAnchorEl(null);
-			setHomeFeed((prevState) => {
-				data.owner = prevState[index].owner;
-				prevState[index] = data;
-				return [...prevState];
-			});
-			return;
-		}
-	};
-
-	return (
-		<Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
-			<MenuItem onClick={deleteComment}>Delete</MenuItem>
-		</Menu>
-	);
-}
-
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
 
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 
-	const [commentId, setCommentId] = useState(null);
-	const [postId, setPostId] = useState(null);
-	const [cardIndex, setCardIndex] = useState(null);
-	const [anchorEl, setAnchorEl] = useState(null);
-	let open = Boolean(anchorEl);
-
-	const dislikePost = async (postId, index) => {
-		const result = await fetch(`/api/post/dislike/?id=${postId}`, {
+	const dislikePost = async (id, feedIndex) => {
+		const results = await fetch(`/api/post/dislike/?id=${id}`, {
 			method: 'PUT',
 		});
-
-		if (result.status === 200) {
-			const { data } = await result.json();
+		if (results.status === 200) {
+			const { data } = await results.json();
 			setHomeFeed((prevState) => {
-				data.owner = prevState[index].owner;
-				prevState[index] = data;
+				prevState[feedIndex].likes = data.likes;
 				return [...prevState];
 			});
-			return;
+			return data;
 		}
 		return;
 	};
 
-	const likePost = async (postId, index) => {
-		const result = await fetch(`/api/post/like/?id=${postId}`, {
+	const likePost = async (id, feedIndex) => {
+		const results = await fetch(`/api/post/like/?id=${id}`, {
 			method: 'PUT',
 		});
-		if (result.status === 200) {
-			const { data } = await result.json();
+		if (results.status === 200) {
+			const { data } = await results.json();
 			setHomeFeed((prevState) => {
-				data.owner = prevState[index].owner;
-				prevState[index] = data;
+				prevState[feedIndex].likes = data.likes;
 				return [...prevState];
 			});
-			return;
+			return data;
 		}
 		return;
 	};
-
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
-				<DeleteCommentMenu
-					open={open}
-					anchorEl={anchorEl}
-					setAnchorEl={setAnchorEl}
-					commentId={commentId}
-					postId={postId}
-					index={cardIndex}
-					setHomeFeed={setHomeFeed}
-				/>
-				{homeFeed?.map((post, index) => {
+				{homeFeed?.map((post, cardIndex) => {
 					return (
-						<Card key={index}>
+						<Card key={cardIndex}>
 							<CardHeader
 								avatar={
 									<Avatar
 										src={
-											post.owner[0].profilePhoto
+											post?.owner[0].profilePhoto
 												? `${process.env.REACT_APP_S3_URL}${post.owner[0].profilePhoto}`
 												: null
 										}
 									/>
 								}
-								title={post.owner[0].username}
+								title={post?.owner[0].username}
 							/>
 							<CardMedia>
 								<img
 									id='postImage'
-									src={`${process.env.REACT_APP_S3_URL}${post.photo}`}
+									src={
+										post?.photo &&
+										`${process.env.REACT_APP_S3_URL}${post.photo}`
+									}
 									alt='post'
 								/>
 							</CardMedia>
 							<CardContent>
-								{post.likes.includes(loggedInUser.username) ? (
-									<IconButton
-										disableRipple
-										onClick={() => dislikePost(post._id, index)}
-									>
+								{post?.likes?.includes(loggedInUser.username) ? (
+									<IconButton onClick={() => dislikePost(post._id, cardIndex)}>
 										<FavoriteRoundedIcon sx={{ color: 'red' }} />
 									</IconButton>
 								) : (
-									<IconButton
-										disableRipple
-										onClick={() => likePost(post._id, index)}
-									>
+									<IconButton onClick={() => likePost(post._id, cardIndex)}>
 										<FavoriteBorderRoundedIcon />
 									</IconButton>
 								)}
 
-								<div>{post.likes && post.likes.length} likes</div>
-								<div id='postCaption'>
-									{post.caption && (
-										<>
-											<span>{post.owner[0].username}</span>
-											{post.caption}
-										</>
-									)}
+								<div>{post?.likes.length} likes</div>
+								<div>
+									{post?.caption && `${post.owner[0].username} ${post.caption}`}
 								</div>
-								{post.comments.map((comment, commentsIndex, arr) => {
+								{post?.comments?.map((comment, commentsIndex) => {
 									return (
-										<div className='postComment' key={commentsIndex}>
-											<span>{comment.owner}</span>
-											<span>{comment.comment}</span>
-											<IconButton
-												disableRipple
-												onClick={(e) => {
-													setAnchorEl(e.currentTarget);
-													setCommentId(comment._id);
-													setPostId(post._id);
-													setCardIndex(index);
-												}}
-												children={<MoreHorizRoundedIcon />}
-											/>
-										</div>
+										<div
+											key={commentsIndex}
+										>{`${comment.owner} ${comment.comment}`}</div>
 									);
-								})}
-
-								{new Date(post.inception).toLocaleString('en-US', {
-									timeZone: new Intl.DateTimeFormat().resolvedOptions()
-										.timeZone,
 								})}
 							</CardContent>
 							<CardActions>
 								<CommentInput
-									index={index}
+									index={cardIndex}
 									post={post}
 									homeFeed={homeFeed}
 									setHomeFeed={setHomeFeed}

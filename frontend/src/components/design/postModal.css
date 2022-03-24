@@ -19,6 +19,7 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 }
 
 #postModal .MuiCard-root .MuiCardContent-root div:first-child {
@@ -30,5 +31,6 @@
 #postModal .MuiCard-root .MuiCardContent-root .MuiList-root {
 	display: flex;
 	flex-direction: column;
+	height: 100%;
 	overflow: auto;
 }

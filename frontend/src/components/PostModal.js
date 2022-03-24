@@ -22,7 +22,7 @@ import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import './design/postModal.css';
 
 function CommentInput(props) {
-	const { post, setHomeFeed, index } = props;
+	const { id, post, setPostToView } = props;
 
 	const [comment, setComment] = useState('');
 
@@ -38,19 +38,21 @@ function CommentInput(props) {
 		});
 		if (result.status === 200) {
 			const { data } = await result.json();
-			setComment('');
-			setHomeFeed((prevState) => {
-				data.owner = prevState[index].owner;
-				prevState[index] = data;
-				return [...prevState];
+
+			setPostToView((prevState) => {
+				prevState._id = data;
+				console.log(prevState);
+				return prevState;
 			});
+			setComment('');
+
 			return;
 		}
 		return;
 	};
 
 	return (
-		<form onSubmit={(e) => postComment(e, post._id)}>
+		<form onSubmit={(e) => postComment(e, id)}>
 			<Input
 				disableUnderline
 				endAdornment={<Button type='submit'>Comment</Button>}
@@ -90,8 +92,8 @@ export default function PostModal({
 					}
 				})
 				.then((result) => {
-					console.log(result.post);
-					setPostToView(result.post[0]);
+					console.log(result[0]);
+					setPostToView(result[0]);
 					setLoading(false);
 				});
 		}
@@ -120,7 +122,10 @@ export default function PostModal({
 					<CardContent>
 						<div>
 							<Avatar
-								src={`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`}
+								src={
+									loggedInUser.profilePhoto &&
+									`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`
+								}
 							/>
 							{loggedInUser.username}
 						</div>
@@ -162,7 +167,11 @@ export default function PostModal({
 									<FavoriteBorderRoundedIcon />
 								</IconButton>
 							)}
-							<CommentInput />
+							<CommentInput
+								id={post?._id?._id}
+								post={post}
+								setPostToView={setPostToView}
+							/>
 						</div>
 					</CardContent>
 				</Card>

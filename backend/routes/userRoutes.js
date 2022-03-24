@@ -8,7 +8,7 @@ router.get('/following', isAuthorized, (req, res) => {
 	database
 		.getFollowing(req.session.user)
 		.then((following) => {
-			return res.json({ following });
+			return res.json({ data: following });
 		})
 		.catch((err) => res.sendStatus(500));
 });
@@ -17,7 +17,7 @@ router.get('/followers', isAuthorized, (req, res) => {
 	database
 		.getFollowers(req.session.user)
 		.then((followers) => {
-			return res.json({ followers });
+			return res.json({ data: followers });
 		})
 		.catch((err) => res.sendStatus(500));
 });

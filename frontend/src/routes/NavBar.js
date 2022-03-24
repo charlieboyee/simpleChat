@@ -256,7 +256,7 @@ export default function NavBar(props) {
 							return (
 								<MenuItem
 									key={index}
-									onClick={() => goToPost(notification.ref)}
+									onClick={() => goToPost(notification.postRef)}
 								>
 									<Avatar
 										src={
