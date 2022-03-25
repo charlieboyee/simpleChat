@@ -61,7 +61,6 @@ function CommentInput(props) {
 
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
-	console.log(homeFeed);
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 
@@ -98,6 +97,7 @@ export default function Home(props) {
 		return (
 			<main id='homePage'>
 				{homeFeed?.map((post, cardIndex) => {
+					console.log(post);
 					return (
 						<Card key={cardIndex}>
 							<CardHeader
@@ -144,6 +144,12 @@ export default function Home(props) {
 										>{`${comment.owner} ${comment.comment}`}</div>
 									);
 								})}
+								<div>
+									{new Date(post.inception).toLocaleString({
+										timeZone: new Intl.DateTimeFormat().resolvedOptions()
+											.timeZone,
+									})}
+								</div>
 							</CardContent>
 							<CardActions>
 								<CommentInput

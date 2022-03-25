@@ -68,6 +68,9 @@ export default function AuthorizedRoutes() {
 				}
 			})
 			.then(({ posts }) => {
+				posts.forEach((post) => {
+					post.comments.reverse();
+				});
 				setHomeFeed(posts);
 				return;
 			});
