@@ -39,3 +39,12 @@
 #homePage #postImage {
 	width: 100%;
 }
+
+.comment {
+	clear: right;
+	word-wrap: break-word;
+}
+
+.comment .MuiIconButton-root {
+	float: right;
+}

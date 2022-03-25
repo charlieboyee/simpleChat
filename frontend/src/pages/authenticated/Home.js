@@ -8,12 +8,16 @@ import {
 	CardActions,
 	CardMedia,
 	CardContent,
+	CircularProgress,
 	Input,
 	IconButton,
-	CircularProgress,
+	Menu,
+	MenuItem,
 } from '@mui/material';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import './design/home.css';
 
 function CommentInput(props) {
@@ -64,6 +68,18 @@ export default function Home(props) {
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
+
+	const handleMenuOpen = (e) => {
+		console.log(e.currentTarget.className);
+		setAnchorEl(e.currentTarget);
+	};
+
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
+
 	const dislikePost = async (id, feedIndex) => {
 		const results = await fetch(`/api/post/dislike/?id=${id}`, {
 			method: 'PUT',
@@ -93,6 +109,19 @@ export default function Home(props) {
 		}
 		return;
 	};
+
+	const deletePost = async () => {};
+	const deleteComment = async () => {
+		const results = await fetch('/api/post/comment', {
+			method: 'DELETE',
+		});
+		if (results.status === 200) {
+			const { data } = await results.json();
+			console.log(data);
+			return data;
+		}
+		return;
+	};
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
@@ -111,6 +140,13 @@ export default function Home(props) {
 									/>
 								}
 								title={post?.owner[0].username}
+								action={
+									post?.owner[0].username === loggedInUser.username ? (
+										<IconButton onClick={handleMenuOpen}>
+											<MoreVertIcon />
+										</IconButton>
+									) : null
+								}
 							/>
 							<CardMedia>
 								<img
@@ -139,9 +175,18 @@ export default function Home(props) {
 								</div>
 								{post?.comments?.map((comment, commentsIndex) => {
 									return (
-										<div
-											key={commentsIndex}
-										>{`${comment.owner} ${comment.comment}`}</div>
+										<div className='comment' key={commentsIndex}>
+											{comment.owner === loggedInUser.username ? (
+												<IconButton
+													className='commentDelete'
+													onClick={handleMenuOpen}
+												>
+													<MoreHorizIcon />
+												</IconButton>
+											) : null}
+
+											{`${comment.owner} ${comment.comment}`}
+										</div>
 									);
 								})}
 								<div>
@@ -162,6 +207,23 @@ export default function Home(props) {
 						</Card>
 					);
 				})}
+				<Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+					{anchorEl?.className.includes('commentDelete') ? (
+						<MenuItem
+							onClose={handleMenuClose}
+							onClick={() => console.log('comment')}
+						>
+							Delete
+						</MenuItem>
+					) : (
+						<MenuItem
+							onClose={handleMenuClose}
+							onClick={() => console.log('post')}
+						>
+							Delete
+						</MenuItem>
+					)}
+				</Menu>
 			</main>
 		);
 	}
