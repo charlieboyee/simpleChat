@@ -41,7 +41,12 @@ router.delete('/comment', isAuthorized, (req, res) => {
 
 router.post('/comment', isAuthorized, (req, res) => {
 	database
-		.postComment(req.body.comment, req.body.postId, req.session.user)
+		.postComment(
+			req.body.comment,
+			req.body.postId,
+			req.session.user,
+			req.body.recipient
+		)
 		.then((commentDoc) => {
 			if (commentDoc) {
 				return res.json({ data: commentDoc });

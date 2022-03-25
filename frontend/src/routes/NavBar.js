@@ -62,6 +62,8 @@ export default function NavBar(props) {
 		switch (type) {
 			case 'like':
 				return 'liked your post.';
+			case 'comment':
+				return 'commented on your post.';
 			default:
 				return;
 		}

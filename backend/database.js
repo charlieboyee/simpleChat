@@ -291,17 +291,25 @@ const logIn = async (user) => {
 	return access_token;
 };
 
-const postComment = async (comment, postId, user) => {
+const postComment = async (comment, postId, user, recipient) => {
 	const commentDoc = {
 		_id: new ObjectId(),
 		owner: user,
 		comment,
 		inception: new Date(),
-		postRef: new ObjectId(postId),
+		postRef: ObjectId(postId),
 	};
 
 	const result = await comments.insertOne(commentDoc);
 	if (result.acknowledged) {
+		notifications.insertOne({
+			sender: user,
+			recipient,
+			inception: new Date(),
+			type: 'comment',
+			read: false,
+			postRef: ObjectId(postId),
+		});
 		const updatedDoc = await comments.findOne({ _id: result.insertedId });
 		return updatedDoc;
 	}

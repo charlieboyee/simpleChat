@@ -17,19 +17,21 @@ import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import './design/home.css';
 
 function CommentInput(props) {
-	const { post, homeFeed, setHomeFeed, index } = props;
+	const { post, setHomeFeed, index } = props;
 	const [comment, setComment] = useState('');
-
 	const postComment = async (e, postId) => {
 		e.preventDefault();
-		console.log(index);
 
 		const result = await fetch('/api/post/comment', {
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json',
 			},
-			body: JSON.stringify({ comment, postId }),
+			body: JSON.stringify({
+				comment,
+				postId,
+				recipient: post.owner[0].username,
+			}),
 		});
 		if (result.status === 200) {
 			const { data } = await result.json();
@@ -59,7 +61,7 @@ function CommentInput(props) {
 
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
-
+	console.log(homeFeed);
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 

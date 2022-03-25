@@ -22,11 +22,11 @@ import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import './design/postModal.css';
 
 function CommentInput(props) {
-	const { id, setPostToView, loggedInUser } = props;
+	const { post, setPostToView, loggedInUser } = props;
 
 	const [comment, setComment] = useState('');
 
-	const postComment = async (e, postId) => {
+	const postComment = async (e) => {
 		e.preventDefault();
 
 		const result = await fetch('/api/post/comment', {
@@ -34,7 +34,11 @@ function CommentInput(props) {
 			headers: {
 				'content-type': 'application/json',
 			},
-			body: JSON.stringify({ comment, postId }),
+			body: JSON.stringify({
+				comment,
+				postId: post._id._id,
+				recipient: post._id.owner,
+			}),
 		});
 		if (result.status === 200) {
 			const { data } = await result.json();
@@ -57,7 +61,7 @@ function CommentInput(props) {
 	};
 
 	return (
-		<form onSubmit={(e) => postComment(e, id)}>
+		<form onSubmit={(e) => postComment(e, post._id.id)}>
 			<Input
 				disableUnderline
 				endAdornment={<Button type='submit'>Comment</Button>}
@@ -127,7 +131,6 @@ export default function PostModal({
 					}
 				})
 				.then((result) => {
-					console.log(result[0]);
 					setPostToView(result[0]);
 					setLoading(false);
 				});
@@ -145,6 +148,7 @@ export default function PostModal({
 		);
 	}
 	if (!loading) {
+		console.log(post);
 		return (
 			<Modal id='postModal' open={postModalOpen} onClose={handleClose}>
 				<Card>
@@ -203,7 +207,6 @@ export default function PostModal({
 								</IconButton>
 							)}
 							<CommentInput
-								id={post?._id?._id}
 								post={post}
 								setPostToView={setPostToView}
 								loggedInUser={loggedInUser}
