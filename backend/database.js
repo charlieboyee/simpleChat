@@ -12,6 +12,7 @@ const client = new MongoClient(uri, {
 let users;
 let posts;
 let notifications;
+let comments;
 
 const addFollower = async (user, follower) => {
 	const options = { returnDocument: 'after' };
@@ -50,7 +51,6 @@ const createPost = async (user, filePath, caption = '') => {
 		inception: new Date(),
 		caption,
 		likes: [],
-		comments: [],
 		owner: user,
 	};
 
@@ -80,7 +80,10 @@ const dislikePost = async (postId, liker) => {
 		returnDocument: 'after',
 	};
 	const result = await posts.findOneAndUpdate(query, update, options);
-	return result;
+	if (result.lastErrorObject.n) {
+		return result.value;
+	}
+	return null;
 };
 
 const editProfilePhoto = async (user, filePath = '') => {
@@ -117,22 +120,36 @@ const getAllPosts = async (username) => {
 				as: 'owner',
 			},
 		},
+		{
+			$lookup: {
+				from: 'comments',
+				localField: '_id',
+				foreignField: 'postRef',
+				as: 'comments',
+			},
+		},
+
+		{ $sort: { inception: -1 } },
 	];
 
-	const agg = await posts.aggregate(pipeline);
-	const cursor = await agg.toArray();
-	return cursor;
+	const cursor = await posts.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
 };
 
 const getFollowing = async (username) => {
-	const user = await users.findOne(
-		{ username },
-		{ projection: { following: 1 } }
-	);
 	const pipeline = [
 		{
 			$match: {
-				username: { $in: [...user.following] },
+				username,
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'following',
+				foreignField: 'username',
+				as: 'following',
 			},
 		},
 	];
@@ -143,19 +160,68 @@ const getFollowing = async (username) => {
 };
 
 const getFollowers = async (username) => {
-	const user = await users.findOne(
-		{ username },
-		{ projection: { followers: 1 } }
-	);
 	const pipeline = [
 		{
 			$match: {
-				username: { $in: [...user.followers] },
+				username,
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'followers',
+				foreignField: 'username',
+				as: 'followers',
 			},
 		},
 	];
 
 	const cursor = await users.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
+};
+
+const getPost = async (id) => {
+	const pipeline = [
+		{ $match: { _id: new ObjectId(id) } },
+
+		{
+			$lookup: {
+				from: 'comments',
+				localField: '_id',
+				foreignField: 'postRef',
+				as: 'comments',
+			},
+		},
+		{
+			$unwind: {
+				path: '$comments',
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'comments.owner',
+				foreignField: 'username',
+				as: 'comments.owner',
+			},
+		},
+		{
+			$group: {
+				_id: {
+					_id: '$_id',
+					photo: '$photo',
+					caption: '$caption',
+					owner: '$owner',
+					likes: '$likes',
+				},
+				postComments: {
+					$push: '$comments',
+				},
+			},
+		},
+	];
+	const cursor = await posts.aggregate(pipeline);
 	const result = await cursor.toArray();
 	return result;
 };
@@ -182,6 +248,7 @@ const getUserNotifications = async (user) => {
 				as: 'sender',
 			},
 		},
+		{ $sort: { inception: -1 } },
 	];
 	const cursor = await notifications.aggregate(pipeline);
 	const result = await cursor.toArray();
@@ -209,10 +276,11 @@ const likePost = async (postId, liker) => {
 			inception: new Date(),
 			type: 'like',
 			read: false,
-			ref: new ObjectId(postId),
+			postRef: new ObjectId(postId),
 		});
+		return result.value;
 	}
-	return result;
+	return null;
 };
 const logIn = async (user) => {
 	let result = await users.findOne({ username: user.username });
@@ -223,22 +291,29 @@ const logIn = async (user) => {
 	return access_token;
 };
 
-const postComment = async (comment, postId, user) => {
-	const commentObj = {
+const postComment = async (comment, postId, user, recipient) => {
+	const commentDoc = {
 		_id: new ObjectId(),
 		owner: user,
 		comment,
 		inception: new Date(),
+		postRef: ObjectId(postId),
 	};
-	const update = { $push: { comments: { $each: [commentObj], $position: 0 } } };
-	const options = { returnDocument: 'after' };
-	const result = await posts.findOneAndUpdate(
-		{ _id: new ObjectId(postId) },
-		update,
-		options
-	);
 
-	return result;
+	const result = await comments.insertOne(commentDoc);
+	if (result.acknowledged) {
+		notifications.insertOne({
+			sender: user,
+			recipient,
+			inception: new Date(),
+			type: 'comment',
+			read: false,
+			postRef: ObjectId(postId),
+		});
+		const updatedDoc = await comments.findOne({ _id: result.insertedId });
+		return updatedDoc;
+	}
+	return null;
 };
 const runDb = async () => {
 	try {
@@ -246,6 +321,7 @@ const runDb = async () => {
 		let db = await client.db('simpleChat');
 		users = db.collection('users');
 		posts = db.collection('posts');
+		comments = db.collection('comments');
 		notifications = db.collection('notifications');
 		console.log('connected to db');
 	} catch (error) {
@@ -266,6 +342,7 @@ module.exports = {
 	getUserNotificationCount,
 	getFollowing,
 	getFollowers,
+	getPost,
 	getUser,
 	getUserPosts,
 	likePost,

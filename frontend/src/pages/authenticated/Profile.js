@@ -48,8 +48,8 @@ function FollowingModal(props) {
 					return res.json();
 				}
 			})
-			.then(({ following }) => {
-				setFollowing(following);
+			.then(({ data }) => {
+				setFollowing(data[0].following);
 			});
 	}, []);
 	return (
@@ -61,7 +61,12 @@ function FollowingModal(props) {
 						return (
 							<ListItem key={index}>
 								<ListItemAvatar>
-									<Avatar src={user.profilePhoto} />
+									<Avatar
+										src={
+											user.profilePhoto &&
+											`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`
+										}
+									/>
 								</ListItemAvatar>
 								<ListItemText primary={user.username} />
 
@@ -94,8 +99,8 @@ function FollowersModal(props) {
 					return res.json();
 				}
 			})
-			.then(({ followers }) => {
-				setFollowers(followers);
+			.then(({ data }) => {
+				setFollowers(data[0].followers);
 			});
 	}, []);
 	return (
@@ -107,7 +112,12 @@ function FollowersModal(props) {
 						return (
 							<ListItem key={index}>
 								<ListItemAvatar>
-									<Avatar src={follower.profilePhoto} />
+									<Avatar
+										src={
+											follower.profilePhoto &&
+											`${process.env.REACT_APP_S3_URL}${follower.profilePhoto}`
+										}
+									/>
 								</ListItemAvatar>
 								<ListItemText primary={follower.username} />
 

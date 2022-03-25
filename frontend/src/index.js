@@ -5,7 +5,7 @@ import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-export const LoggedInContext = createContext(false);
+export const LoggedInContext = createContext();
 
 ReactDOM.render(
 	<React.StrictMode>

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoggedInContext } from '../index';
 import CreatePostModal from '../components/CreatePostModal';
+import PostModal from '../components/PostModal';
 import {
 	Autocomplete,
 	Avatar,
@@ -21,7 +22,7 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
 
 export default function NavBar(props) {
-	const { userData, socket } = props;
+	const { userData, socket, homeFeed, setHomeFeed } = props;
 	const navigate = useNavigate();
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
@@ -35,25 +36,42 @@ export default function NavBar(props) {
 	const searchLoading = searchOpen && searchOptions.length === 0;
 
 	const [modalOpen, setModalOpen] = useState(false);
+	const [postModalOpen, setPostModalOpen] = useState(false);
+
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
+
+	const [postToView, setPostToView] = useState(null);
+
+	const controller = new AbortController();
+	const signal = controller.signal;
+
+	const handleMenuClick = (event) => {
+		setAnchorEl(event.currentTarget);
+		if (event.currentTarget.id === 'notificationButton') {
+			setTimeout(() => {
+				setNotificationCount(0);
+			}, 2000);
+		}
+	};
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
 
 	const setNotificationText = (type) => {
 		switch (type) {
 			case 'like':
 				return 'liked your post.';
+			case 'comment':
+				return 'commented on your post.';
 			default:
 				return;
 		}
 	};
 
-	const handleMenuClick = (event) => {
-		setAnchorEl(event.currentTarget);
-		setTimeout(() => {
-			setNotificationCount(0);
-		}, 2000);
-	};
-	const handleMenuClose = () => {
+	const goToPost = (id) => {
+		setPostModalOpen(true);
+		setPostToView(id);
 		setAnchorEl(null);
 	};
 
@@ -64,6 +82,7 @@ export default function NavBar(props) {
 			method: 'POST',
 		});
 		if (result.status === 200) {
+			handleMenuClose();
 			setLoggedIn(false);
 			navigate('/', { replace: true });
 			console.log('sucessfully logged out');
@@ -73,20 +92,23 @@ export default function NavBar(props) {
 	};
 
 	useEffect(() => {
-		fetch('/api/notifications/count')
+		fetch('/api/notifications/count', { signal })
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
 				}
 			})
 			.then(({ count }) => setNotificationCount(count));
+		return () => {
+			controller.abort();
+		};
 	}, []);
 
 	useEffect(() => {
 		if (!searchLoading) {
 			return;
 		}
-		fetch('/api/allUsers')
+		fetch('/api/allUsers', { signal })
 			.then((res) => {
 				if (res.status === 200) {
 					return res.json();
@@ -102,8 +124,8 @@ export default function NavBar(props) {
 	}, [searchOpen]);
 
 	useEffect(() => {
-		if (anchorEl?.id === 'notificationButton') {
-			fetch('/api/notifications')
+		if (anchorEl && anchorEl.id === 'notificationButton') {
+			fetch('/api/notifications', { signal })
 				.then((res) => {
 					if (res.status === 200) {
 						return res.json();
@@ -115,11 +137,6 @@ export default function NavBar(props) {
 
 	return (
 		<nav id='mainNav'>
-			<CreatePostModal
-				userData={userData}
-				modalOpen={modalOpen}
-				setModalOpen={setModalOpen}
-			/>
 			<Button
 				onClick={() => navigate('/')}
 				disableRipple
@@ -194,6 +211,20 @@ export default function NavBar(props) {
 					/>
 				</IconButton>
 			</span>
+			<PostModal
+				postModalOpen={postModalOpen}
+				setPostModalOpen={setPostModalOpen}
+				post={postToView}
+				setPostToView={setPostToView}
+				loggedInUser={userData}
+				homeFeed={homeFeed}
+				setHomeFeed={setHomeFeed}
+			/>
+			<CreatePostModal
+				userData={userData}
+				modalOpen={modalOpen}
+				setModalOpen={setModalOpen}
+			/>
 			<Menu anchorEl={anchorEl} onClose={handleMenuClose} open={open}>
 				{anchorEl?.id === 'profilePhotoButton' ? (
 					<div>
@@ -216,7 +247,6 @@ export default function NavBar(props) {
 						<MenuItem
 							onClick={() => {
 								logOut();
-								handleMenuClose();
 							}}
 						>
 							Log Out
@@ -226,7 +256,10 @@ export default function NavBar(props) {
 					notifications?.map((notification, index) => {
 						if (!notification.read) {
 							return (
-								<MenuItem onClick={() => console.log('hi')} key={index}>
+								<MenuItem
+									key={index}
+									onClick={() => goToPost(notification.postRef)}
+								>
 									<Avatar
 										src={
 											notification.sender[0].profilePhoto &&

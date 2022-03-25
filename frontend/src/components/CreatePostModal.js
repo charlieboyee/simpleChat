@@ -37,6 +37,7 @@ export default function CreatePostModal(props) {
 		let formData = new FormData();
 
 		formData.append('file', blob, fileName);
+		formData.append('caption', caption);
 		const results = await fetch('/api/post', {
 			method: 'POST',
 			body: formData,
