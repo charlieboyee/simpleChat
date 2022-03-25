@@ -22,7 +22,7 @@ import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import './design/postModal.css';
 
 function CommentInput(props) {
-	const { id, post, setPostToView } = props;
+	const { id, setPostToView, loggedInUser } = props;
 
 	const [comment, setComment] = useState('');
 
@@ -38,11 +38,16 @@ function CommentInput(props) {
 		});
 		if (result.status === 200) {
 			const { data } = await result.json();
-
+			console.log(data);
 			setPostToView((prevState) => {
-				prevState._id = data;
-
-				return prevState;
+				data.owner = [
+					{
+						owner: loggedInUser.username,
+						profilePhoto: loggedInUser.profilePhoto,
+					},
+				];
+				prevState.postComments.push(data);
+				return { ...prevState };
 			});
 			setComment('');
 
@@ -81,6 +86,36 @@ export default function PostModal({
 
 	const [loading, setLoading] = useState(true);
 
+	const likePost = async (id) => {
+		const results = await fetch(`/api/post/like/?id=${id}`, {
+			method: 'PUT',
+		});
+		if (results.status === 200) {
+			const { data } = await results.json();
+
+			setPostToView((prevState) => {
+				console.log(prevState);
+				prevState._id.likes = data.likes;
+				return { ...prevState };
+			});
+		}
+		return;
+	};
+
+	const dislikePost = async (id) => {
+		const results = await fetch(`/api/post/dislike/?id=${id}`, {
+			method: 'PUT',
+		});
+		if (results.status === 200) {
+			const { data } = await results.json();
+			setPostToView((prevState) => {
+				prevState._id.likes = data.likes;
+				return { ...prevState };
+			});
+		}
+		return;
+	};
+
 	useEffect(() => {
 		if (postModalOpen) {
 			fetch(`/api/post/?id=${post}`, {
@@ -92,6 +127,7 @@ export default function PostModal({
 					}
 				})
 				.then((result) => {
+					console.log(result[0]);
 					setPostToView(result[0]);
 					setLoading(false);
 				});
@@ -130,7 +166,6 @@ export default function PostModal({
 						</div>
 						<List>
 							{post?.postComments?.map((comment, index) => {
-								console.log(comment);
 								return (
 									<ListItem key={index}>
 										<ListItemAvatar>
@@ -153,11 +188,17 @@ export default function PostModal({
 						</List>
 						<div>
 							{post?._id?.likes.includes(loggedInUser.username) ? (
-								<IconButton disableRipple>
+								<IconButton
+									disableRipple
+									onClick={() => dislikePost(post._id._id)}
+								>
 									<FavoriteRoundedIcon sx={{ color: 'red' }} />
 								</IconButton>
 							) : (
-								<IconButton disableRipple>
+								<IconButton
+									disableRipple
+									onClick={() => likePost(post._id._id)}
+								>
 									<FavoriteBorderRoundedIcon />
 								</IconButton>
 							)}
@@ -165,6 +206,7 @@ export default function PostModal({
 								id={post?._id?._id}
 								post={post}
 								setPostToView={setPostToView}
+								loggedInUser={loggedInUser}
 							/>
 						</div>
 					</CardContent>

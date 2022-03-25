@@ -223,7 +223,6 @@ const getPost = async (id) => {
 	];
 	const cursor = await posts.aggregate(pipeline);
 	const result = await cursor.toArray();
-	console.log(result);
 	return result;
 };
 
@@ -304,7 +303,6 @@ const postComment = async (comment, postId, user) => {
 	const result = await comments.insertOne(commentDoc);
 	if (result.acknowledged) {
 		const updatedDoc = await comments.findOne({ _id: result.insertedId });
-		console.log(updatedDoc);
 		return updatedDoc;
 	}
 	return null;

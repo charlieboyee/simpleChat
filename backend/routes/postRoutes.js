@@ -16,10 +16,12 @@ router.put('/dislike', isAuthorized, (req, res) => {
 });
 
 router.put('/like', isAuthorized, (req, res) => {
+	console.log(req.query.id);
 	database
 		.likePost(req.query.id, req.session.user)
 		.then((result) => {
 			if (result) {
+				console.log(result);
 				return res.json({ data: result });
 			}
 		})
@@ -73,7 +75,6 @@ router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 });
 
 router.get('/', isAuthorized, (req, res) => {
-	console.log(req.query.id);
 	database
 		.getPost(req.query.id)
 		.then((result) => {
