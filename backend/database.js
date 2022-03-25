@@ -201,7 +201,7 @@ const getPost = async (id) => {
 		{
 			$lookup: {
 				from: 'users',
-				localField: 'owner',
+				localField: 'comments.owner',
 				foreignField: 'username',
 				as: 'comments.owner',
 			},

@@ -41,7 +41,7 @@ function CommentInput(props) {
 
 			setPostToView((prevState) => {
 				prevState._id = data;
-				console.log(prevState);
+
 				return prevState;
 			});
 			setComment('');
@@ -92,7 +92,6 @@ export default function PostModal({
 					}
 				})
 				.then((result) => {
-					console.log(result[0]);
 					setPostToView(result[0]);
 					setLoading(false);
 				});
@@ -131,27 +130,22 @@ export default function PostModal({
 						</div>
 						<List>
 							{post?.postComments?.map((comment, index) => {
+								console.log(comment);
 								return (
 									<ListItem key={index}>
 										<ListItemAvatar>
 											<Avatar
 												src={
-													comment.owner.profilePhoto
-														? `${process.env.REACT_APP_S3_URL}${comment.owner.profilePhoto}`
+													comment.owner[0].profilePhoto
+														? `${process.env.REACT_APP_S3_URL}${comment.owner[0].profilePhoto}`
 														: null
 												}
 											/>
 										</ListItemAvatar>
 
 										<div>
-											<span>{comment.owner[0].username}</span>
-											<span>
-												{comment.comment}Lorem Ipsum is simply dummy text of the
-												printing and typesetting industry. Lorem Ipsum has been
-												the industry's standard dummy text ever since the 1500s,
-												when an unknown printer took a galley of type and
-												scrambled it to make a type specimen book.
-											</span>
+											<span>{comment.owner.username}</span>
+											<span>{comment.comment}</span>
 										</div>
 									</ListItem>
 								);
