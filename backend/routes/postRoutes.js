@@ -16,7 +16,6 @@ router.put('/dislike', isAuthorized, (req, res) => {
 });
 
 router.put('/like', isAuthorized, (req, res) => {
-	console.log(req.query.id);
 	database
 		.likePost(req.query.id, req.session.user)
 		.then((result) => {
@@ -30,10 +29,10 @@ router.put('/like', isAuthorized, (req, res) => {
 
 router.delete('/comment', isAuthorized, (req, res) => {
 	database
-		.deleteComment(req.body.postId, req.body.commentId)
+		.deleteComment(req.body.commentId)
 		.then((result) => {
-			if (result.lastErrorObject.n) {
-				return res.json({ data: result.value });
+			if (result.deletedCount) {
+				return res.sendStatus(200);
 			}
 		})
 		.catch((err) => res.sendStatus(500));

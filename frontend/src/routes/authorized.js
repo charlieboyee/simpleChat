@@ -71,6 +71,7 @@ export default function AuthorizedRoutes() {
 				posts.forEach((post) => {
 					post.comments.reverse();
 				});
+				console.log(posts);
 				setHomeFeed(posts);
 				return;
 			});

@@ -58,14 +58,9 @@ const createPost = async (user, filePath, caption = '') => {
 	return result;
 };
 
-const deleteComment = async (postId, commentId) => {
-	const update = { $pull: { comments: { _id: new ObjectId(commentId) } } };
-	const options = { returnDocument: 'after' };
-	const result = await posts.findOneAndUpdate(
-		{ _id: new ObjectId(postId) },
-		update,
-		options
-	);
+const deleteComment = async (commentId) => {
+	const query = { _id: new ObjectId(commentId) };
+	const result = await comments.deleteOne(query);
 	return result;
 };
 

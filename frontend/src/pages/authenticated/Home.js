@@ -63,6 +63,60 @@ function CommentInput(props) {
 	);
 }
 
+const DeleteMenu = ({
+	anchorEl,
+	setAnchorEl,
+	homeFeed,
+	setHomeFeed,
+	open,
+	postIndex,
+	commentInDex,
+}) => {
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
+
+	const deletePost = async () => {
+		console.log('deletePost');
+	};
+	const deleteComment = async () => {
+		const results = await fetch('/api/post/comment', {
+			method: 'DELETE',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({ commentId: commentInDex.commentId }),
+		});
+		if (results.status === 200) {
+			setAnchorEl(null);
+			setHomeFeed((prevState) => {
+				const newState = prevState[postIndex].comments.filter((comment) => {
+					if (comment._id !== commentInDex.commentId) {
+						return comment;
+					}
+				});
+				prevState[postIndex].comments = newState;
+				return [...prevState];
+			});
+		}
+		return;
+	};
+
+	return (
+		<Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+			{anchorEl?.className.includes('commentDelete') ? (
+				<MenuItem onClose={handleMenuClose} onClick={deleteComment}>
+					Delete
+				</MenuItem>
+			) : (
+				<MenuItem onClose={handleMenuClose} onClick={deletePost}>
+					Delete
+				</MenuItem>
+			)}
+		</Menu>
+	);
+};
+
 export default function Home(props) {
 	const { homeFeed, setHomeFeed } = props;
 	const { userData } = useOutletContext();
@@ -71,13 +125,13 @@ export default function Home(props) {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
 
-	const handleMenuOpen = (e) => {
-		console.log(e.currentTarget.className);
-		setAnchorEl(e.currentTarget);
-	};
+	const [commentInDex, setCommentInDex] = useState('');
+	const [postIndex, setPostIndex] = useState(null);
 
-	const handleMenuClose = () => {
-		setAnchorEl(null);
+	const handleMenuOpen = (e, commentId, commentIndex, pIndex) => {
+		setPostIndex(pIndex);
+		setCommentInDex({ commentId, commentIndex });
+		setAnchorEl(e.currentTarget);
 	};
 
 	const dislikePost = async (id, feedIndex) => {
@@ -110,23 +164,10 @@ export default function Home(props) {
 		return;
 	};
 
-	const deletePost = async () => {};
-	const deleteComment = async () => {
-		const results = await fetch('/api/post/comment', {
-			method: 'DELETE',
-		});
-		if (results.status === 200) {
-			const { data } = await results.json();
-			console.log(data);
-			return data;
-		}
-		return;
-	};
 	if (homeFeed.length) {
 		return (
 			<main id='homePage'>
 				{homeFeed?.map((post, cardIndex) => {
-					console.log(post);
 					return (
 						<Card key={cardIndex}>
 							<CardHeader
@@ -148,6 +189,7 @@ export default function Home(props) {
 									) : null
 								}
 							/>
+
 							<CardMedia>
 								<img
 									id='postImage'
@@ -158,6 +200,7 @@ export default function Home(props) {
 									alt='post'
 								/>
 							</CardMedia>
+
 							<CardContent>
 								{post?.likes?.includes(loggedInUser.username) ? (
 									<IconButton onClick={() => dislikePost(post._id, cardIndex)}>
@@ -169,17 +212,24 @@ export default function Home(props) {
 									</IconButton>
 								)}
 
-								<div>{post?.likes.length} likes</div>
+								<div>{post.likes && post.likes.length} likes</div>
 								<div>
 									{post?.caption && `${post.owner[0].username} ${post.caption}`}
 								</div>
-								{post?.comments?.map((comment, commentsIndex) => {
+								{post?.comments?.map((comment, commentIndex) => {
 									return (
-										<div className='comment' key={commentsIndex}>
+										<div className='comment' key={commentIndex}>
 											{comment.owner === loggedInUser.username ? (
 												<IconButton
 													className='commentDelete'
-													onClick={handleMenuOpen}
+													onClick={(e) =>
+														handleMenuOpen(
+															e,
+															comment._id,
+															commentIndex,
+															cardIndex
+														)
+													}
 												>
 													<MoreHorizIcon />
 												</IconButton>
@@ -196,6 +246,7 @@ export default function Home(props) {
 									})}
 								</div>
 							</CardContent>
+
 							<CardActions>
 								<CommentInput
 									index={cardIndex}
@@ -204,26 +255,19 @@ export default function Home(props) {
 									setHomeFeed={setHomeFeed}
 								/>
 							</CardActions>
+
+							<DeleteMenu
+								anchorEl={anchorEl}
+								setAnchorEl={setAnchorEl}
+								homeFeed={homeFeed}
+								setHomeFeed={setHomeFeed}
+								open={open}
+								postIndex={postIndex}
+								commentInDex={commentInDex}
+							/>
 						</Card>
 					);
 				})}
-				<Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-					{anchorEl?.className.includes('commentDelete') ? (
-						<MenuItem
-							onClose={handleMenuClose}
-							onClick={() => console.log('comment')}
-						>
-							Delete
-						</MenuItem>
-					) : (
-						<MenuItem
-							onClose={handleMenuClose}
-							onClick={() => console.log('post')}
-						>
-							Delete
-						</MenuItem>
-					)}
-				</Menu>
 			</main>
 		);
 	}
