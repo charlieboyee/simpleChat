@@ -131,6 +131,7 @@ export default function PostModal({
 					}
 				})
 				.then((result) => {
+					console.log(result);
 					setPostToView(result[0]);
 					setLoading(false);
 				});
@@ -148,7 +149,6 @@ export default function PostModal({
 		);
 	}
 	if (!loading) {
-		console.log(post);
 		return (
 			<Modal id='postModal' open={postModalOpen} onClose={handleClose}>
 				<Card>
@@ -191,7 +191,7 @@ export default function PostModal({
 							})}
 						</List>
 						<div>
-							{post?._id?.likes.includes(loggedInUser.username) ? (
+							{post?._id?.likes?.includes(loggedInUser.username) ? (
 								<IconButton
 									disableRipple
 									onClick={() => dislikePost(post._id._id)}

@@ -70,6 +70,7 @@ export default function NavBar(props) {
 	};
 
 	const goToPost = (id) => {
+		console.log(id);
 		setPostModalOpen(true);
 		setPostToView(id);
 		setAnchorEl(null);
@@ -254,6 +255,7 @@ export default function NavBar(props) {
 					</div>
 				) : anchorEl?.id === 'notificationButton' ? (
 					notifications?.map((notification, index) => {
+						console.log(notification.postRef);
 						if (!notification.read) {
 							return (
 								<MenuItem

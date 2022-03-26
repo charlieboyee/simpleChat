@@ -177,9 +177,33 @@ const getFollowers = async (username) => {
 };
 
 const getPost = async (id) => {
+	console.log(id);
+	const nullPipe = [
+		{
+			$match: {
+				_id: new ObjectId(id),
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'owner',
+				foreignField: 'username',
+				as: 'owner',
+			},
+		},
+		{
+			$group: {
+				_id: '$$CURRENT',
+			},
+		},
+	];
 	const pipeline = [
-		{ $match: { _id: new ObjectId(id) } },
-
+		{
+			$match: {
+				_id: new ObjectId(id),
+			},
+		},
 		{
 			$lookup: {
 				from: 'comments',
@@ -218,7 +242,15 @@ const getPost = async (id) => {
 	];
 	const cursor = await posts.aggregate(pipeline);
 	const result = await cursor.toArray();
-	return result;
+	if (result.length) {
+		console.log(result);
+		return result;
+	}
+
+	const cursor2 = await posts.aggregate(nullPipe);
+	const result2 = await cursor2.toArray();
+	console.log(result2);
+	return result2;
 };
 
 const getUser = async (user) => {
@@ -247,6 +279,7 @@ const getUserNotifications = async (user) => {
 	];
 	const cursor = await notifications.aggregate(pipeline);
 	const result = await cursor.toArray();
+
 	return result;
 };
 
