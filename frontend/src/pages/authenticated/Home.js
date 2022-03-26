@@ -77,7 +77,25 @@ const DeleteMenu = ({
 	};
 
 	const deletePost = async () => {
-		console.log('deletePost');
+		const results = await fetch(`/api/post/?id=${homeFeed[postIndex]._id}`, {
+			method: 'DELETE',
+			headers: {
+				'content-type': 'application/json',
+			},
+		});
+		if (results.status === 200) {
+			setAnchorEl(null);
+			setHomeFeed((prevState) => {
+				const newState = prevState.filter((post) => {
+					if (post._id !== prevState[postIndex]._id) {
+						return post;
+					}
+				});
+				return [...newState];
+			});
+		}
+
+		return;
 	};
 	const deleteComment = async () => {
 		const results = await fetch('/api/post/comment', {
@@ -128,7 +146,7 @@ export default function Home(props) {
 	const [commentInDex, setCommentInDex] = useState('');
 	const [postIndex, setPostIndex] = useState(null);
 
-	const handleMenuOpen = (e, commentId, commentIndex, pIndex) => {
+	const handleMenuOpen = (e, pIndex, commentId = '', commentIndex = '') => {
 		setPostIndex(pIndex);
 		setCommentInDex({ commentId, commentIndex });
 		setAnchorEl(e.currentTarget);
@@ -183,7 +201,15 @@ export default function Home(props) {
 								title={post?.owner[0].username}
 								action={
 									post?.owner[0].username === loggedInUser.username ? (
-										<IconButton onClick={handleMenuOpen}>
+										<IconButton
+											onClick={(e) =>
+												handleMenuOpen(
+													e,
+
+													cardIndex
+												)
+											}
+										>
 											<MoreVertIcon />
 										</IconButton>
 									) : null
@@ -225,9 +251,9 @@ export default function Home(props) {
 													onClick={(e) =>
 														handleMenuOpen(
 															e,
+															cardIndex,
 															comment._id,
-															commentIndex,
-															cardIndex
+															commentIndex
 														)
 													}
 												>
@@ -271,5 +297,5 @@ export default function Home(props) {
 			</main>
 		);
 	}
-	return <CircularProgress />;
+	return <h1>Nothing to display yet</h1>;
 }

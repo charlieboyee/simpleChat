@@ -61,6 +61,17 @@ router.get('/all', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
+router.delete('/', isAuthorized, (req, res) => {
+	database
+		.deletePost(req.query.id)
+		.then((result) => {
+			if (result[0].deletedCount) {
+				return res.sendStatus(200);
+			}
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
 router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 	console.log(req.body.caption);
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
@@ -82,10 +93,16 @@ router.get('/', isAuthorized, (req, res) => {
 	database
 		.getPost(req.query.id)
 		.then((result) => {
+			console.log(result);
 			if (result.length) {
-				res.json(result);
+				return res.json(result);
 			}
+
+			return res.sendStatus(204);
 		})
-		.catch((err) => res.sendStatus(500));
+		.catch((err) => {
+			console.log(err);
+			res.sendStatus(500);
+		});
 });
 module.exports = router;

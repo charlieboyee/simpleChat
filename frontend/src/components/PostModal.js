@@ -90,6 +90,8 @@ export default function PostModal({
 
 	const [loading, setLoading] = useState(true);
 
+	const [postNotFound, setPostNotFound] = useState(false);
+
 	const likePost = async (id) => {
 		const results = await fetch(`/api/post/like/?id=${id}`, {
 			method: 'PUT',
@@ -122,19 +124,20 @@ export default function PostModal({
 
 	useEffect(() => {
 		if (postModalOpen) {
-			fetch(`/api/post/?id=${post}`, {
-				signal,
-			})
-				.then((res) => {
-					if (res.status === 200) {
-						return res.json();
-					}
-				})
-				.then((result) => {
-					console.log(result);
-					setPostToView(result[0]);
-					setLoading(false);
+			(async () => {
+				const results = await fetch(`/api/post/?id=${post}`, {
+					signal,
 				});
+				if (results.status === 200) {
+					const data = await results.json();
+					setPostToView(data[0]);
+					setLoading(false);
+				}
+				if (results.status === 204) {
+					setPostNotFound(true);
+					setLoading(false);
+				}
+			})();
 		}
 		return () => {
 			controller.abort();
@@ -145,6 +148,13 @@ export default function PostModal({
 		return (
 			<Modal id='postModal' open={postModalOpen} onClose={handleClose}>
 				<CircularProgress />
+			</Modal>
+		);
+	}
+	if (!loading && postNotFound) {
+		return (
+			<Modal id='postModal' open={postModalOpen} onClose={handleClose}>
+				<h1>Post Not Found</h1>
 			</Modal>
 		);
 	}

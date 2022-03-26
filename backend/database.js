@@ -64,6 +64,15 @@ const deleteComment = async (commentId) => {
 	return result;
 };
 
+const deletePost = async (postId) => {
+	const query = { _id: new ObjectId(postId) };
+	const query2 = { postRef: new ObjectId(postId) };
+	const prom = posts.deleteOne(query);
+	const prom2 = comments.deleteMany(query2);
+	const results = await Promise.all([prom, prom2]);
+	return results;
+};
+
 const dislikePost = async (postId, liker) => {
 	const query = {
 		_id: new ObjectId(postId),
@@ -177,7 +186,6 @@ const getFollowers = async (username) => {
 };
 
 const getPost = async (id) => {
-	console.log(id);
 	const nullPipe = [
 		{
 			$match: {
@@ -243,14 +251,15 @@ const getPost = async (id) => {
 	const cursor = await posts.aggregate(pipeline);
 	const result = await cursor.toArray();
 	if (result.length) {
-		console.log(result);
 		return result;
 	}
 
 	const cursor2 = await posts.aggregate(nullPipe);
 	const result2 = await cursor2.toArray();
-	console.log(result2);
-	return result2;
+	if (result2.length) {
+		return result2;
+	}
+	return [];
 };
 
 const getUser = async (user) => {
@@ -362,6 +371,7 @@ module.exports = {
 	createAccount,
 	createPost,
 	deleteComment,
+	deletePost,
 	dislikePost,
 	editProfilePhoto,
 	getAllUsers,
