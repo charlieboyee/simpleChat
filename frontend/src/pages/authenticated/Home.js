@@ -135,8 +135,7 @@ const DeleteMenu = ({
 	);
 };
 
-export default function Home(props) {
-	const { homeFeed, setHomeFeed } = props;
+export default function Home({ homeFeed, setHomeFeed, setNotificationCount }) {
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 

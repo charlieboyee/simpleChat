@@ -19,6 +19,8 @@ function Base(props) {
 		followingPosts,
 		socket,
 		homeFeed,
+		notificationCount,
+		setNotificationCount,
 		setHomeFeed,
 	} = props;
 	return (
@@ -28,6 +30,8 @@ function Base(props) {
 				setHomeFeed={setHomeFeed}
 				userData={userData}
 				socket={socket}
+				notificationCount={notificationCount}
+				setNotificationCount={setNotificationCount}
 			/>
 			<Outlet
 				context={{
@@ -44,12 +48,20 @@ export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
 	const [socket, setSocket] = useState();
+	const [notificationCount, setNotificationCount] = useState(0);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
 
 	useEffect(() => {
 		setSocket(io());
+		fetch('/api/notifications/count', { signal })
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ count }) => setNotificationCount(count));
 		fetch(`/api/user`, { signal })
 			.then((res) => {
 				if (res.status === 200) {
@@ -86,12 +98,24 @@ export default function AuthorizedRoutes() {
 			<Route
 				path='/'
 				element={
-					<Base socket={socket} userData={userData} setUserData={setUserData} />
+					<Base
+						notificationCount={notificationCount}
+						setNotificationCount={setNotificationCount}
+						socket={socket}
+						userData={userData}
+						setUserData={setUserData}
+					/>
 				}
 			>
 				<Route
 					index
-					element={<Home homeFeed={homeFeed} setHomeFeed={setHomeFeed} />}
+					element={
+						<Home
+							setNotificationCount={setNotificationCount}
+							homeFeed={homeFeed}
+							setHomeFeed={setHomeFeed}
+						/>
+					}
 				/>
 				<Route path='profile' element={<Profile />} />
 				<Route path='profile/:otherUser' element={<OtherProfile />} />

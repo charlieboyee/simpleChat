@@ -21,14 +21,17 @@ import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import './authorized.css';
 
-export default function NavBar(props) {
-	const { userData, socket, homeFeed, setHomeFeed } = props;
+export default function NavBar({
+	userData,
+	notificationCount,
+	setNotificationCount,
+}) {
 	const navigate = useNavigate();
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 
 	const [notifications, setNotifications] = useState([]);
-	const [notificationCount, setNotificationCount] = useState(0);
+
 	const [notificationId, setNotificationId] = useState(null);
 
 	const [searchOpen, setSearchOpen] = useState(false);
@@ -94,13 +97,6 @@ export default function NavBar(props) {
 	};
 
 	useEffect(() => {
-		fetch('/api/notifications/count', { signal })
-			.then((res) => {
-				if (res.status === 200) {
-					return res.json();
-				}
-			})
-			.then(({ count }) => setNotificationCount(count));
 		return () => {
 			controller.abort();
 		};
@@ -134,6 +130,7 @@ export default function NavBar(props) {
 					}
 				})
 				.then((result) => {
+					//array of ALL user notifications read and unread
 					setNotifications(result.notifications);
 				});
 		}
@@ -196,6 +193,7 @@ export default function NavBar(props) {
 					id='notificationButton'
 					onClick={handleMenuClick}
 				>
+					{/* Increase this badge count whenever a comment or like */}
 					<Badge badgeContent={notificationCount} color='primary'>
 						<NotificationsRoundedIcon className='mainNavButtons' />
 					</Badge>
