@@ -42,7 +42,6 @@ function CommentInput(props) {
 		});
 		if (result.status === 200) {
 			const { data } = await result.json();
-			console.log(data);
 			setPostToView((prevState) => {
 				data.owner = [
 					{
@@ -80,6 +79,7 @@ export default function PostModal({
 	post,
 	setPostToView,
 	loggedInUser,
+	notiId,
 }) {
 	const controller = new AbortController();
 	const signal = controller.signal;
@@ -100,7 +100,6 @@ export default function PostModal({
 			const { data } = await results.json();
 
 			setPostToView((prevState) => {
-				console.log(prevState);
 				prevState._id.likes = data.likes;
 				return { ...prevState };
 			});
@@ -125,9 +124,12 @@ export default function PostModal({
 	useEffect(() => {
 		if (postModalOpen) {
 			(async () => {
-				const results = await fetch(`/api/post/?id=${post}`, {
-					signal,
-				});
+				const results = await fetch(
+					`/api/post/?postId=${post}&notiId=${notiId}`,
+					{
+						signal,
+					}
+				);
 				if (results.status === 200) {
 					const data = await results.json();
 					setPostToView(data[0]);

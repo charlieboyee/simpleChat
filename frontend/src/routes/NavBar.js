@@ -29,6 +29,7 @@ export default function NavBar(props) {
 
 	const [notifications, setNotifications] = useState([]);
 	const [notificationCount, setNotificationCount] = useState(0);
+	const [notificationId, setNotificationId] = useState(null);
 
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchOptions, setSearchOptions] = useState([]);
@@ -69,9 +70,10 @@ export default function NavBar(props) {
 		}
 	};
 
-	const goToPost = (id) => {
+	const goToPost = (postId, notiId) => {
+		setNotificationId(notiId);
 		setPostModalOpen(true);
-		setPostToView(id);
+		setPostToView(postId);
 		setAnchorEl(null);
 	};
 
@@ -131,7 +133,9 @@ export default function NavBar(props) {
 						return res.json();
 					}
 				})
-				.then((result) => setNotifications(result.notifications));
+				.then((result) => {
+					setNotifications(result.notifications);
+				});
 		}
 	}, [anchorEl]);
 
@@ -217,8 +221,7 @@ export default function NavBar(props) {
 				post={postToView}
 				setPostToView={setPostToView}
 				loggedInUser={userData}
-				homeFeed={homeFeed}
-				setHomeFeed={setHomeFeed}
+				notiId={notificationId}
 			/>
 			<CreatePostModal
 				userData={userData}
@@ -253,28 +256,34 @@ export default function NavBar(props) {
 						</MenuItem>
 					</div>
 				) : anchorEl?.id === 'notificationButton' ? (
-					notifications?.map((notification, index) => {
-						if (!notification.read) {
-							return (
-								<MenuItem
-									key={index}
-									onClick={() => goToPost(notification.postRef)}
-								>
-									<Avatar
-										src={
-											notification.sender[0].profilePhoto &&
-											`${process.env.REACT_APP_S3_URL}${notification.sender[0].profilePhoto}`
+					notifications.filter((noti) => !noti.read).length ? (
+						notifications?.map((notification, index) => {
+							if (!notification.read) {
+								return (
+									<MenuItem
+										key={index}
+										onClick={() =>
+											goToPost(notification.postRef, notification._id)
 										}
-									/>
+									>
+										<Avatar
+											src={
+												notification.sender[0].profilePhoto &&
+												`${process.env.REACT_APP_S3_URL}${notification.sender[0].profilePhoto}`
+											}
+										/>
 
-									<ListItemText
-										primary={notification.sender[0].username}
-										secondary={setNotificationText(notification.type)}
-									/>
-								</MenuItem>
-							);
-						}
-					})
+										<ListItemText
+											primary={notification.sender[0].username}
+											secondary={setNotificationText(notification.type)}
+										/>
+									</MenuItem>
+								);
+							}
+						})
+					) : (
+						<MenuItem>No new notifications</MenuItem>
+					)
 				) : null}
 			</Menu>
 		</nav>

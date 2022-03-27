@@ -185,11 +185,11 @@ const getFollowers = async (username) => {
 	return result;
 };
 
-const getPost = async (id) => {
+const getPost = async (postId, notiId) => {
 	const nullPipe = [
 		{
 			$match: {
-				_id: new ObjectId(id),
+				_id: new ObjectId(postId),
 			},
 		},
 		{
@@ -209,7 +209,7 @@ const getPost = async (id) => {
 	const pipeline = [
 		{
 			$match: {
-				_id: new ObjectId(id),
+				_id: new ObjectId(postId),
 			},
 		},
 		{
@@ -248,6 +248,12 @@ const getPost = async (id) => {
 			},
 		},
 	];
+
+	notifications.updateOne(
+		{ _id: new ObjectId(notiId) },
+		{ $set: { read: true } }
+	);
+
 	const cursor = await posts.aggregate(pipeline);
 	const result = await cursor.toArray();
 	if (result.length) {

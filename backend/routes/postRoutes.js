@@ -91,9 +91,8 @@ router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 
 router.get('/', isAuthorized, (req, res) => {
 	database
-		.getPost(req.query.id)
+		.getPost(req.query.postId, req.query.notiId)
 		.then((result) => {
-			console.log(result);
 			if (result.length) {
 				return res.json(result);
 			}
