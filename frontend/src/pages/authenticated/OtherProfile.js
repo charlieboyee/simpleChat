@@ -6,12 +6,7 @@ import {
 	Card,
 	CardMedia,
 	CardContent,
-	Input,
-	IconButton,
 	LinearProgress,
-	Modal,
-	CardHeader,
-	CardActions,
 	Tab,
 	Tabs,
 } from '@mui/material';

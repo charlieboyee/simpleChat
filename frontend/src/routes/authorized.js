@@ -1,9 +1,6 @@
 import { useEffect, useState, createContext } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
-import Home from '../pages/authenticated/Home';
-import Profile from '../pages/authenticated/Profile';
-import OtherProfile from '../pages/authenticated/OtherProfile';
-import EditProfile from '../pages/authenticated/EditProfile';
+import * as Page from '../pages/authenticated';
 import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
 import './authorized.css';
@@ -110,16 +107,18 @@ export default function AuthorizedRoutes() {
 				<Route
 					index
 					element={
-						<Home
+						<Page.Home
 							setNotificationCount={setNotificationCount}
 							homeFeed={homeFeed}
 							setHomeFeed={setHomeFeed}
 						/>
 					}
 				/>
-				<Route path='profile' element={<Profile />} />
-				<Route path='profile/:otherUser' element={<OtherProfile />} />
-				<Route path='edit' element={<EditProfile />} />
+
+				<Route path='edit' element={<Page.EditProfile />} />
+				<Route path='inbox' element={<Page.Inbox />} />
+				<Route path='profile' element={<Page.Profile />} />
+				<Route path='profile/:otherUser' element={<Page.OtherProfile />} />
 				<Route path='*' element={<NotFound />} />
 			</Route>
 		</Routes>

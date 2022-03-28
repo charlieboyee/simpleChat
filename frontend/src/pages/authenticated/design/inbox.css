@@ -1,0 +1,41 @@
+#inboxCard {
+	display: flex;
+	width: 70vw;
+	align-self: center;
+}
+
+#inboxCard section[id='left'] {
+	flex: 1;
+}
+
+#inboxCard section[id='left'] header {
+	display: flex;
+}
+#inboxCard section[id='left'] header span {
+	margin: auto;
+}
+
+#inboxCard section[id='right'] {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 2;
+}
+
+#inboxCard section[id='right'] div {
+	border: black 3px solid;
+	border-radius: 100%;
+}
+
+#inboxCard section[id='right'] .MuiSvgIcon-root {
+	position: relative;
+	left: 0.05em;
+	bottom: 0.05em;
+	font-size: 5em;
+	transform: rotateZ(-45deg);
+}
+
+#inboxModal .MuiCard-root {
+	display: flex;
+	flex-direction: column;
+}

@@ -98,9 +98,11 @@ const editProfilePhoto = async (user, filePath = '') => {
 	return result;
 };
 
-const getAllUsers = async () => {
-	const projection = { username: 1, _id: 0 };
-	const result = await users.find({}).project(projection);
+const getAllUsers = async (user) => {
+	const query = { username: { $ne: user } };
+	const projection = { username: 1, profilePhoto: 1, _id: 0 };
+
+	const result = await users.find(query).project(projection);
 	const cursor = await result.toArray();
 	return cursor;
 };

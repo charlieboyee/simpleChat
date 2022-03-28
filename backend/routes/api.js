@@ -15,7 +15,7 @@ router.use('/post', postRoutes);
 
 router.get('/allUsers', isAuthorized, (req, res) => {
 	database
-		.getAllUsers()
+		.getAllUsers(req.session.user)
 		.then((users) => res.json({ options: users }))
 		.catch((err) => res.sendStatus(500));
 });
