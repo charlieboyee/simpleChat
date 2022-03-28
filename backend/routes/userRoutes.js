@@ -4,7 +4,9 @@ const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
 
-router.get('/following', isAuthorized, (req, res) => {
+router.use(isAuthorized);
+
+router.get('/following', (req, res) => {
 	database
 		.getFollowing(req.session.user)
 		.then((following) => {
@@ -13,7 +15,7 @@ router.get('/following', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/followers', isAuthorized, (req, res) => {
+router.get('/followers', (req, res) => {
 	database
 		.getFollowers(req.session.user)
 		.then((followers) => {
@@ -22,7 +24,7 @@ router.get('/followers', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/post', isAuthorized, (req, res) => {
+router.get('/post', (req, res) => {
 	database
 		.getUserPosts(req.session.user)
 		.then((posts) => {
@@ -31,7 +33,7 @@ router.get('/post', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
+router.put('/profilePhoto', upload.single('file'), (req, res) => {
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database
@@ -46,7 +48,7 @@ router.put('/profilePhoto', isAuthorized, upload.single('file'), (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.delete('/profilePhoto', isAuthorized, (req, res) => {
+router.delete('/profilePhoto', (req, res) => {
 	s3.deletePhoto(req.body.profilePhoto)
 		.then(() => {
 			database
@@ -61,7 +63,7 @@ router.delete('/profilePhoto', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/', isAuthorized, (req, res) => {
+router.get('/', (req, res) => {
 	database
 		.getUser(req.session.user)
 		.then((result) => {

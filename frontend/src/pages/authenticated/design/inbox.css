@@ -47,3 +47,11 @@
 	width: 25vw;
 	align-self: center;
 }
+
+#inboxModal .MuiCard-root {
+	display: flex;
+	flex-direction: column;
+	width: 25vw;
+	height: 50vh;
+	align-self: center;
+}

@@ -10,7 +10,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 
 const database = require('./database');
-const api = require('./routes/api');
+const api = require('./routes.js');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

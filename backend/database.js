@@ -34,7 +34,7 @@ const createAccount = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (result) return result;
 	const hash = await bcrypt.hash(user.password, saltRounds);
-	result = users.insertOne({
+	result = await users.insertOne({
 		username: user.username,
 		password: hash,
 		inception: new Date(),
@@ -45,6 +45,9 @@ const createAccount = async (user) => {
 	return result;
 };
 
+const createConversation = async () => {
+	const result = await users;
+};
 const createPost = async (user, filePath, caption = '') => {
 	const post = {
 		photo: filePath,
