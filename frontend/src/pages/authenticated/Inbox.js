@@ -20,6 +20,7 @@ export default function Inbox() {
 	const [loggedInUser] = userData;
 
 	const [options, setOptions] = useState([]);
+	const [value, setValue] = useState([]);
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	let open = Boolean(anchorEl);
@@ -31,6 +32,10 @@ export default function Inbox() {
 	const handleCloseModal = () => {
 		setAnchorEl(null);
 	};
+
+	useEffect(() => {
+		console.log(value);
+	}, [value]);
 
 	useEffect(() => {
 		if (open) {
@@ -78,6 +83,15 @@ export default function Inbox() {
 						action={<Button>Next</Button>}
 					/>
 					<Autocomplete
+						multiple
+						freeSolo
+						isOptionEqualToValue={(option, value) =>
+							option.username === value.username
+						}
+						value={value}
+						onChange={(event, newValue) => {
+							setValue(newValue);
+						}}
 						getOptionLabel={(option) => option.username}
 						options={options}
 						renderInput={(params) => <TextField {...params} />}
