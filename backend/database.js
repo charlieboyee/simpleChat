@@ -13,6 +13,7 @@ let users;
 let posts;
 let notifications;
 let comments;
+let conversations;
 
 const addFollower = async (user, follower) => {
 	const options = { returnDocument: 'after' };
@@ -45,8 +46,13 @@ const createAccount = async (user) => {
 	return result;
 };
 
-const createConversation = async () => {
-	const result = await users;
+const createConversation = async (searchedUsers, user) => {
+	const result = await conversations.insertOne({
+		users: searchedUsers,
+		owner: user,
+		inception: new Date(),
+	});
+	return result;
 };
 const createPost = async (user, filePath, caption = '') => {
 	const post = {
@@ -381,6 +387,7 @@ module.exports = {
 	addFollower,
 	createAccount,
 	createPost,
+	createConversation,
 	deleteComment,
 	deletePost,
 	dislikePost,
