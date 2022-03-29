@@ -2,6 +2,8 @@
 	display: flex;
 	width: 70vw;
 	align-self: center;
+	height: 80%;
+	margin: auto;
 }
 
 #inboxCard section[id='left'] {
@@ -22,7 +24,7 @@
 	flex: 2;
 }
 
-#inboxCard section[id='right'] div {
+#inboxCard section[id='right'] div[id='noConversation'] {
 	border: black 3px solid;
 	border-radius: 100%;
 }

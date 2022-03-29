@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import {
 	Autocomplete,
 	Avatar,
+	AvatarGroup,
 	Button,
 	Card,
 	CardHeader,
@@ -14,13 +15,25 @@ import {
 	ListItemButton,
 	ListItemText,
 	Modal,
+	Tab,
+	Tabs,
 	TextField,
 } from '@mui/material';
+
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import Checkbox from '@mui/material/Checkbox';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import './design/inbox.css';
+
+function TabPanel({ value, index, convo }) {
+	console.log(convo);
+	return (
+		<div hidden={value !== index}>
+			<TextField />
+		</div>
+	);
+}
 
 function CBox({ value, setValue, searchedIndex }) {
 	const [checked, setChecked] = useState(true);
@@ -45,6 +58,9 @@ export default function Inbox() {
 	const [options, setOptions] = useState([]);
 	const [value, setValue] = useState([]);
 
+	const [tabValue, setTabValue] = useState(0);
+	const [conversations, setConversations] = useState([]);
+
 	const [anchorEl, setAnchorEl] = useState(null);
 	let open = Boolean(anchorEl);
 
@@ -56,23 +72,17 @@ export default function Inbox() {
 		setAnchorEl(null);
 	};
 
-	const createConversation = async () => {
-		const results = await fetch('/api/conversatation', {
-			method: 'PUT',
-			body: JSON.stringify({ selectedUsers: value }),
-		});
-
-		if (results.status === 200) {
-			const { data } = await results.json();
-			console.log(data);
-			return;
-		}
-		return;
+	const handleTabChange = (e, newValue) => {
+		setTabValue(newValue);
 	};
 
+	const createConversation = async () => {
+		setConversations(value);
+		setAnchorEl(null);
+	};
 	useEffect(() => {
-		console.log(value);
-	}, [value]);
+		console.log(conversations);
+	}, [conversations]);
 
 	useEffect(() => {
 		if (open) {
@@ -86,6 +96,19 @@ export default function Inbox() {
 		}
 	}, [open]);
 
+	useEffect(() => {
+		fetch('/api/conversations')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ data }) => {
+				console.log(data);
+				setConversations(data);
+			});
+	}, []);
+
 	return (
 		<>
 			<Card id='inboxCard'>
@@ -96,19 +119,55 @@ export default function Inbox() {
 							<OpenInNewRoundedIcon />
 						</IconButton>
 					</header>
+					<Tabs
+						orientation='vertical'
+						value={tabValue}
+						onChange={handleTabChange}
+					>
+						{conversations.map((conversation, index) => {
+							return (
+								<Tab
+									label={
+										<ListItemButton>
+											<ListItemText primary={conversation.username} />
+										</ListItemButton>
+									}
+									key={index}
+								/>
+							);
+						})}
+					</Tabs>
 				</section>
-				<section id='right'>
-					<div>
-						<SendRoundedIcon />
-					</div>
 
-					<h3>Your Messages</h3>
-					<p>Send private photos and messages to a friend or group.</p>
-					<Button variant='contained' onClick={handleOpenModal}>
-						Send Message
-					</Button>
+				<section id='right'>
+					{!conversations.length ? (
+						<>
+							<div id='noConversation'>
+								<SendRoundedIcon />
+							</div>
+
+							<h3>Your Messages</h3>
+							<p>Send private photos and messages to a friend or group.</p>
+							<Button variant='contained' onClick={handleOpenModal}>
+								Send Message
+							</Button>
+						</>
+					) : (
+						conversations.map((conversation, index) => {
+							return (
+								<TabPanel
+									key={index}
+									value={tabValue}
+									index={index}
+									convo={conversation}
+								/>
+							);
+						})
+					)}
 				</section>
 			</Card>
+
+			{/* 		SEARCH MODAL		 */}
 			<Modal id='inboxModal' onClose={handleCloseModal} open={open}>
 				<Card>
 					<CardHeader

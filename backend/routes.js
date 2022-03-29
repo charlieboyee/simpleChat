@@ -50,7 +50,6 @@ router.post('/createAccount', (req, res) => {
 });
 
 router.get('/', isAuthorized, (req, res) => {
-	console.log(req.session);
 	res.sendStatus(200);
 });
 
