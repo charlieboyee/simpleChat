@@ -1,5 +1,6 @@
-import { useEffect, useState, useMemo, forwardRef } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { SocketContext } from '../../index';
 import {
 	Autocomplete,
 	Avatar,
@@ -30,6 +31,11 @@ import './design/inbox.css';
 function TabPanel({ value, index, convo, children }) {
 	const [message, setMessage] = useState('');
 
+	let socket = useContext(SocketContext);
+
+	const sendMessage = () => {
+		socket.emit('message', message);
+	};
 	return (
 		<div id='tabPanel' className={value !== index ? 'hidden' : null}>
 			{children}
@@ -38,6 +44,13 @@ function TabPanel({ value, index, convo, children }) {
 				value={message}
 				onChange={(e) => setMessage(e.target.value)}
 				fullWidth
+				InputProps={{
+					endAdornment: (
+						<Button variant='text' onClick={sendMessage}>
+							Send
+						</Button>
+					),
+				}}
 			/>
 		</div>
 	);

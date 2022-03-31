@@ -5,8 +5,6 @@ import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
 import './authorized.css';
 
-import { io } from 'socket.io-client';
-
 function Base(props) {
 	const {
 		userData,
@@ -14,7 +12,6 @@ function Base(props) {
 		userPosts,
 		setUserPosts,
 		followingPosts,
-		socket,
 		homeFeed,
 		notificationCount,
 		setNotificationCount,
@@ -26,7 +23,6 @@ function Base(props) {
 				homeFeed={homeFeed}
 				setHomeFeed={setHomeFeed}
 				userData={userData}
-				socket={socket}
 				notificationCount={notificationCount}
 				setNotificationCount={setNotificationCount}
 			/>
@@ -41,17 +37,15 @@ function Base(props) {
 	);
 }
 export const SocketContext = createContext();
+
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
-	const [socket, setSocket] = useState();
 	const [notificationCount, setNotificationCount] = useState(0);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
-
 	useEffect(() => {
-		setSocket(io());
 		fetch('/api/notifications/count', { signal })
 			.then((res) => {
 				if (res.status === 200) {
@@ -98,7 +92,6 @@ export default function AuthorizedRoutes() {
 					<Base
 						notificationCount={notificationCount}
 						setNotificationCount={setNotificationCount}
-						socket={socket}
 						userData={userData}
 						setUserData={setUserData}
 					/>

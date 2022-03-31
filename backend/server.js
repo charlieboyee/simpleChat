@@ -6,13 +6,20 @@ const app = express();
 const session = require('express-session');
 const database = require('./database');
 
-const { Server } = require('socket.io');
+const { Server, Socket } = require('socket.io');
 const { createServer } = require('http');
 const httpServer = createServer(app);
 const io = new Server(httpServer);
+
 io.on('connection', (sock) => {
 	console.log(`Server socket ${sock.id}`);
 	app.set('socket', sock);
+	sock.on('message', (message) => {
+		console.log(message);
+	});
+	sock.on('disconnect', () => {
+		console.log(`${sock.id} disconnected`);
+	});
 });
 
 let RedisStore = require('connect-redis')(session);
@@ -21,7 +28,7 @@ let redisClient = createClient({ legacyMode: true });
 redisClient.connect().catch((err) => console.log(err));
 
 redisClient.on('connect', () => {
-	console.log('hello');
+	console.log('Redis connected');
 });
 const api = require('./routes.js');
 
