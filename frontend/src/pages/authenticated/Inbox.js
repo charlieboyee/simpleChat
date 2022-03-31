@@ -27,31 +27,18 @@ import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import './design/inbox.css';
 
-function TabPanel({ value, index, convo }) {
-	return (
-		<div id='tabPanel' hidden={value !== index}>
-			<header>
-				<AvatarGroup>
-					{convo.map((user, userIndex) => {
-						return (
-							<Avatar
-								key={userIndex}
-								src={
-									user.profilePhoto &&
-									`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`
-								}
-							/>
-						);
-					})}
-				</AvatarGroup>
+function TabPanel({ value, index, convo, children }) {
+	const [message, setMessage] = useState('');
 
-				{convo
-					.map((user, userIndex) => {
-						return user.username;
-					})
-					.toString()}
-			</header>
-			<TextField fullWidth />
+	return (
+		<div id='tabPanel' className={value !== index ? 'hidden' : null}>
+			{children}
+			<TextField
+				placeholder='Message'
+				value={message}
+				onChange={(e) => setMessage(e.target.value)}
+				fullWidth
+			/>
 		</div>
 	);
 }
@@ -223,14 +210,32 @@ export default function Inbox() {
 							</Button>
 						</>
 					) : (
-						conversations.map((conversation, index) => {
+						conversations.map((convo, index) => {
 							return (
-								<TabPanel
-									key={index}
-									value={tabValue}
-									index={index}
-									convo={conversation}
-								/>
+								<TabPanel key={index} value={tabValue} index={index}>
+									<header>
+										<AvatarGroup>
+											{convo.map((user, userIndex) => {
+												return (
+													<Avatar
+														key={userIndex}
+														src={
+															user.profilePhoto &&
+															`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`
+														}
+													/>
+												);
+											})}
+										</AvatarGroup>
+
+										{convo
+											.map((user, userIndex) => {
+												return user.username;
+											})
+											.toString()}
+									</header>
+									<main></main>
+								</TabPanel>
 							);
 						})
 					)}

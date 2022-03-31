@@ -16,8 +16,6 @@
 #inboxCard section[id='left'] header span {
 	margin: auto;
 }
-#inboxCard section[id='left'] .MuiTab-root {
-}
 #inboxCard section[id='left'] .MuiListItem-root {
 	padding: 0;
 }
@@ -39,8 +37,19 @@
 	flex-direction: column;
 	justify-content: space-between;
 }
+
+#inboxCard section[id='right'] #tabPanel.hidden {
+	display: none;
+}
+
 #inboxCard section[id='right'] #tabPanel header {
 	display: flex;
+	align-items: center;
+}
+
+#inboxCard section[id='right'] #tabPanel main {
+	height: 100%;
+	overflow: auto;
 }
 
 #inboxCard section[id='right noConversation'] {
