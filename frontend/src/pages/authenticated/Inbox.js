@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, forwardRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
 	Autocomplete,
 	Avatar,
 	AvatarGroup,
+	Badge,
 	Button,
 	Card,
 	CardHeader,
@@ -27,10 +28,30 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import './design/inbox.css';
 
 function TabPanel({ value, index, convo }) {
-	console.log(convo);
 	return (
-		<div hidden={value !== index}>
-			<TextField />
+		<div id='tabPanel' hidden={value !== index}>
+			<header>
+				<AvatarGroup>
+					{convo.map((user, userIndex) => {
+						return (
+							<Avatar
+								key={userIndex}
+								src={
+									user.profilePhoto &&
+									`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`
+								}
+							/>
+						);
+					})}
+				</AvatarGroup>
+
+				{convo
+					.map((user, userIndex) => {
+						return user.username;
+					})
+					.toString()}
+			</header>
+			<TextField fullWidth />
 		</div>
 	);
 }
@@ -52,7 +73,6 @@ function CBox({ value, setValue, searchedIndex }) {
 
 export default function Inbox() {
 	const { userData } = useOutletContext();
-
 	const [loggedInUser] = userData;
 
 	const [options, setOptions] = useState([]);
@@ -69,6 +89,7 @@ export default function Inbox() {
 	};
 
 	const handleCloseModal = () => {
+		setValue([]);
 		setAnchorEl(null);
 	};
 
@@ -76,9 +97,11 @@ export default function Inbox() {
 		setTabValue(newValue);
 	};
 
-	const createConversation = async () => {
-		setConversations(value);
-		setAnchorEl(null);
+	const createConversation = () => {
+		//take all convos and see if it matches value object
+		//value is a conversation, it can contain 1 or more users
+		setConversations([value, ...conversations]);
+		handleCloseModal();
 	};
 	useEffect(() => {
 		console.log(conversations);
@@ -96,18 +119,17 @@ export default function Inbox() {
 		}
 	}, [open]);
 
-	useEffect(() => {
-		fetch('/api/conversations')
-			.then((res) => {
-				if (res.status === 200) {
-					return res.json();
-				}
-			})
-			.then(({ data }) => {
-				console.log(data);
-				setConversations(data);
-			});
-	}, []);
+	// useEffect(() => {
+	// 	fetch('/api/conversations')
+	// 		.then((res) => {
+	// 			if (res.status === 200) {
+	// 				return res.json();
+	// 			}
+	// 		})
+	// 		.then(({ data }) => {
+	// 			setConversations(data);
+	// 		});
+	// }, []);
 
 	return (
 		<>
@@ -119,30 +141,78 @@ export default function Inbox() {
 							<OpenInNewRoundedIcon />
 						</IconButton>
 					</header>
-					<Tabs
-						orientation='vertical'
-						value={tabValue}
-						onChange={handleTabChange}
-					>
-						{conversations.map((conversation, index) => {
-							return (
-								<Tab
-									label={
-										<ListItemButton>
-											<ListItemText primary={conversation.username} />
-										</ListItemButton>
-									}
-									key={index}
-								/>
-							);
-						})}
-					</Tabs>
+					{!conversations.length ? (
+						<div>nothing to display</div>
+					) : (
+						<Tabs
+							orientation='vertical'
+							value={tabValue}
+							onChange={handleTabChange}
+						>
+							{conversations.map((convo, index) => {
+								// convo is the individual conversation tab
+								if (convo.length === 1) {
+									return (
+										<Tab
+											key={index}
+											label={
+												<ListItem>
+													<ListItemAvatar>
+														<Avatar
+															src={
+																convo[0].profilePhoto &&
+																`${process.env.REACT_APP_S3_URL}${convo[0].profilePhoto}`
+															}
+														/>
+													</ListItemAvatar>
+													<ListItemText primary={convo[0].username} />
+												</ListItem>
+											}
+										/>
+									);
+								}
+
+								return (
+									<Tab
+										key={index}
+										label={
+											<ListItem>
+												<ListItemAvatar>
+													<AvatarGroup max={3}>
+														{convo.map((user, userIndex) => {
+															return (
+																<Avatar
+																	key={userIndex}
+																	src={
+																		user.profilePhoto &&
+																		`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`
+																	}
+																/>
+															);
+														})}
+													</AvatarGroup>
+												</ListItemAvatar>
+												<ListItemText
+													id='convoUsers'
+													primary={convo
+														.map((user, userIndex) => {
+															return user.username;
+														})
+														.toString()}
+												/>
+											</ListItem>
+										}
+									/>
+								);
+							})}
+						</Tabs>
+					)}
 				</section>
 
-				<section id='right'>
+				<section id={conversations.length ? `right` : `right noConversation`}>
 					{!conversations.length ? (
 						<>
-							<div id='noConversation'>
+							<div>
 								<SendRoundedIcon />
 							</div>
 
@@ -181,12 +251,12 @@ export default function Inbox() {
 					/>
 					<Autocomplete
 						multiple
-						freeSolo
 						isOptionEqualToValue={(option, value) =>
 							option.username === value.username
 						}
 						value={value}
 						onChange={(event, newValue) => {
+							console.log(newValue);
 							setValue(newValue);
 						}}
 						getOptionLabel={(option) => option.username}
@@ -217,7 +287,7 @@ export default function Inbox() {
 					/>
 					<List>
 						{/* Value is the array of selected users */}
-						{value.map((selectedUser, index) => {
+						{value?.map((selectedUser, index) => {
 							return (
 								<ListItem
 									key={index}

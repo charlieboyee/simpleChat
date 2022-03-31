@@ -20,6 +20,7 @@ router.get('/', (req, res) => {
 	database
 		.getConversations(req.session.user)
 		.then((result) => {
+			console.log(result);
 			res.json({ data: result });
 		})
 		.catch((err) => {
