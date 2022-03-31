@@ -1,14 +1,9 @@
 import { useEffect, useState, createContext } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
-import Home from '../pages/authenticated/Home';
-import Profile from '../pages/authenticated/Profile';
-import OtherProfile from '../pages/authenticated/OtherProfile';
-import EditProfile from '../pages/authenticated/EditProfile';
+import * as Page from '../pages/authenticated';
 import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
 import './authorized.css';
-
-import { io } from 'socket.io-client';
 
 function Base(props) {
 	const {
@@ -17,7 +12,6 @@ function Base(props) {
 		userPosts,
 		setUserPosts,
 		followingPosts,
-		socket,
 		homeFeed,
 		notificationCount,
 		setNotificationCount,
@@ -29,7 +23,6 @@ function Base(props) {
 				homeFeed={homeFeed}
 				setHomeFeed={setHomeFeed}
 				userData={userData}
-				socket={socket}
 				notificationCount={notificationCount}
 				setNotificationCount={setNotificationCount}
 			/>
@@ -44,17 +37,15 @@ function Base(props) {
 	);
 }
 export const SocketContext = createContext();
+
 export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
-	const [socket, setSocket] = useState();
 	const [notificationCount, setNotificationCount] = useState(0);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
-
 	useEffect(() => {
-		setSocket(io());
 		fetch('/api/notifications/count', { signal })
 			.then((res) => {
 				if (res.status === 200) {
@@ -101,7 +92,6 @@ export default function AuthorizedRoutes() {
 					<Base
 						notificationCount={notificationCount}
 						setNotificationCount={setNotificationCount}
-						socket={socket}
 						userData={userData}
 						setUserData={setUserData}
 					/>
@@ -110,16 +100,18 @@ export default function AuthorizedRoutes() {
 				<Route
 					index
 					element={
-						<Home
+						<Page.Home
 							setNotificationCount={setNotificationCount}
 							homeFeed={homeFeed}
 							setHomeFeed={setHomeFeed}
 						/>
 					}
 				/>
-				<Route path='profile' element={<Profile />} />
-				<Route path='profile/:otherUser' element={<OtherProfile />} />
-				<Route path='edit' element={<EditProfile />} />
+
+				<Route path='edit' element={<Page.EditProfile />} />
+				<Route path='inbox' element={<Page.Inbox />} />
+				<Route path='profile' element={<Page.Profile />} />
+				<Route path='profile/:otherUser' element={<Page.OtherProfile />} />
 				<Route path='*' element={<NotFound />} />
 			</Route>
 		</Routes>

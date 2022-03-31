@@ -1,21 +1,19 @@
 const express = require('express');
-const database = require('../database');
-const { isAuthorized } = require('../middlewares');
+const database = require('./database');
+const { isAuthorized } = require('./middlewares');
 const bcrypt = require('bcrypt');
-const userRoute = require('./userRoutes');
-const notificationRoutes = require('./notificationRoutes');
-const postRoutes = require('./postRoutes');
-const otherUserRoutes = require('./otherUserRoutes');
+const routes = require('./routes/');
 const router = express.Router();
 
-router.use('/user', userRoute);
-router.use('/notifications', notificationRoutes);
-router.use('/otherUser', otherUserRoutes);
-router.use('/post', postRoutes);
+router.use('/conversations', routes.conversations);
+router.use('/notifications', routes.notificationRoutes);
+router.use('/otherUser', routes.otherUserRoutes);
+router.use('/post', routes.postRoutes);
+router.use('/user', routes.userRoute);
 
 router.get('/allUsers', isAuthorized, (req, res) => {
 	database
-		.getAllUsers()
+		.getAllUsers(req.session.user)
 		.then((users) => res.json({ options: users }))
 		.catch((err) => res.sendStatus(500));
 });

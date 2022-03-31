@@ -6,6 +6,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 export const LoggedInContext = createContext();
+export const SocketContext = createContext();
 
 ReactDOM.render(
 	<React.StrictMode>

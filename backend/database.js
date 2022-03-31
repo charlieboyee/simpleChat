@@ -13,6 +13,22 @@ let users;
 let posts;
 let notifications;
 let comments;
+let conversations;
+
+const runDb = async () => {
+	try {
+		await client.connect();
+		let db = await client.db('simpleChat');
+		users = db.collection('users');
+		posts = db.collection('posts');
+		comments = db.collection('comments');
+		notifications = db.collection('notifications');
+		conversations = db.collection('conversations');
+		console.log('connected to db');
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 const addFollower = async (user, follower) => {
 	const options = { returnDocument: 'after' };
@@ -34,7 +50,7 @@ const createAccount = async (user) => {
 	let result = await users.findOne({ username: user.username });
 	if (result) return result;
 	const hash = await bcrypt.hash(user.password, saltRounds);
-	result = users.insertOne({
+	result = await users.insertOne({
 		username: user.username,
 		password: hash,
 		inception: new Date(),
@@ -45,6 +61,16 @@ const createAccount = async (user) => {
 	return result;
 };
 
+const createConversation = async (searchedUsers, user) => {
+	const result = await conversations.insertOne({
+		users: searchedUsers,
+		owner: user,
+		messages: [],
+		inception: new Date(),
+	});
+
+	return result;
+};
 const createPost = async (user, filePath, caption = '') => {
 	const post = {
 		photo: filePath,
@@ -98,9 +124,11 @@ const editProfilePhoto = async (user, filePath = '') => {
 	return result;
 };
 
-const getAllUsers = async () => {
-	const projection = { username: 1, _id: 0 };
-	const result = await users.find({}).project(projection);
+const getAllUsers = async (user) => {
+	const query = { username: { $ne: user } };
+	const projection = { username: 1, profilePhoto: 1, _id: 0 };
+
+	const result = await users.find(query).project(projection);
 	const cursor = await result.toArray();
 	return cursor;
 };
@@ -137,6 +165,15 @@ const getAllPosts = async (username) => {
 	];
 
 	const cursor = await posts.aggregate(pipeline);
+	const result = await cursor.toArray();
+	return result;
+};
+
+const getConversations = async (user) => {
+	const query = {
+		$or: [{ owner: user }, { 'users.username': { $in: [user] } }],
+	};
+	const cursor = await conversations.find(query);
 	const result = await cursor.toArray();
 	return result;
 };
@@ -358,30 +395,19 @@ const postComment = async (comment, postId, user, recipient) => {
 	}
 	return null;
 };
-const runDb = async () => {
-	try {
-		await client.connect();
-		let db = await client.db('simpleChat');
-		users = db.collection('users');
-		posts = db.collection('posts');
-		comments = db.collection('comments');
-		notifications = db.collection('notifications');
-		console.log('connected to db');
-	} catch (error) {
-		console.log(error);
-	}
-};
 
 module.exports = {
 	addFollower,
 	createAccount,
 	createPost,
+	createConversation,
 	deleteComment,
 	deletePost,
 	dislikePost,
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
+	getConversations,
 	getUserNotifications,
 	getUserNotificationCount,
 	getFollowing,

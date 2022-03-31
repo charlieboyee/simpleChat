@@ -182,7 +182,7 @@ export default function NavBar({
 				<IconButton disableRipple onClick={() => navigate('/')}>
 					<HomeRoundedIcon className='mainNavButtons' />
 				</IconButton>
-				<IconButton disableRipple>
+				<IconButton disableRipple onClick={() => navigate('/inbox')}>
 					<SendRoundedIcon className='mainNavButtons' />
 				</IconButton>
 				<IconButton disableRipple onClick={openCreatePostModal}>

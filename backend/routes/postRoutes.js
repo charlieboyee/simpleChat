@@ -3,8 +3,8 @@ const database = require('../database');
 const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
-
-router.put('/dislike', isAuthorized, (req, res) => {
+router.use(isAuthorized);
+router.put('/dislike', (req, res) => {
 	database
 		.dislikePost(req.query.id, req.session.user)
 		.then((result) => {
@@ -15,7 +15,7 @@ router.put('/dislike', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.put('/like', isAuthorized, (req, res) => {
+router.put('/like', (req, res) => {
 	database
 		.likePost(req.query.id, req.session.user)
 		.then((result) => {
@@ -27,7 +27,7 @@ router.put('/like', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.delete('/comment', isAuthorized, (req, res) => {
+router.delete('/comment', (req, res) => {
 	database
 		.deleteComment(req.body.commentId)
 		.then((result) => {
@@ -38,7 +38,7 @@ router.delete('/comment', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.post('/comment', isAuthorized, (req, res) => {
+router.post('/comment', (req, res) => {
 	database
 		.postComment(
 			req.body.comment,
@@ -54,14 +54,14 @@ router.post('/comment', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/all', isAuthorized, (req, res) => {
+router.get('/all', (req, res) => {
 	database
 		.getAllPosts(req.session.user)
 		.then((posts) => res.json({ posts }))
 		.catch((err) => res.sendStatus(500));
 });
 
-router.delete('/', isAuthorized, (req, res) => {
+router.delete('/', (req, res) => {
 	database
 		.deletePost(req.query.id)
 		.then((result) => {
@@ -72,7 +72,7 @@ router.delete('/', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.post('/', isAuthorized, upload.single('file'), (req, res) => {
+router.post('/', upload.single('file'), (req, res) => {
 	console.log(req.body.caption);
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
@@ -89,7 +89,7 @@ router.post('/', isAuthorized, upload.single('file'), (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.get('/', isAuthorized, (req, res) => {
+router.get('/', (req, res) => {
 	database
 		.getPost(req.query.postId, req.query.notiId)
 		.then((result) => {
