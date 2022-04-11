@@ -61,16 +61,6 @@ const createAccount = async (user) => {
 	return result;
 };
 
-const createConversation = async (searchedUsers, user) => {
-	const result = await conversations.insertOne({
-		users: searchedUsers,
-		owner: user,
-		messages: [],
-		inception: new Date(),
-	});
-
-	return result;
-};
 const createPost = async (user, filePath, caption = '') => {
 	const post = {
 		photo: filePath,
@@ -170,12 +160,45 @@ const getAllPosts = async (username) => {
 };
 
 const getConversations = async (user) => {
-	const query = {
-		$or: [{ owner: user }, { 'users.username': { $in: [user] } }],
-	};
-	const cursor = await conversations.find(query);
-	const result = await cursor.toArray();
-	return result;
+	const pipeline = [
+		{
+			$match: {
+				$or: [
+					{
+						owner: user,
+					},
+					{
+						recipients: {
+							$in: [user],
+						},
+					},
+				],
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'username',
+				foreignField: 'username',
+				as: 'profilePhoto',
+			},
+		},
+		{
+			$addFields: {
+				profilePhoto: {
+					$first: '$profilePhoto.profilePhoto',
+				},
+			},
+		},
+	];
+
+	const pipeCursor = await conversations.aggregate(pipeline);
+	let returnArr = [];
+	await pipeCursor.forEach((doc) => {
+		returnArr.push([doc]);
+	});
+
+	return returnArr;
 };
 
 const getFollowing = async (username) => {
@@ -396,11 +419,29 @@ const postComment = async (comment, postId, user, recipient) => {
 	return null;
 };
 
+const storeMessage = async (data, owner) => {
+	const query = { username: data.recipient };
+	const update = { $push: { messages: data } };
+
+	const result = await conversations.findOneAndUpdate(query, update);
+
+	if (result.lastErrorObject.n) {
+		return;
+	}
+
+	const newConvo = await conversations.insertOne({
+		username: data.recipient,
+		owner,
+		messages: [data],
+		inception: new Date(),
+	});
+	return;
+};
+
 module.exports = {
 	addFollower,
 	createAccount,
 	createPost,
-	createConversation,
 	deleteComment,
 	deletePost,
 	dislikePost,
@@ -419,4 +460,5 @@ module.exports = {
 	logIn,
 	postComment,
 	runDb,
+	storeMessage,
 };

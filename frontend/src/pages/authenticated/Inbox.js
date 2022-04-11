@@ -5,11 +5,9 @@ import {
 	Autocomplete,
 	Avatar,
 	AvatarGroup,
-	Badge,
 	Button,
 	Card,
 	CardHeader,
-	CardContent,
 	IconButton,
 	List,
 	ListItem,
@@ -17,6 +15,7 @@ import {
 	ListItemButton,
 	ListItemText,
 	Modal,
+	Paper,
 	Tab,
 	Tabs,
 	TextField,
@@ -28,41 +27,67 @@ import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import './design/inbox.css';
 
-function TabPanel({ value, index, convo, children }) {
+//Tab panels for each tab
+function TabPanel({
+	value,
+	convoIndex,
+	convo,
+	children,
+	receivedMessage,
+	allMessages,
+	setAllMessages,
+}) {
+	let [socket] = useContext(SocketContext);
+	const { userData } = useOutletContext();
+	const [loggedInUser] = userData;
+
 	const [message, setMessage] = useState('');
 
-	let socket = useContext(SocketContext);
-
-	const sendMessage = () => {
-		socket.emit('message', message);
+	let dataToEmit = {
+		message,
+		recipient: convo[0].username,
+		sender: loggedInUser.username,
+		inception: new Date(),
 	};
+
+	const sendMessage = (e) => {
+		e.preventDefault();
+		socket.emit('sendMessage', dataToEmit);
+
+		setAllMessages([message, ...allMessages]);
+		setMessage('');
+	};
+
 	return (
-		<div id='tabPanel' className={value !== index ? 'hidden' : null}>
+		<div id='tabPanel' className={value !== convoIndex ? 'hidden' : null}>
 			{children}
-			<TextField
-				placeholder='Message'
-				value={message}
-				onChange={(e) => setMessage(e.target.value)}
-				fullWidth
-				InputProps={{
-					endAdornment: (
-						<Button variant='text' onClick={sendMessage}>
-							Send
-						</Button>
-					),
-				}}
-			/>
+			<main>
+				{allMessages?.map((message, messageIndex) => {
+					return <Paper key={messageIndex}>{message}</Paper>;
+				})}
+			</main>
+			<form onSubmit={sendMessage}>
+				<TextField
+					placeholder='Message'
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+					fullWidth
+					InputProps={{
+						endAdornment: <Button onClick={sendMessage}>Send</Button>,
+					}}
+				/>
+			</form>
 		</div>
 	);
 }
 
+//Checkbox autocomplete list
 function CBox({ value, setValue, searchedIndex }) {
 	const [checked, setChecked] = useState(true);
 	const toggleCheck = (e) => {
 		if (!e.target.checked) {
 			setValue((prevState) => {
 				return prevState.filter((searchedUser, index) => {
-					console.log(prevState.indexOf(searchedUser));
 					return prevState.indexOf(searchedUser) !== searchedIndex;
 				});
 			});
@@ -72,13 +97,19 @@ function CBox({ value, setValue, searchedIndex }) {
 }
 
 export default function Inbox() {
-	const { userData } = useOutletContext();
+	let [socket] = useContext(SocketContext);
+
+	const { userData, receivedMessage } = useOutletContext();
+
 	const [loggedInUser] = userData;
 
 	const [options, setOptions] = useState([]);
 	const [value, setValue] = useState([]);
 
 	const [tabValue, setTabValue] = useState(0);
+
+	const [allMessages, setAllMessages] = useState([]);
+
 	const [conversations, setConversations] = useState([]);
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -103,6 +134,25 @@ export default function Inbox() {
 		setConversations([value, ...conversations]);
 		handleCloseModal();
 	};
+
+	useEffect(() => {
+		if (socket) {
+			socket.on('receiveMessage', (data) => {
+				setAllMessages([data.message, ...allMessages]);
+			});
+		}
+	}, [socket]);
+
+	useEffect(() => {
+		fetch('/api/conversations')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ data }) => setConversations(data));
+	}, []);
+
 	useEffect(() => {
 		console.log(conversations);
 	}, [conversations]);
@@ -118,18 +168,6 @@ export default function Inbox() {
 				.then((result) => setOptions(result.options));
 		}
 	}, [open]);
-
-	// useEffect(() => {
-	// 	fetch('/api/conversations')
-	// 		.then((res) => {
-	// 			if (res.status === 200) {
-	// 				return res.json();
-	// 			}
-	// 		})
-	// 		.then(({ data }) => {
-	// 			setConversations(data);
-	// 		});
-	// }, []);
 
 	return (
 		<>
@@ -223,9 +261,17 @@ export default function Inbox() {
 							</Button>
 						</>
 					) : (
-						conversations.map((convo, index) => {
+						conversations.map((convo, convoIndex) => {
 							return (
-								<TabPanel key={index} value={tabValue} index={index}>
+								<TabPanel
+									convo={convo}
+									key={convoIndex}
+									value={tabValue}
+									convoIndex={convoIndex}
+									receivedMessage={receivedMessage}
+									allMessages={allMessages}
+									setAllMessages={setAllMessages}
+								>
 									<header>
 										<AvatarGroup>
 											{convo.map((user, userIndex) => {
@@ -247,7 +293,6 @@ export default function Inbox() {
 											})
 											.toString()}
 									</header>
-									<main></main>
 								</TabPanel>
 							);
 						})
@@ -274,7 +319,6 @@ export default function Inbox() {
 						}
 						value={value}
 						onChange={(event, newValue) => {
-							console.log(newValue);
 							setValue(newValue);
 						}}
 						getOptionLabel={(option) => option.username}

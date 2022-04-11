@@ -1,41 +1,32 @@
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
+const api = require('./routes.js');
+const database = require('./database');
 const express = require('express');
+const session = require('express-session');
 const app = express();
 
-const session = require('express-session');
-const database = require('./database');
-
-const { Server, Socket } = require('socket.io');
+const { Server } = require('socket.io');
 const { createServer } = require('http');
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
-io.on('connection', (sock) => {
-	console.log(`Server socket ${sock.id}`);
-	app.set('socket', sock);
-	sock.on('message', (message) => {
-		console.log(message);
-	});
-	sock.on('disconnect', () => {
-		console.log(`${sock.id} disconnected`);
-	});
-});
-
 let RedisStore = require('connect-redis')(session);
 const { createClient } = require('redis');
 let redisClient = createClient({ legacyMode: true });
-redisClient.connect().catch((err) => console.log(err));
+redisClient.connect();
 
 redisClient.on('connect', () => {
 	console.log('Redis connected');
 });
-const api = require('./routes.js');
+redisClient.on('error', () => {
+	console.log('Redis connected');
+});
+
+require('./socketIo')(io, database);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-app.set('io', io);
 
 let minute = 1000 * 60;
 
