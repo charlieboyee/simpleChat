@@ -160,44 +160,10 @@ const getAllPosts = async (username) => {
 };
 
 const getConversations = async (user) => {
-	const pipeline = [
-		{
-			$match: {
-				$or: [
-					{
-						owner: user,
-					},
-					{
-						username: {
-							$in: [user],
-						},
-					},
-				],
-			},
-		},
-		{
-			$lookup: {
-				from: 'users',
-				localField: 'username',
-				foreignField: 'username',
-				as: 'profilePhoto',
-			},
-		},
-		{
-			$addFields: {
-				profilePhoto: {
-					$first: '$profilePhoto.profilePhoto',
-				},
-			},
-		},
-	];
-
-	const pipeCursor = await conversations.aggregate(pipeline);
-	let returnArr = [];
-	await pipeCursor.forEach((doc) => {
-		returnArr.push([doc]);
-	});
-	return returnArr;
+	const query = { participants: { $in: [user] } };
+	const cursor = await conversations.find({});
+	const result = cursor.toArray();
+	return result;
 };
 
 const getFollowing = async (username) => {
@@ -418,25 +384,6 @@ const postComment = async (comment, postId, user, recipient) => {
 	return null;
 };
 
-const storeMessage = async (data, owner) => {
-	const query = { username: data.recipient };
-	const update = { $push: { messages: data } };
-
-	const result = await conversations.findOneAndUpdate(query, update);
-	console.log(result);
-	if (result.lastErrorObject.n) {
-		return;
-	}
-
-	const newConvo = await conversations.insertOne({
-		username: data.recipient,
-		owner,
-		messages: [data],
-		inception: new Date(),
-	});
-	return;
-};
-
 module.exports = {
 	addFollower,
 	createAccount,
@@ -459,5 +406,4 @@ module.exports = {
 	logIn,
 	postComment,
 	runDb,
-	storeMessage,
 };

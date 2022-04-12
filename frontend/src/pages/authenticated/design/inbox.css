@@ -28,8 +28,7 @@
 #inboxModal .MuiCard-root {
 	min-width: 300px;
 	width: 30vw;
-	min-height: 400px;
-	height: 40vh;
+
 	margin: auto;
 }
 

@@ -32,16 +32,22 @@ import './design/inbox.css';
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
+function TabPanel() {
+	return <div></div>;
+}
+
 export default function Inbox() {
 	const [socket] = useContext(SocketContext);
 
-	const { conversationList } = useOutletContext();
+	const { conversationList, setConversationList } = useOutletContext();
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	let modalOpen = Boolean(anchorEl);
 
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState([]);
+	const [value, setValue] = useState([]);
+	const [tabValue, setTabValue] = useState(0);
 	const loading = open && options.length === 0;
 
 	const handleClose = () => {
@@ -50,6 +56,13 @@ export default function Inbox() {
 
 	const openModal = (e) => {
 		setAnchorEl(e.currentTarget);
+	};
+
+	const handleTabChange = (e, newValue) => {
+		setTabValue(newValue);
+	};
+	const createConversationTab = () => {
+		setConversationList(value);
 	};
 
 	useEffect(() => {
@@ -62,10 +75,13 @@ export default function Inbox() {
 				})
 				.then(({ options }) => {
 					setOptions(options);
-					return;
 				});
 		}
 	}, [open]);
+
+	// useEffect(() => {
+	// 	fetch('/api/')
+	// }, [])
 
 	if (!conversationList.length) {
 		return (
@@ -79,7 +95,7 @@ export default function Inbox() {
 								</IconButton>
 							}
 							title='New Message'
-							action={<Button>Next</Button>}
+							action={<Button onClick={createConversationTab}>Next</Button>}
 						/>
 						<Autocomplete
 							multiple
@@ -89,6 +105,10 @@ export default function Inbox() {
 							}}
 							onClose={() => {
 								setOpen(false);
+							}}
+							value={value}
+							onChange={(event, value) => {
+								setValue(value);
 							}}
 							options={options}
 							loading={loading}
@@ -146,8 +166,18 @@ export default function Inbox() {
 	}
 	return (
 		<Card className='inboxCard'>
-			<section id='right'></section>
-			<section id='left'></section>
+			<section id='right'>
+				<Tabs value={tabValue} onChange={handleTabChange}>
+					{value.map((selectedUser, selectedUserIndex) => {
+						return (
+							<Tab key={selectedUserIndex} label={selectedUser.username} />
+						);
+					})}
+				</Tabs>
+			</section>
+			<section id='left'>
+				<TabPanel></TabPanel>
+			</section>
 		</Card>
 	);
 }

@@ -19,6 +19,7 @@ function Base(props) {
 		setNotificationCount,
 		setHomeFeed,
 		conversationList,
+		setConversationList,
 	} = props;
 	return (
 		<div className='authorizedBase'>
@@ -33,6 +34,7 @@ function Base(props) {
 				context={{
 					followingPosts,
 					conversationList,
+					setConversationList,
 					userData: [userData, setUserData],
 					userPosts: [userPosts, setUserPosts],
 				}}
@@ -108,6 +110,7 @@ export default function AuthorizedRoutes() {
 						userData={userData}
 						setUserData={setUserData}
 						conversationList={conversationList}
+						setConversationList={setConversationList}
 					/>
 				}
 			>
