@@ -18,7 +18,7 @@ function Base(props) {
 		notificationCount,
 		setNotificationCount,
 		setHomeFeed,
-		receivedMessage,
+		conversationList,
 	} = props;
 	return (
 		<div className='authorizedBase'>
@@ -32,7 +32,7 @@ function Base(props) {
 			<Outlet
 				context={{
 					followingPosts,
-					receivedMessage,
+					conversationList,
 					userData: [userData, setUserData],
 					userPosts: [userPosts, setUserPosts],
 				}}
@@ -48,22 +48,10 @@ export default function AuthorizedRoutes() {
 	const [homeFeed, setHomeFeed] = useState({});
 	const [notificationCount, setNotificationCount] = useState(0);
 
-	const [receivedMessage, setReceivedMessage] = useState({
-		sender: '',
-		timeStamp: null,
-		message: '',
-	});
+	const [conversationList, setConversationList] = useState([]);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
-
-	useEffect(() => {
-		if (socket) {
-			socket.on('receiveMessage', (data) => {
-				setReceivedMessage(data);
-			});
-		}
-	}, [socket]);
 
 	useEffect(() => {
 		if (userData.username) {
@@ -115,11 +103,11 @@ export default function AuthorizedRoutes() {
 				path='/'
 				element={
 					<Base
-						receivedMessage={receivedMessage}
 						notificationCount={notificationCount}
 						setNotificationCount={setNotificationCount}
 						userData={userData}
 						setUserData={setUserData}
+						conversationList={conversationList}
 					/>
 				}
 			>

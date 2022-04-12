@@ -1,75 +1,23 @@
-#inboxCard {
-	display: flex;
-	width: 70vw;
-	align-self: center;
-	height: 80%;
-	margin: auto;
-}
-
-#inboxCard section[id='left'] {
-	flex: 1;
-}
-
-#inboxCard section[id='left'] header {
-	display: flex;
-}
-#inboxCard section[id='left'] header span {
-	margin: auto;
-}
-#inboxCard section[id='left'] .MuiListItem-root {
-	padding: 0;
-}
-#inboxCard
-	section[id='left']
-	.MuiListItem-root
-	.MuiListItemText-root
-	.MuiTypography-root {
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-#inboxCard section[id='right'] {
-	flex: 2;
-}
-#inboxCard section[id='right'] #tabPanel {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}
-
-#inboxCard section[id='right'] #tabPanel.hidden {
-	display: none;
-}
-
-#inboxCard section[id='right'] #tabPanel header {
-	display: flex;
-	align-items: center;
-}
-
-#inboxCard section[id='right'] #tabPanel main {
-	height: 100%;
-	overflow: auto;
-}
-
-#inboxCard section[id='right noConversation'] {
+.inboxCard.noMessage {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	flex: 2;
+	justify-content: center;
 }
 
-#inboxCard section[id='right noConversation'] div:first-child {
-	border: black 3px solid;
-	border-radius: 100%;
+.inboxCard.noMessage div:first-child {
+	border: solid black 1px;
+	border-radius: 50%;
 }
-
-#inboxCard section[id='right noConversation'] .MuiSvgIcon-root {
+.inboxCard.noMessage div:nth-child(2) {
+	text-align: center;
+}
+.inboxCard.noMessage .MuiSvgIcon-root {
+	transform: rotateZ(-45deg);
 	position: relative;
+	font-size: 7rem;
 	left: 0.05em;
 	bottom: 0.05em;
-	font-size: 5em;
-	transform: rotateZ(-45deg);
 }
 
 #inboxModal {
@@ -77,15 +25,18 @@
 	flex-direction: column;
 	justify-content: center;
 }
-
 #inboxModal .MuiCard-root {
-	display: flex;
-	flex-direction: column;
-	width: 25vw;
-	height: 50vh;
-	align-self: center;
+	min-width: 300px;
+	width: 30vw;
+	min-height: 400px;
+	height: 40vh;
+	margin: auto;
 }
 
-#inboxModal .MuiCard-root .MuiList-root {
-	overflow: auto;
+.inboxCard {
+	display: flex;
+	width: 70vw;
+	align-self: center;
+	height: 80%;
+	margin: auto;
 }

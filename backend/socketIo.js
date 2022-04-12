@@ -22,15 +22,7 @@ module.exports = (io, database) => {
 	return io.on('connection', (socket) => {
 		socket.broadcast.emit('userConnected', `${socket.username}, ${socket.id}`);
 
-		socket.on('sendMessage', (data) => {
-			database.storeMessage(data, socket.username);
-
-			socket.to(users[data.username]).emit('receiveMessage', {
-				message: data.message,
-				sender: socket.username,
-				timeStamp: data.inception,
-			});
-		});
+		socket.on('sendMessage', (data) => {});
 
 		socket.on('disconnect', () => {
 			console.log(`${socket.id} disconnected`);

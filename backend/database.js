@@ -168,7 +168,7 @@ const getConversations = async (user) => {
 						owner: user,
 					},
 					{
-						recipients: {
+						username: {
 							$in: [user],
 						},
 					},
@@ -197,7 +197,6 @@ const getConversations = async (user) => {
 	await pipeCursor.forEach((doc) => {
 		returnArr.push([doc]);
 	});
-
 	return returnArr;
 };
 
@@ -424,7 +423,7 @@ const storeMessage = async (data, owner) => {
 	const update = { $push: { messages: data } };
 
 	const result = await conversations.findOneAndUpdate(query, update);
-
+	console.log(result);
 	if (result.lastErrorObject.n) {
 		return;
 	}
