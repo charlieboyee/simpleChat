@@ -12,10 +12,6 @@ const sio = (userData) => {
 		console.log(data);
 	});
 
-	socket.on('receiveSentMessage', (data) => {
-		console.log(data);
-	});
-
 	socket.on('connect_error', (err) => {
 		console.log(err);
 		socket.auth = { username: userData.username };

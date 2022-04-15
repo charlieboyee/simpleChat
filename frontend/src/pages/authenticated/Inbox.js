@@ -42,6 +42,9 @@ function TabPanel({ children, index, value, convo }) {
 
 	useEffect(() => {
 		if (value === index && socket) {
+			socket.on('receiveSentMessage', (data) => {
+				setAllMessages([data, ...allMessages]);
+			});
 			const fetchConvo = async () => {
 				const result = await fetch(
 					`/api/conversations/conversation?id=${convo._id}`
@@ -56,7 +59,7 @@ function TabPanel({ children, index, value, convo }) {
 
 			fetchConvo();
 		}
-	}, [value]);
+	}, [value, socket]);
 
 	const sendMessage = (e) => {
 		e.preventDefault();
@@ -94,10 +97,10 @@ function TabPanel({ children, index, value, convo }) {
 export default function Inbox() {
 	const [socket] = useContext(SocketContext);
 
-	const { conversationList, setConversationList } = useOutletContext();
-
 	const [anchorEl, setAnchorEl] = useState(null);
 	let modalOpen = Boolean(anchorEl);
+
+	const [conversationList, setConversationList] = useState([]);
 
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState([]);

@@ -18,8 +18,6 @@ function Base(props) {
 		notificationCount,
 		setNotificationCount,
 		setHomeFeed,
-		conversationList,
-		setConversationList,
 	} = props;
 	return (
 		<div className='authorizedBase'>
@@ -33,8 +31,6 @@ function Base(props) {
 			<Outlet
 				context={{
 					followingPosts,
-					conversationList,
-					setConversationList,
 					userData: [userData, setUserData],
 					userPosts: [userPosts, setUserPosts],
 				}}
@@ -49,8 +45,6 @@ export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
 	const [notificationCount, setNotificationCount] = useState(0);
-
-	const [conversationList, setConversationList] = useState([]);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
@@ -109,8 +103,6 @@ export default function AuthorizedRoutes() {
 						setNotificationCount={setNotificationCount}
 						userData={userData}
 						setUserData={setUserData}
-						conversationList={conversationList}
-						setConversationList={setConversationList}
 					/>
 				}
 			>
