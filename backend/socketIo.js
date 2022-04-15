@@ -22,7 +22,14 @@ module.exports = (io, database) => {
 	return io.on('connection', (socket) => {
 		socket.broadcast.emit('userConnected', `${socket.username}, ${socket.id}`);
 
-		socket.on('sendMessage', (data) => {});
+		socket.on('joinRoom', (room) => {
+			console.log(`Joined room: ${room}`);
+			socket.join(room);
+		});
+
+		socket.on('sendMessage', (messageObj) => {
+			socket.to(messageObj.to).emit('receiveSentMessage', messageObj);
+		});
 
 		socket.on('disconnect', () => {
 			console.log(`${socket.id} disconnected`);

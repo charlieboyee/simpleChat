@@ -2,7 +2,11 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	justify-content: space-evenly;
+	width: 40vw;
+	min-width: 300px;
+	height: 50vh;
+	margin: auto;
 }
 
 .inboxCard.noMessage div:first-child {
@@ -32,10 +36,28 @@
 	margin: auto;
 }
 
-.inboxCard {
+.inboxCard.yesMessage {
 	display: flex;
-	width: 70vw;
-	align-self: center;
-	height: 80%;
+	width: 40vw;
+	min-width: 300px;
+	height: 50vh;
 	margin: auto;
+}
+
+.inboxCard.yesMessage section[id='right'] {
+	width: 100%;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel.hidden {
+	display: none;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+}
+.inboxCard.yesMessage section[id='right'] .tabPanel main {
+	height: 100%;
 }

@@ -32,8 +32,63 @@ import './design/inbox.css';
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
-function TabPanel() {
-	return <div></div>;
+function TabPanel({ children, index, value, convo }) {
+	const { userData } = useOutletContext();
+	const [loggedInUser] = userData;
+	const [socket] = useContext(SocketContext);
+
+	const [message, setMessage] = useState('');
+	const [allMessages, setAllMessages] = useState([]);
+
+	useEffect(() => {
+		if (value === index && socket) {
+			const fetchConvo = async () => {
+				const result = await fetch(
+					`/api/conversations/conversation?id=${convo._id}`
+				);
+
+				if (result.status === 200) {
+					const { conversation } = await result.json();
+					setAllMessages(conversation.messages);
+					socket.emit('joinRoom', conversation._id);
+				}
+			};
+
+			fetchConvo();
+		}
+	}, [value]);
+
+	const sendMessage = (e) => {
+		e.preventDefault();
+
+		const payload = {
+			message,
+			timeStamp: new Date(),
+			sender: loggedInUser.username,
+			to: convo._id,
+		};
+		socket.emit('sendMessage', payload);
+	};
+
+	return (
+		<div className={value !== index ? 'tabPanel hidden' : 'tabPanel'}>
+			{children}
+			<main>
+				{allMessages.map((messageObj, messageIndex) => {
+					return <div key={messageIndex}>{messageObj.message}</div>;
+				})}
+			</main>
+
+			<form onSubmit={sendMessage}>
+				<TextField
+					fullWidth
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+					InputProps={{ endAdornment: <Button>Send</Button> }}
+				/>
+			</form>
+		</div>
+	);
 }
 
 export default function Inbox() {
@@ -50,8 +105,9 @@ export default function Inbox() {
 	const [tabValue, setTabValue] = useState(0);
 	const loading = open && options.length === 0;
 
-	const handleClose = () => {
+	const closeModal = () => {
 		setAnchorEl(null);
+		setValue([]);
 	};
 
 	const openModal = (e) => {
@@ -62,8 +118,22 @@ export default function Inbox() {
 		setTabValue(newValue);
 	};
 	const createConversationTab = () => {
-		setConversationList(value);
+		const convo = { participants: value };
+		setConversationList([...conversationList, convo]);
+		closeModal();
 	};
+
+	useEffect(() => {
+		fetch('/api/conversations')
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ data }) => {
+				setConversationList(data);
+			});
+	}, []);
 
 	useEffect(() => {
 		if (open) {
@@ -78,19 +148,14 @@ export default function Inbox() {
 				});
 		}
 	}, [open]);
-
-	// useEffect(() => {
-	// 	fetch('/api/')
-	// }, [])
-
 	if (!conversationList.length) {
 		return (
 			<>
-				<Modal id='inboxModal' onClose={handleClose} open={modalOpen}>
+				<Modal id='inboxModal' onClose={closeModal} open={modalOpen}>
 					<Card>
 						<CardHeader
 							avatar={
-								<IconButton onClick={handleClose}>
+								<IconButton onClick={closeModal}>
 									<CloseRoundedIcon />
 								</IconButton>
 							}
@@ -165,19 +230,149 @@ export default function Inbox() {
 		);
 	}
 	return (
-		<Card className='inboxCard'>
-			<section id='right'>
-				<Tabs value={tabValue} onChange={handleTabChange}>
-					{value.map((selectedUser, selectedUserIndex) => {
+		<>
+			<Modal id='inboxModal' onClose={closeModal} open={modalOpen}>
+				<Card>
+					<CardHeader
+						avatar={
+							<IconButton onClick={closeModal}>
+								<CloseRoundedIcon />
+							</IconButton>
+						}
+						title='New Message'
+						action={<Button onClick={createConversationTab}>Next</Button>}
+					/>
+					<Autocomplete
+						multiple
+						open={open}
+						onOpen={() => {
+							setOpen(true);
+						}}
+						onClose={() => {
+							setOpen(false);
+						}}
+						value={value}
+						onChange={(event, value) => {
+							setValue(value);
+						}}
+						options={options}
+						loading={loading}
+						getOptionLabel={(option) => option.username}
+						isOptionEqualToValue={(option, value) =>
+							option.username === value.username
+						}
+						renderInput={(params) => (
+							<TextField placeholder='Search' variant='standard' {...params} />
+						)}
+						renderOption={(props, option, { selected }) => (
+							<ListItem {...props}>
+								<ListItemAvatar>
+									<Avatar
+										src={
+											option.profilePhoto &&
+											process.env.REACT_APP_S3_URL + option.profilePhoto
+										}
+									/>
+								</ListItemAvatar>
+								<ListItemText primary={option.username} />
+
+								<Checkbox
+									icon={icon}
+									checkedIcon={checkedIcon}
+									style={{ marginRight: 8 }}
+									checked={selected}
+								/>
+								{option.title}
+							</ListItem>
+						)}
+					/>
+				</Card>
+			</Modal>
+
+			<Card className='inboxCard yesMessage'>
+				<section id='left'>
+					<CardHeader
+						title='Conversations'
+						action={
+							<IconButton onClick={openModal}>
+								<OpenInNewRoundedIcon />
+							</IconButton>
+						}
+					/>
+					<Tabs
+						orientation='vertical'
+						value={tabValue}
+						onChange={handleTabChange}
+					>
+						{conversationList.map((selectedConvo, selectedConvoIndex) => {
+							if (selectedConvo.participants?.length === 1) {
+								return (
+									<Tab
+										key={selectedConvoIndex}
+										icon={
+											<Avatar
+												src={
+													selectedConvo.participants[0].profilePhoto &&
+													process.env.REACT_APP_S3_URL +
+														selectedConvo.participants[0].profilePhoto
+												}
+											/>
+										}
+										iconPosition='start'
+										label={selectedConvo.participants[0].username}
+									/>
+								);
+							}
+							return (
+								<Tab
+									key={selectedConvoIndex}
+									icon={
+										<AvatarGroup max={4}>
+											{selectedConvo.participants?.map((user, userIndex) => {
+												return (
+													<Avatar
+														key={userIndex}
+														src={
+															user.profilePhoto &&
+															process.env.REACT_APP_S3_URL + user.profilePhoto
+														}
+													/>
+												);
+											})}
+										</AvatarGroup>
+									}
+									iconPosition='start'
+									label={selectedConvo.participants
+										?.map((user, userIndex) => {
+											return user.username;
+										})
+										.join(', ')}
+								/>
+							);
+						})}
+					</Tabs>
+				</section>
+				<section id='right'>
+					{conversationList.map((selectedConvo, selectedConvoIndex) => {
 						return (
-							<Tab key={selectedUserIndex} label={selectedUser.username} />
+							<TabPanel
+								key={selectedConvoIndex}
+								value={tabValue}
+								index={selectedConvoIndex}
+								convo={selectedConvo}
+							>
+								<CardHeader
+									title={selectedConvo.participants
+										?.map((user, userIndex) => {
+											return user.username;
+										})
+										.join(', ')}
+								/>
+							</TabPanel>
 						);
 					})}
-				</Tabs>
-			</section>
-			<section id='left'>
-				<TabPanel></TabPanel>
-			</section>
-		</Card>
+				</section>
+			</Card>
+		</>
 	);
 }

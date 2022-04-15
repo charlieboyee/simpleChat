@@ -114,13 +114,28 @@ const editProfilePhoto = async (user, filePath = '') => {
 	return result;
 };
 
-const getAllUsers = async (user) => {
-	const query = { username: { $ne: user } };
-	const projection = { username: 1, profilePhoto: 1, _id: 0 };
+const getAllConversations = async (user) => {
+	const pipeline = [
+		{
+			$match: {
+				participants: {
+					$in: ['charoo'],
+				},
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'participants',
+				foreignField: 'username',
+				as: 'participants',
+			},
+		},
+	];
+	const cursor = await conversations.aggregate(pipeline);
 
-	const result = await users.find(query).project(projection);
-	const cursor = await result.toArray();
-	return cursor;
+	const result = await cursor.toArray();
+	return result;
 };
 
 const getAllPosts = async (username) => {
@@ -159,10 +174,18 @@ const getAllPosts = async (username) => {
 	return result;
 };
 
-const getConversations = async (user) => {
-	const query = { participants: { $in: [user] } };
-	const cursor = await conversations.find({});
-	const result = cursor.toArray();
+const getAllUsers = async (user) => {
+	const query = { username: { $ne: user } };
+	const projection = { username: 1, profilePhoto: 1, _id: 0 };
+
+	const result = await users.find(query).project(projection);
+	const cursor = await result.toArray();
+	return cursor;
+};
+
+const getConversation = async (convoId) => {
+	const query = { _id: new ObjectId(convoId) };
+	const result = await conversations.findOne(query);
 	return result;
 };
 
@@ -384,6 +407,36 @@ const postComment = async (comment, postId, user, recipient) => {
 	return null;
 };
 
+const storeMessage = async (messageInfo, owner) => {
+	const query = { _id: messageInfo._id };
+	const update = { $push: { messages: messageInfo.message } };
+	const options = { returnDocument: 'after' };
+
+	const updateResult = await conversations.findOneAndUpdate(query, update);
+
+	if (updateResult.lastErrorObject.n) {
+		return updateResult;
+	}
+
+	const result = await conversations.insertOne({
+		participants: [owner, ...messageInfo.participants],
+		inception: messageInfo.timeStamp,
+		messages: [
+			{
+				message: messageInfo.message,
+				sender: messageInfo.sender,
+				timeStamp: messageInfo.timeStamp,
+			},
+		],
+	});
+
+	if (result.acknowledged && result.insertedId) {
+		return await conversations.findOne({ _id: result.insertedId });
+	}
+
+	return null;
+};
+
 module.exports = {
 	addFollower,
 	createAccount,
@@ -394,7 +447,8 @@ module.exports = {
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
-	getConversations,
+	getAllConversations,
+	getConversation,
 	getUserNotifications,
 	getUserNotificationCount,
 	getFollowing,
@@ -406,4 +460,5 @@ module.exports = {
 	logIn,
 	postComment,
 	runDb,
+	storeMessage,
 };
