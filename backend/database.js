@@ -61,16 +61,6 @@ const createAccount = async (user) => {
 	return result;
 };
 
-const createConversation = async (searchedUsers, user) => {
-	const result = await conversations.insertOne({
-		users: searchedUsers,
-		owner: user,
-		messages: [],
-		inception: new Date(),
-	});
-
-	return result;
-};
 const createPost = async (user, filePath, caption = '') => {
 	const post = {
 		photo: filePath,
@@ -124,13 +114,28 @@ const editProfilePhoto = async (user, filePath = '') => {
 	return result;
 };
 
-const getAllUsers = async (user) => {
-	const query = { username: { $ne: user } };
-	const projection = { username: 1, profilePhoto: 1, _id: 0 };
+const getAllConversations = async (user) => {
+	const pipeline = [
+		{
+			$match: {
+				participants: {
+					$in: ['charoo'],
+				},
+			},
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'participants',
+				foreignField: 'username',
+				as: 'participants',
+			},
+		},
+	];
+	const cursor = await conversations.aggregate(pipeline);
 
-	const result = await users.find(query).project(projection);
-	const cursor = await result.toArray();
-	return cursor;
+	const result = await cursor.toArray();
+	return result;
 };
 
 const getAllPosts = async (username) => {
@@ -169,12 +174,18 @@ const getAllPosts = async (username) => {
 	return result;
 };
 
-const getConversations = async (user) => {
-	const query = {
-		$or: [{ owner: user }, { 'users.username': { $in: [user] } }],
-	};
-	const cursor = await conversations.find(query);
-	const result = await cursor.toArray();
+const getAllUsers = async (user) => {
+	const query = { username: { $ne: user } };
+	const projection = { username: 1, profilePhoto: 1, _id: 0 };
+
+	const result = await users.find(query).project(projection);
+	const cursor = await result.toArray();
+	return cursor;
+};
+
+const getConversation = async (convoId) => {
+	const query = { _id: new ObjectId(convoId) };
+	const result = await conversations.findOne(query);
 	return result;
 };
 
@@ -381,7 +392,7 @@ const postComment = async (comment, postId, user, recipient) => {
 	};
 
 	const result = await comments.insertOne(commentDoc);
-	if (result.acknowledged) {
+	if (result.acknowledged && result.insertedId) {
 		notifications.insertOne({
 			sender: user,
 			recipient,
@@ -396,18 +407,39 @@ const postComment = async (comment, postId, user, recipient) => {
 	return null;
 };
 
+const storeMessage = async (messageObj, participants) => {
+	if (messageObj.to) {
+		const query = { _id: new ObjectId(messageObj.to) };
+		const update = { $push: { messages: messageObj } };
+		const result = await conversations.findOneAndUpdate(query, update);
+		if (result.lastErrorObject.n) {
+			return result.value;
+		}
+		return null;
+	}
+	const result = await conversations.insertOne({
+		inception: messageObj.timeStamp,
+		participants,
+		messages: [messageObj],
+	});
+	if (result.acknowledged && result.insertedId) {
+		return result.insertedId;
+	}
+	return null;
+};
+
 module.exports = {
 	addFollower,
 	createAccount,
 	createPost,
-	createConversation,
 	deleteComment,
 	deletePost,
 	dislikePost,
 	editProfilePhoto,
 	getAllUsers,
 	getAllPosts,
-	getConversations,
+	getAllConversations,
+	getConversation,
 	getUserNotifications,
 	getUserNotificationCount,
 	getFollowing,
@@ -419,4 +451,5 @@ module.exports = {
 	logIn,
 	postComment,
 	runDb,
+	storeMessage,
 };

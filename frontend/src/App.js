@@ -4,7 +4,6 @@ import AuthorizedRoutes from './routes/authorized';
 import UnauthorizedRoutes from './routes/unauthorized';
 import { LoggedInContext, SocketContext } from './index';
 import './App.css';
-import { io } from 'socket.io-client';
 
 export default function App() {
 	const navigate = useNavigate();
@@ -17,14 +16,6 @@ export default function App() {
 	const signal = controller.signal;
 
 	useEffect(() => {
-		if (socket) {
-			socket.on('connect', () => {
-				console.log('connected');
-			});
-		}
-	}, [socket]);
-	useEffect(() => {
-		setSocket(io());
 		(async () => {
 			const result = await fetch('/api', { signal });
 			if (result.status === 200) {
@@ -43,7 +34,7 @@ export default function App() {
 	if (loggedIn) {
 		return (
 			<LoggedInContext.Provider value={[loggedIn, setLoggedIn]}>
-				<SocketContext.Provider value={socket}>
+				<SocketContext.Provider value={[socket, setSocket]}>
 					<AuthorizedRoutes />
 				</SocketContext.Provider>
 			</LoggedInContext.Provider>

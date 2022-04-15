@@ -1,9 +1,11 @@
-import { useEffect, useState, createContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
+import { SocketContext } from '../index';
 import * as Page from '../pages/authenticated';
 import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
 import './authorized.css';
+import sio from '../sio';
 
 function Base(props) {
 	const {
@@ -36,15 +38,23 @@ function Base(props) {
 		</div>
 	);
 }
-export const SocketContext = createContext();
 
 export default function AuthorizedRoutes() {
+	const [socket, setSocket] = useContext(SocketContext);
+
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
 	const [notificationCount, setNotificationCount] = useState(0);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
+
+	useEffect(() => {
+		if (userData.username) {
+			setSocket(sio(userData));
+		}
+	}, [userData.username]);
+
 	useEffect(() => {
 		fetch('/api/notifications/count', { signal })
 			.then((res) => {
@@ -74,7 +84,6 @@ export default function AuthorizedRoutes() {
 				posts.forEach((post) => {
 					post.comments.reverse();
 				});
-				console.log(posts);
 				setHomeFeed(posts);
 				return;
 			});

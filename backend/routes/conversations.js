@@ -5,26 +5,34 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 
 router.use(isAuthorized);
-router.put('/', (req, res) => {
+
+router.get('/conversation', (req, res) => {
 	database
-		.createConversation(req.body.selectedUsers, req.session.user)
+		.getConversation(req.query.id)
+		.then((conversation) => res.json({ conversation }))
+		.catch((err) => res.sendStatus(500));
+});
+
+router.post('/conversation', (req, res) => {
+	console.log(req.body);
+	database
+		.storeMessage(req.body.messageObj, req.body.participants)
 		.then((result) => {
-			if (result.acknowledged) res.sendStatus(200);
+			if (result) {
+				return res.sendStatus(200);
+			}
+			res.sendStatus(204);
 		})
-		.catch((err) => {
-			res.sendStatus(500);
-		});
+		.catch((err) => res.sendStatus(500));
 });
 
 router.get('/', (req, res) => {
 	database
-		.getConversations(req.session.user)
+		.getAllConversations(req.session.user)
 		.then((result) => {
-			console.log(result);
 			res.json({ data: result });
 		})
 		.catch((err) => {
-			console.log(err);
 			res.sendStatus(500);
 		});
 });
