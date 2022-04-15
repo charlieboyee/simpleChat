@@ -23,7 +23,6 @@ module.exports = (io, database) => {
 		socket.broadcast.emit('userConnected', `${socket.username}, ${socket.id}`);
 
 		socket.on('joinRoom', (room) => {
-			console.log(`Joined room: ${room}`);
 			socket.join(room);
 		});
 

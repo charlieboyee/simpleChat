@@ -392,7 +392,7 @@ const postComment = async (comment, postId, user, recipient) => {
 	};
 
 	const result = await comments.insertOne(commentDoc);
-	if (result.acknowledged) {
+	if (result.acknowledged && result.insertedId) {
 		notifications.insertOne({
 			sender: user,
 			recipient,
@@ -407,33 +407,24 @@ const postComment = async (comment, postId, user, recipient) => {
 	return null;
 };
 
-const storeMessage = async (messageInfo, owner) => {
-	const query = { _id: messageInfo._id };
-	const update = { $push: { messages: messageInfo.message } };
-	const options = { returnDocument: 'after' };
-
-	const updateResult = await conversations.findOneAndUpdate(query, update);
-
-	if (updateResult.lastErrorObject.n) {
-		return updateResult;
+const storeMessage = async (messageObj, participants) => {
+	if (messageObj.to) {
+		const query = { _id: new ObjectId(messageObj.to) };
+		const update = { $push: { messages: messageObj } };
+		const result = await conversations.findOneAndUpdate(query, update);
+		if (result.lastErrorObject.n) {
+			return result.value;
+		}
+		return null;
 	}
-
 	const result = await conversations.insertOne({
-		participants: [owner, ...messageInfo.participants],
-		inception: messageInfo.timeStamp,
-		messages: [
-			{
-				message: messageInfo.message,
-				sender: messageInfo.sender,
-				timeStamp: messageInfo.timeStamp,
-			},
-		],
+		inception: messageObj.timeStamp,
+		participants,
+		messages: [messageObj],
 	});
-
 	if (result.acknowledged && result.insertedId) {
-		return await conversations.findOne({ _id: result.insertedId });
+		return result.insertedId;
 	}
-
 	return null;
 };
 

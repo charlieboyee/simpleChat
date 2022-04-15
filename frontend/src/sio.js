@@ -13,7 +13,6 @@ const sio = (userData) => {
 	});
 
 	socket.on('connect_error', (err) => {
-		console.log(err);
 		socket.auth = { username: userData.username };
 		socket.connect();
 	});

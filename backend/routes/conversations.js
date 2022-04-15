@@ -13,18 +13,17 @@ router.get('/conversation', (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.post('/', (req, res) => {
+router.post('/conversation', (req, res) => {
+	console.log(req.body);
 	database
-		.storeMessage(req.body, req.session.user)
+		.storeMessage(req.body.messageObj, req.body.participants)
 		.then((result) => {
 			if (result) {
-				return res.json({ data: result.toString() });
+				return res.sendStatus(200);
 			}
-			return res.sendStatus(204);
+			res.sendStatus(204);
 		})
-		.catch((err) => {
-			res.sendStatus(500);
-		});
+		.catch((err) => res.sendStatus(500));
 });
 
 router.get('/', (req, res) => {

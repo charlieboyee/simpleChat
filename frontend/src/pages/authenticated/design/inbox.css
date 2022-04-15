@@ -61,3 +61,11 @@
 .inboxCard.yesMessage section[id='right'] .tabPanel main {
 	height: 100%;
 }
+.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage {
+	text-align: right;
+	background-color: #48cae4;
+}
+.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage {
+	text-align: left;
+	background-color: #8e9aaf;
+}

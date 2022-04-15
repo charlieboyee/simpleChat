@@ -43,8 +43,11 @@ function TabPanel({ children, index, value, convo }) {
 	useEffect(() => {
 		if (value === index && socket) {
 			socket.on('receiveSentMessage', (data) => {
-				setAllMessages([data, ...allMessages]);
+				setAllMessages((prevState) => {
+					return [data, ...prevState];
+				});
 			});
+
 			const fetchConvo = async () => {
 				const result = await fetch(
 					`/api/conversations/conversation?id=${convo._id}`
@@ -61,16 +64,29 @@ function TabPanel({ children, index, value, convo }) {
 		}
 	}, [value, socket]);
 
-	const sendMessage = (e) => {
+	const sendMessage = async (e) => {
 		e.preventDefault();
 
-		const payload = {
+		const messageObj = {
 			message,
 			timeStamp: new Date(),
 			sender: loggedInUser.username,
 			to: convo._id,
 		};
-		socket.emit('sendMessage', payload);
+		const result = await fetch(`/api/conversations/conversation`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				messageObj,
+				participants: convo.participants.map((user) => user.username),
+			}),
+		});
+
+		if (result.status === 200) {
+			socket.emit('sendMessage', messageObj);
+			setAllMessages([messageObj, ...allMessages]);
+			setMessage('');
+		}
 	};
 
 	return (
@@ -78,7 +94,18 @@ function TabPanel({ children, index, value, convo }) {
 			{children}
 			<main>
 				{allMessages.map((messageObj, messageIndex) => {
-					return <div key={messageIndex}>{messageObj.message}</div>;
+					return (
+						<Paper
+							id={
+								messageObj.sender === loggedInUser.username
+									? 'outgoingMessage'
+									: 'incomingMessage'
+							}
+							key={messageIndex}
+						>
+							{messageObj.message}
+						</Paper>
+					);
 				})}
 			</main>
 
@@ -95,7 +122,8 @@ function TabPanel({ children, index, value, convo }) {
 }
 
 export default function Inbox() {
-	const [socket] = useContext(SocketContext);
+	const { userData } = useOutletContext();
+	const [loggedInUser] = userData;
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	let modalOpen = Boolean(anchorEl);
@@ -121,7 +149,15 @@ export default function Inbox() {
 		setTabValue(newValue);
 	};
 	const createConversationTab = () => {
-		const convo = { participants: value };
+		const convo = {
+			participants: [
+				{
+					username: loggedInUser.username,
+					profilePhoto: loggedInUser.profilePhoto,
+				},
+				...value,
+			],
+		};
 		setConversationList([...conversationList, convo]);
 		closeModal();
 	};
@@ -151,6 +187,7 @@ export default function Inbox() {
 				});
 		}
 	}, [open]);
+
 	if (!conversationList.length) {
 		return (
 			<>
