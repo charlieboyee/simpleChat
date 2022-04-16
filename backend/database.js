@@ -410,6 +410,7 @@ const postComment = async (comment, postId, user, recipient) => {
 const storeMessage = async (messageObj, participants) => {
 	if (messageObj.to) {
 		const query = { _id: new ObjectId(messageObj.to) };
+		delete messageObj.to;
 		const update = { $push: { messages: messageObj } };
 		const result = await conversations.findOneAndUpdate(query, update);
 		if (result.lastErrorObject.n) {

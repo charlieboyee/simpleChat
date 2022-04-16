@@ -14,7 +14,6 @@ router.get('/conversation', (req, res) => {
 });
 
 router.post('/conversation', (req, res) => {
-	console.log(req.body);
 	database
 		.storeMessage(req.body.messageObj, req.body.participants)
 		.then((result) => {

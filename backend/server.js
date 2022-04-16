@@ -19,8 +19,8 @@ redisClient.connect();
 redisClient.on('connect', () => {
 	console.log('Redis connected');
 });
-redisClient.on('error', () => {
-	console.log('Redis connected');
+redisClient.on('error', (err) => {
+	console.log(err);
 });
 
 require('./socketIo')(io, database);
