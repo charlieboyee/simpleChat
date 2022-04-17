@@ -8,6 +8,7 @@ import {
 	Button,
 	Card,
 	CardHeader,
+	Chip,
 	IconButton,
 	List,
 	ListItem,
@@ -16,6 +17,7 @@ import {
 	ListItemText,
 	Modal,
 	Paper,
+	Stack,
 	Tab,
 	Tabs,
 	TextField,
@@ -32,7 +34,11 @@ import './design/inbox.css';
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
-function TabPanel({ children, index, value, convo }) {
+function ChipLabel({ children }) {
+	return <div id='chipLabel'>{children}</div>;
+}
+
+function TabPanel({ children, index, value, convo, conversationList }) {
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 	const [socket] = useContext(SocketContext);
@@ -67,12 +73,13 @@ function TabPanel({ children, index, value, convo }) {
 	const sendMessage = async (e) => {
 		e.preventDefault();
 
-		const messageObj = {
+		let messageObj = {
 			message,
 			timeStamp: new Date(),
 			sender: loggedInUser.username,
 			to: convo._id,
 		};
+
 		const result = await fetch(`/api/conversations/conversation`, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
@@ -84,7 +91,7 @@ function TabPanel({ children, index, value, convo }) {
 
 		if (result.status === 200) {
 			socket.emit('sendMessage', messageObj);
-			setAllMessages([messageObj, ...allMessages]);
+			setAllMessages([...allMessages, messageObj]);
 			setMessage('');
 		}
 	};
@@ -103,7 +110,8 @@ function TabPanel({ children, index, value, convo }) {
 							}
 							key={messageIndex}
 						>
-							{messageObj.message}
+							<div>{messageObj.sender}</div>
+							<div>{messageObj.message}</div>
 						</Paper>
 					);
 				})}
@@ -148,6 +156,25 @@ export default function Inbox() {
 	const handleTabChange = (e, newValue) => {
 		setTabValue(newValue);
 	};
+
+	const checkArrayEquality = (arr1, arr2) => {
+		const uniqueValues = new Set([]);
+		for (let i = 0; i < arr1.length; i++) {
+			uniqueValues.add(arr2[i].username);
+			uniqueValues.add(arr1[i].username);
+		}
+
+		if (uniqueValues.size !== arr2.length) {
+			return false;
+		}
+		for (let i = 0; i < arr2.length; i++) {
+			if (!uniqueValues.has(arr2[i].username)) {
+				return false;
+			}
+		}
+		return true;
+	};
+
 	const createConversationTab = () => {
 		const convo = {
 			participants: [
@@ -158,6 +185,22 @@ export default function Inbox() {
 				...value,
 			],
 		};
+		//need to check if conversations with the same users already exists here.
+		for (let i = 0; i < conversationList.length; i++) {
+			const isEqual = checkArrayEquality(
+				conversationList[i].participants,
+				convo.participants
+			);
+			if (!isEqual) {
+				continue;
+			}
+			if (isEqual) {
+				setTabValue(i);
+				closeModal();
+				return;
+			}
+		}
+
 		setConversationList([...conversationList, convo]);
 		closeModal();
 	};
@@ -400,6 +443,7 @@ export default function Inbox() {
 								value={tabValue}
 								index={selectedConvoIndex}
 								convo={selectedConvo}
+								conversationList={conversationList}
 							>
 								<CardHeader
 									title={selectedConvo.participants

@@ -3,9 +3,9 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-evenly;
-	width: 40vw;
+	width: 70vw;
 	min-width: 300px;
-	height: 50vh;
+	height: 80vh;
 	margin: auto;
 }
 
@@ -32,20 +32,24 @@
 #inboxModal .MuiCard-root {
 	min-width: 300px;
 	width: 30vw;
-
 	margin: auto;
 }
 
 .inboxCard.yesMessage {
 	display: flex;
-	width: 40vw;
+	width: 70vw;
 	min-width: 300px;
-	height: 50vh;
+	height: 80vh;
 	margin: auto;
 }
 
+.inboxCard.yesMessage section[id='left'] {
+	flex:2
+}
+
+
 .inboxCard.yesMessage section[id='right'] {
-	width: 100%;
+	flex: 4
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel.hidden {
@@ -58,14 +62,26 @@
 	justify-content: space-between;
 	height: 100%;
 }
-.inboxCard.yesMessage section[id='right'] .tabPanel main {
-	height: 100%;
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main{
+overflow: auto;
+height: 100%;
 }
-.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage {
-	text-align: right;
-	background-color: #48cae4;
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{
+	border-radius: 1rem;
+	padding:1rem;
+	max-width: 50%;
+	
 }
-.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage {
-	text-align: left;
-	background-color: #8e9aaf;
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage{
+	background-color:#52b788;
+	float: right;
+	clear: both;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage{
+	background-color:#9d9d9d;	
+	clear: both;
 }
