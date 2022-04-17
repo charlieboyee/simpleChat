@@ -71,13 +71,17 @@ height: 100%;
 .inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{
 	border-radius: 1rem;
 	padding:1rem;
-
+	max-width: 50%;
+	
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage{
-	background-color:#52b788;	
+	background-color:#52b788;
+	float: right;
+	clear: both;
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage{
 	background-color:#9d9d9d;	
+	clear: both;
 }
