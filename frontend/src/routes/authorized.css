@@ -6,7 +6,7 @@
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background-color: #3d348b;
+	background-color: #171F4A;
 	overflow: auto;
 }
 #mainNav {
@@ -15,7 +15,7 @@
 	justify-content: space-between;
 	position: sticky;
 	top: 0;
-	background-color: #3d348b;
+	background-color: #171F4A;
 	z-index: 99;
 	margin-bottom: 1rem;
 }

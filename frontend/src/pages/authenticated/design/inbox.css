@@ -62,14 +62,22 @@
 	justify-content: space-between;
 	height: 100%;
 }
-.inboxCard.yesMessage section[id='right'] .tabPanel main {
-	height: 100%;
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main{
+overflow: auto;
+height: 100%;
 }
-.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage {
-	text-align: right;
-	background-color: #48cae4;
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{
+	border-radius: 1rem;
+	padding:1rem;
+
 }
-.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage {
-	text-align: left;
-	background-color: #8e9aaf;
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage{
+	background-color:#52b788;	
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage{
+	background-color:#9d9d9d;	
 }

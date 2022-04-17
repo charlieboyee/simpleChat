@@ -8,6 +8,7 @@ import {
 	Button,
 	Card,
 	CardHeader,
+	Chip,
 	IconButton,
 	List,
 	ListItem,
@@ -16,6 +17,7 @@ import {
 	ListItemText,
 	Modal,
 	Paper,
+	Stack,
 	Tab,
 	Tabs,
 	TextField,
@@ -31,6 +33,10 @@ import './design/inbox.css';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
+
+function ChipLabel({ children }) {
+	return <div id='chipLabel'>{children}</div>;
+}
 
 function TabPanel({ children, index, value, convo, conversationList }) {
 	const { userData } = useOutletContext();
@@ -85,7 +91,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 
 		if (result.status === 200) {
 			socket.emit('sendMessage', messageObj);
-			setAllMessages([messageObj, ...allMessages]);
+			setAllMessages([...allMessages, messageObj]);
 			setMessage('');
 		}
 	};
@@ -104,7 +110,8 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 							}
 							key={messageIndex}
 						>
-							{messageObj.message}
+							<div>{messageObj.sender}</div>
+							<div>{messageObj.message}</div>
 						</Paper>
 					);
 				})}
