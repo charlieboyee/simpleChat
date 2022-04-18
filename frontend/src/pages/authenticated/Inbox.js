@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { SocketContext } from '../../index';
 import {
@@ -43,6 +43,8 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 	const [loggedInUser] = userData;
 	const [socket] = useContext(SocketContext);
 
+	const bottomRef = useRef();
+
 	const [message, setMessage] = useState('');
 	const [allMessages, setAllMessages] = useState([]);
 
@@ -50,7 +52,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		if (value === index && socket) {
 			socket.on('receiveSentMessage', (data) => {
 				setAllMessages((prevState) => {
-					return [data, ...prevState];
+					return [...prevState, data];
 				});
 			});
 
@@ -70,6 +72,11 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		}
 	}, [value, socket]);
 
+	useEffect(() => {
+		bottomRef.current?.scrollIntoView({
+			behavior: 'smooth',
+		});
+	}, [allMessages]);
 	const sendMessage = async (e) => {
 		e.preventDefault();
 
@@ -109,9 +116,11 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 									: 'incomingMessage'
 							}
 							key={messageIndex}
+							ref={messageIndex + 1 === allMessages.length ? bottomRef : null}
 						>
 							<div>{messageObj.sender}</div>
 							<div>{messageObj.message}</div>
+							<div>{new Date(messageObj.timeStamp).toLocaleString()}</div>
 						</Paper>
 					);
 				})}
