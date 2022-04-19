@@ -193,7 +193,6 @@ export default function NavBar({
 					id='notificationButton'
 					onClick={handleMenuClick}
 				>
-					{/* Increase this badge count whenever a comment or like */}
 					<Badge badgeContent={notificationCount} color='primary'>
 						<NotificationsRoundedIcon className='mainNavButtons' />
 					</Badge>
