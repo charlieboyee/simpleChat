@@ -6,6 +6,17 @@ const router = express.Router();
 
 router.use(isAuthorized);
 
+router.put('/removeFollower/:user', (req, res) => {
+	database
+		.removeFollower(req.session.user, req.params.user)
+		.then((result) => {
+			if (result) {
+				return res.json({ data: result });
+			}
+			return res.sendStatus(204);
+		})
+		.catch((err) => res.sendStatus(500));
+});
 router.get('/following', (req, res) => {
 	database
 		.getFollowing(req.session.user)

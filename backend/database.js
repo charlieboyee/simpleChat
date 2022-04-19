@@ -407,6 +407,23 @@ const postComment = async (comment, postId, user, recipient) => {
 	return null;
 };
 
+const removeFollower = async (user, userToRemove) => {
+	const query = { username: user };
+	const update = { $pull: { followers: userToRemove } };
+	const options = { returnDocument: 'after' };
+	const prom = users.findOneAndUpdate(query, update, options);
+
+	const query2 = { username: userToRemove };
+	const update2 = { $pull: { following: user } };
+	const prom2 = users.findOneAndUpdate(query2, update2, options);
+
+	const result = await Promise.all([prom, prom2]);
+	if (result[0].lastErrorObject.n && result[1].lastErrorObject.n) {
+		return result[0].value;
+	}
+	return null;
+};
+
 const storeMessage = async (messageObj, participants) => {
 	if (messageObj.to) {
 		const query = { _id: new ObjectId(messageObj.to) };
@@ -472,6 +489,7 @@ module.exports = {
 	likePost,
 	logIn,
 	postComment,
+	removeFollower,
 	runDb,
 	storeMessage,
 	unFollow,

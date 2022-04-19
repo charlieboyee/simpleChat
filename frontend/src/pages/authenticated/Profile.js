@@ -29,14 +29,12 @@ function TabPanel(props) {
 	);
 }
 
-function FollowingModal(props) {
-	const {
-		followingModalOpen,
-		setFollowingModalOpen,
-		loggedInUser,
-		setLoggedInUser,
-	} = props;
-
+function FollowingModal({
+	followingModalOpen,
+	setFollowingModalOpen,
+	loggedInUser,
+	setLoggedInUser,
+}) {
 	const [following, setFollowing] = useState([]);
 
 	useEffect(() => {
@@ -100,16 +98,14 @@ function FollowingModal(props) {
 		</Modal>
 	);
 }
-function FollowersModal(props) {
-	const { followersModalOpen, setFollowersModalOpen } = props;
 
+function FollowersModal({
+	followersModalOpen,
+	setFollowersModalOpen,
+	loggedInUser,
+	setLoggedInUser,
+}) {
 	const [followers, setFollowers] = useState([]);
-
-	const handleClose = () => {
-		setFollowersModalOpen(false);
-	};
-
-	const removeFollower = async () => {};
 
 	useEffect(() => {
 		fetch('/api/user/followers')
@@ -122,6 +118,22 @@ function FollowersModal(props) {
 				setFollowers(data[0].followers);
 			});
 	}, []);
+
+	const handleClose = () => {
+		setFollowersModalOpen(false);
+	};
+
+	const removeFollower = async (userToRemove) => {
+		const result = await fetch(`/api/user/removeFollower/${userToRemove}`, {
+			method: 'PUT',
+		});
+
+		if (result.status === 200) {
+			const data = await result.json();
+			setFollowers(data.followers);
+			setLoggedInUser({ ...loggedInUser, followers: data.followers });
+		}
+	};
 	return (
 		<Modal className='ffModal' onClose={handleClose} open={followersModalOpen}>
 			<Card>
@@ -140,7 +152,10 @@ function FollowersModal(props) {
 								</ListItemAvatar>
 								<ListItemText primary={follower.username} />
 
-								<Button onClick={removeFollower} variant='outlined'>
+								<Button
+									onClick={() => removeFollower(follower.username)}
+									variant='outlined'
+								>
 									Remove
 								</Button>
 							</ListItem>
