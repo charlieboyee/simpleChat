@@ -15,8 +15,8 @@
 
 #otherProfile #upperSection .MuiCard-root .MuiCardMedia-root {
 	flex: 1;
-	min-width: 150px;
-	min-height: 150px;
+	max-width: 150px;
+	max-height: 150px;
 	padding: 1em;
 }
 #otherProfile #upperSection .MuiCard-root .MuiCardContent-root {
