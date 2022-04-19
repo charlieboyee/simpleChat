@@ -39,12 +39,16 @@
 	display: flex;
 	width: 70vw;
 	min-width: 300px;
-	height: 80vh;
 	margin: auto;
+	height: 70%;
 }
 
 .inboxCard.yesMessage section[id='left'] {
 	flex:2
+}
+.inboxCard.yesMessage section .MuiCardHeader-root{
+	border-bottom: black 1px solid;
+	text-align: center;
 }
 
 
@@ -61,18 +65,22 @@
 	flex-direction: column;
 	justify-content: space-between;
 	height: 100%;
+	
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main{
-overflow: auto;
-height: 100%;
+	overflow: auto;
+	height: 100%;
+	padding: 1rem;
+	overflow: auto;
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{
 	border-radius: 1rem;
 	padding:1rem;
 	max-width: 50%;
-	
+	margin-top: .5rem;
+
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage{
@@ -83,5 +91,30 @@ height: 100%;
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage{
 	background-color:#9d9d9d;	
+	float: left;
 	clear: both;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage > div:first-child,
+.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage > div:first-child{
+	font-size: .8em;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage > div:nth-child(2),
+.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage > div:nth-child(2){
+	margin: .1em
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage > div:last-child,
+.inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage > div:last-child{
+	font-size: .7em;
+}
+
+#scrollableTarget{
+	overflow: auto;
+	height: 12rem;
+}
+
+.messageImage{
+	width: 100%;
 }

@@ -1,6 +1,9 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { SocketContext } from '../../index';
+import emojis from 'emojis-list';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 import {
 	Autocomplete,
 	Avatar,
@@ -8,49 +11,57 @@ import {
 	Button,
 	Card,
 	CardHeader,
-	Chip,
 	IconButton,
-	List,
 	ListItem,
 	ListItemAvatar,
-	ListItemButton,
 	ListItemText,
+	Menu,
+	MenuItem,
 	Modal,
 	Paper,
-	Stack,
 	Tab,
 	Tabs,
 	TextField,
 } from '@mui/material';
 
-import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import Checkbox from '@mui/material/Checkbox';
-import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import Checkbox from '@mui/material/Checkbox';
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
+import SentimentSatisfiedOutlinedIcon from '@mui/icons-material/SentimentSatisfiedOutlined';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
+
 import './design/inbox.css';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
-
-function ChipLabel({ children }) {
-	return <div id='chipLabel'>{children}</div>;
-}
 
 function TabPanel({ children, index, value, convo, conversationList }) {
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 	const [socket] = useContext(SocketContext);
 
+	const bottomRef = useRef();
+	const formRef = useRef();
+
 	const [message, setMessage] = useState('');
 	const [allMessages, setAllMessages] = useState([]);
+
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
+
+	const [emojiList, setEmojiList] = useState([]);
+	const [hasMore, setHasMore] = useState(true);
+
+	const [image, setImage] = useState();
 
 	useEffect(() => {
 		if (value === index && socket) {
 			socket.on('receiveSentMessage', (data) => {
 				setAllMessages((prevState) => {
-					return [data, ...prevState];
+					return [...prevState, data];
 				});
 			});
 
@@ -70,14 +81,87 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		}
 	}, [value, socket]);
 
-	const sendMessage = async (e) => {
+	useEffect(() => {
+		bottomRef.current?.scrollIntoView({
+			behavior: 'smooth',
+		});
+	}, [allMessages]);
+
+	useEffect(() => {
+		if (image) {
+			formRef.current.requestSubmit();
+			setImage();
+		}
+	}, [image]);
+
+	const openMenu = (event) => {
+		setEmojiList(Array.from({ length: 300 }));
+		setAnchorEl(event.currentTarget);
+	};
+	const closeMenu = () => {
+		setAnchorEl(null);
+	};
+
+	const fetchNext = () => {
+		if (emojiList.length >= emojis.length) {
+			setHasMore(false);
+			return;
+		}
+
+		setEmojiList((prevState) => {
+			const newArr = prevState.concat(Array.from({ length: 500 }));
+			if (newArr.length > emojis.length) {
+				return emojis;
+			}
+			return newArr;
+		});
+	};
+
+	const sendPhoto = async (e) => {
 		e.preventDefault();
 
-		let messageObj = {
+		const messageObj = {
 			message,
 			timeStamp: new Date(),
 			sender: loggedInUser.username,
 			to: convo._id,
+			media: true,
+		};
+		const formData = new FormData();
+
+		formData.append('file', image);
+		formData.append('messageObj', JSON.stringify(messageObj));
+		formData.append(
+			'participants',
+
+			convo.participants.map((user) => user.username)
+		);
+
+		const result = await fetch(`/api/conversations/conversation`, {
+			method: 'POST',
+			body: formData,
+		});
+
+		if (result.status === 200) {
+			const { data } = await result.json();
+			messageObj.message = data.message;
+			socket.emit('sendMessage', messageObj);
+			setAllMessages((prevState) => {
+				return [...prevState, messageObj];
+			});
+			setImage();
+		}
+	};
+
+	const sendMessage = async (e) => {
+		e.preventDefault();
+
+		const messageObj = {
+			message,
+			timeStamp: new Date(),
+			sender: loggedInUser.username,
+			to: convo._id,
+			media: false,
 		};
 
 		const result = await fetch(`/api/conversations/conversation`, {
@@ -109,22 +193,92 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 									: 'incomingMessage'
 							}
 							key={messageIndex}
+							ref={messageIndex + 1 === allMessages.length ? bottomRef : null}
 						>
 							<div>{messageObj.sender}</div>
-							<div>{messageObj.message}</div>
+							{!messageObj.media ? (
+								<div>{messageObj.message}</div>
+							) : (
+								<img
+									className='messageImage'
+									alt='img'
+									src={`${process.env.REACT_APP_S3_URL}${messageObj.message}`}
+								/>
+							)}
+							<div>{new Date(messageObj.timeStamp).toLocaleString()}</div>
 						</Paper>
 					);
 				})}
 			</main>
 
-			<form onSubmit={sendMessage}>
+			<form ref={formRef} onSubmit={image ? sendPhoto : sendMessage}>
 				<TextField
 					fullWidth
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
-					InputProps={{ endAdornment: <Button>Send</Button> }}
+					InputProps={{
+						endAdornment: message ? (
+							<Button>Send</Button>
+						) : (
+							<IconButton component='label'>
+								<input
+									type='file'
+									accept='img/*'
+									hidden
+									onChange={(e) => setImage(e.target.files[0])}
+								/>
+								<ImageOutlinedIcon />
+							</IconButton>
+						),
+						startAdornment: (
+							<IconButton onClick={openMenu}>
+								<SentimentSatisfiedOutlinedIcon />
+							</IconButton>
+						),
+					}}
 				/>
 			</form>
+			<Menu
+				sx={{ width: 900 }}
+				anchorEl={anchorEl}
+				open={open}
+				onClose={closeMenu}
+				anchorOrigin={{
+					vertical: 'top',
+					horizontal: 'right',
+				}}
+				transformOrigin={{
+					vertical: 'bottom',
+					horizontal: 'left',
+				}}
+			>
+				<div id='scrollableTarget'>
+					<InfiniteScroll
+						dataLength={emojiList.length}
+						hasMore={hasMore}
+						next={fetchNext}
+						loader={<h4>Loading...</h4>}
+						endMessage={<p style={{ textAlign: 'center' }}>No more emojis.</p>}
+						scrollableTarget='scrollableTarget'
+					>
+						{emojiList.map((emoji, emojiIndex) => {
+							return (
+								<IconButton
+									disableRipple
+									onClick={(e) => {
+										const newMessage = message.concat(e.target.innerText);
+										setMessage(newMessage);
+										closeMenu();
+									}}
+									key={emojiIndex}
+								>
+									{emojis[emojiIndex]}
+								</IconButton>
+							);
+						})}
+					</InfiniteScroll>
+				</div>
+			</Menu>
 		</div>
 	);
 }
