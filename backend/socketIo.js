@@ -27,6 +27,7 @@ module.exports = (io, database) => {
 		});
 
 		socket.on('sendMessage', (messageObj) => {
+			console.log(messageObj);
 			socket.to(messageObj.to).emit('receiveSentMessage', messageObj);
 		});
 

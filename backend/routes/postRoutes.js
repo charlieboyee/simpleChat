@@ -3,7 +3,9 @@ const database = require('../database');
 const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
+
 router.use(isAuthorized);
+
 router.put('/dislike', (req, res) => {
 	database
 		.dislikePost(req.query.id, req.session.user)
@@ -73,7 +75,6 @@ router.delete('/', (req, res) => {
 });
 
 router.post('/', upload.single('file'), (req, res) => {
-	console.log(req.body.caption);
 	s3.uploadPhoto(req.session.user, req.file, req.file.originalname)
 		.then((filePath) => {
 			database
