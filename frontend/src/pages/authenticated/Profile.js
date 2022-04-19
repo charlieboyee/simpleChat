@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import {
 	Avatar,
 	Button,
@@ -15,7 +15,6 @@ import {
 	CardActions,
 	Tab,
 	Tabs,
-	ListItemButton,
 	ListItemText,
 	ListItemAvatar,
 } from '@mui/material';
@@ -31,15 +30,14 @@ function TabPanel(props) {
 }
 
 function FollowingModal(props) {
-	const { followingModalOpen, setFollowingModalOpen } = props;
+	const {
+		followingModalOpen,
+		setFollowingModalOpen,
+		loggedInUser,
+		setLoggedInUser,
+	} = props;
 
 	const [following, setFollowing] = useState([]);
-
-	const handleClose = () => {
-		setFollowingModalOpen(false);
-	};
-
-	const stopFollowing = async () => {};
 
 	useEffect(() => {
 		fetch('/api/user/following')
@@ -52,6 +50,24 @@ function FollowingModal(props) {
 				setFollowing(data[0].following);
 			});
 	}, []);
+
+	const handleClose = () => {
+		setFollowingModalOpen(false);
+	};
+
+	const unFollow = async (userToUnfollow) => {
+		const result = await fetch(`/api/otherUser/${userToUnfollow}/unfollow`, {
+			method: 'PUT',
+		});
+
+		if (result.status === 200) {
+			const data = await result.json();
+			setFollowing(data.following);
+			setLoggedInUser({ ...loggedInUser, following: data.following });
+			handleClose();
+			return;
+		}
+	};
 	return (
 		<Modal className='ffModal' onClose={handleClose} open={followingModalOpen}>
 			<Card>
@@ -70,7 +86,10 @@ function FollowingModal(props) {
 								</ListItemAvatar>
 								<ListItemText primary={user.username} />
 
-								<Button onClick={stopFollowing} variant='outlined'>
+								<Button
+									onClick={() => unFollow(user.username)}
+									variant='outlined'
+								>
 									Unfollow
 								</Button>
 							</ListItem>
@@ -261,10 +280,14 @@ export default function Profile() {
 			<FollowersModal
 				followersModalOpen={followersModalOpen}
 				setFollowersModalOpen={setFollowersModalOpen}
+				loggedInUser={ownerData}
+				setLoggedInUser={setOwnerData}
 			/>
 			<FollowingModal
 				followingModalOpen={followingModalOpen}
 				setFollowingModalOpen={setFollowingModalOpen}
+				loggedInUser={ownerData}
+				setLoggedInUser={setOwnerData}
 			/>
 			<ChangePhotoModal
 				ownerData={ownerData}
@@ -313,14 +336,24 @@ export default function Profile() {
 									disableRipple
 									variant='string'
 								>
-									{ownerData.followers?.length} Followers
+									{`${
+										ownerData.followers?.length
+											? ownerData.followers?.length
+											: 0
+									} 
+									Followers`}
 								</Button>
 								<Button
 									onClick={() => setFollowingModalOpen(true)}
 									disableRipple
 									variant='string'
 								>
-									{ownerData.following?.length} Following
+									{`${
+										ownerData.following?.length
+											? ownerData.following?.length
+											: 0
+									}
+									Following`}
 								</Button>
 							</div>
 						</div>

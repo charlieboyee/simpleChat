@@ -3,7 +3,21 @@ const database = require('../database');
 const { isAuthorized, upload } = require('../middlewares');
 const s3 = require('../aws/aws-s3');
 const router = express.Router();
+
 router.use(isAuthorized);
+
+router.put('/:user/unfollow', (req, res) => {
+	database
+		.unFollow(req.session.user, req.params.user)
+		.then((result) => {
+			if (result) {
+				return res.json({ data: result });
+			}
+			return res.sendStatus(204);
+		})
+		.catch((err) => res.sendStatus(500));
+});
+
 router.post('/:user/follow', (req, res) => {
 	database
 		.addFollower(req.params.user, req.body.follower)
