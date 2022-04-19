@@ -95,12 +95,16 @@ export default function OtherProfile() {
 					<Card>
 						<CardMedia>
 							{otherUserData[0].profilePhoto ? (
-								<Avatar
-									id='profilePhoto'
-									src={`${process.env.REACT_APP_S3_URL}${otherUserData[0].profilePhoto}`}
-								/>
+								<div>
+									<Avatar
+										id='profilePhoto'
+										src={`${process.env.REACT_APP_S3_URL}${otherUserData[0].profilePhoto}`}
+									/>
+								</div>
 							) : (
-								<Avatar id='profilePhoto' />
+								<div>
+									<Avatar id='profilePhoto' />
+								</div>
 							)}
 						</CardMedia>
 						<CardContent>

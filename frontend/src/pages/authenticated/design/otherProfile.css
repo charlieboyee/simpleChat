@@ -15,18 +15,23 @@
 
 #otherProfile #upperSection .MuiCard-root .MuiCardMedia-root {
 	flex: 1;
-	max-width: 150px;
-	max-height: 150px;
-	padding: 1em;
+	padding: .3em;
+	align-self: center;
+	
 }
-#otherProfile #upperSection .MuiCard-root .MuiCardContent-root {
-	flex: 3;
+
+#otherProfile #upperSection .MuiCard-root .MuiCardMedia-root div:first-child{
+	width: 150px;
+	height: 150px
 }
 
 #otherProfile #upperSection .MuiCard-root .MuiCardMedia-root .MuiAvatar-root {
 	width: 100%;
-	height: auto;
-	object-fit: contain;
+	height: 100%;
+}
+
+#otherProfile #upperSection .MuiCard-root .MuiCardContent-root {
+	flex: 3;
 }
 
 #otherProfile #lowerSection {
