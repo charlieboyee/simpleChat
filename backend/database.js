@@ -410,10 +410,14 @@ const postComment = async (comment, postId, user, recipient) => {
 const storeMessage = async (messageObj, participants) => {
 	if (messageObj.to) {
 		const query = { _id: new ObjectId(messageObj.to) };
+		delete messageObj.to;
+
+		const options = { returnDocument: 'after' };
 		const update = { $push: { messages: messageObj } };
-		const result = await conversations.findOneAndUpdate(query, update);
+
+		const result = await conversations.findOneAndUpdate(query, update, options);
 		if (result.lastErrorObject.n) {
-			return result.value;
+			return result.value.messages[result.value.messages.length - 1];
 		}
 		return null;
 	}
@@ -423,7 +427,8 @@ const storeMessage = async (messageObj, participants) => {
 		messages: [messageObj],
 	});
 	if (result.acknowledged && result.insertedId) {
-		return result.insertedId;
+		const newConvo = await conversations.findOne({ _id: result.insertedId });
+		return newConvo;
 	}
 	return null;
 };

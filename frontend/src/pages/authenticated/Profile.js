@@ -279,7 +279,7 @@ export default function Profile() {
 							<IconButton
 								onClick={() => setModalOpen(true)}
 								disableRipple
-								component='span'
+								component='label'
 							>
 								<Avatar
 									id='profilePhoto'
@@ -287,7 +287,7 @@ export default function Profile() {
 								/>
 							</IconButton>
 						) : (
-							<label htmlFor='uploadProfilePhoto'>
+							<IconButton disableRipple component='label'>
 								<Input
 									sx={{ display: 'none' }}
 									accept='image/*'
@@ -296,10 +296,8 @@ export default function Profile() {
 									onChange={(e) => uploadProfilePhoto(e)}
 								/>
 
-								<IconButton disableRipple component='span'>
-									<Avatar id='profilePhoto' />
-								</IconButton>
-							</label>
+								<Avatar id='profilePhoto' />
+							</IconButton>
 						)}
 					</CardMedia>
 					<CardContent>
