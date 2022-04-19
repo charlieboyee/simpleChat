@@ -77,6 +77,10 @@ export default function OtherProfile() {
 		});
 	}, [otherUser]);
 
+	useEffect(() => {
+		console.log(otherUserData);
+	}, [otherUserData]);
+
 	if (loading) {
 		return <LinearProgress />;
 	}
@@ -90,10 +94,10 @@ export default function OtherProfile() {
 				<section id='upperSection'>
 					<Card>
 						<CardMedia>
-							{otherUserData.profilePhoto ? (
+							{otherUserData[0].profilePhoto ? (
 								<Avatar
 									id='profilePhoto'
-									src={`${process.env.REACT_APP_S3_URL}${otherUserData.profilePhoto}`}
+									src={`${process.env.REACT_APP_S3_URL}${otherUserData[0].profilePhoto}`}
 								/>
 							) : (
 								<Avatar id='profilePhoto' />
@@ -102,7 +106,7 @@ export default function OtherProfile() {
 						<CardContent>
 							<div>
 								<div>
-									<span>{otherUserData.username}</span>
+									<span>{otherUserData[0].username}</span>
 									{loggedInUser.following?.includes(otherUser) ? (
 										<Button variant='contained' disabled>
 											Following
