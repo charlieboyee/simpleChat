@@ -85,16 +85,7 @@
 	height: 100%;
 }
 
-.inboxCard.yesMessage section[id='right'] .tabPanel main::-webkit-scrollbar{
-	width: 1rem;
-	border-radius: 1rem;
-	background-color: darkgrey;
-}
 
-.inboxCard.yesMessage section[id='right'] .tabPanel main::-webkit-scrollbar-thumb{
-	background-color:#464649;
-	border-radius: 1rem;
-}
 
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{

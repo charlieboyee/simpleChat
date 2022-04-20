@@ -10,6 +10,17 @@ body {
 	overflow: auto;
 }
 
+::-webkit-scrollbar{
+	width: 1rem;
+	border-radius: 1rem;
+	background-color: darkgrey;
+}
+
+::-webkit-scrollbar-thumb{
+	background-color:#464649;
+	border-radius: 1rem;
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 		monospace;
