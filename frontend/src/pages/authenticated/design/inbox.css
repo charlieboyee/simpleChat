@@ -48,8 +48,14 @@
 }
 .inboxCard.yesMessage section .MuiCardHeader-root{
 	border-bottom: black 1px solid;
-	text-align: center;
+	text-align: center;	
 }
+
+.inboxCard.yesMessage section .MuiCardHeader-root .MuiAvatarGroup-avatar{
+	width: 24px;
+	height: 24px;	
+}
+
 
 
 .inboxCard.yesMessage section[id='right'] {

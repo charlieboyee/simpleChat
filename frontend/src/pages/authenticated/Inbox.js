@@ -529,6 +529,7 @@ export default function Inbox() {
 			<Card className='inboxCard yesMessage'>
 				<section id='left'>
 					<CardHeader
+						titleTypographyProps={{ variant: 'h5' }}
 						title='Conversations'
 						action={
 							<IconButton onClick={openModal}>
@@ -591,6 +592,7 @@ export default function Inbox() {
 				</section>
 				<section id='right'>
 					{conversationList.map((selectedConvo, selectedConvoIndex) => {
+						console.log(selectedConvo);
 						return (
 							<TabPanel
 								key={selectedConvoIndex}
@@ -600,6 +602,19 @@ export default function Inbox() {
 								conversationList={conversationList}
 							>
 								<CardHeader
+									titleTypographyProps={{ variant: 'h5' }}
+									avatar={
+										<AvatarGroup max={4}>
+											{selectedConvo.participants.map((user, userIndex) => {
+												return (
+													<Avatar
+														key={userIndex}
+														src={`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`}
+													/>
+												);
+											})}
+										</AvatarGroup>
+									}
 									title={selectedConvo.participants
 										?.map((user, userIndex) => {
 											return user.username;
