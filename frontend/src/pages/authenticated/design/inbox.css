@@ -1,3 +1,4 @@
+/* No messages */
 .inboxCard.noMessage {
 	display: flex;
 	flex-direction: column;
@@ -24,6 +25,7 @@
 	bottom: 0.05em;
 }
 
+/*Autocomplete Modal  */
 #inboxModal {
 	display: flex;
 	flex-direction: column;
@@ -35,12 +37,15 @@
 	margin: auto;
 }
 
+/* Yes messages */
+
 .inboxCard.yesMessage {
 	display: flex;
 	width: 70vw;
 	min-width: 300px;
 	margin: auto;
 	height: 70%;
+	
 }
 
 .inboxCard.yesMessage section[id='left'] {
@@ -71,15 +76,26 @@
 	flex-direction: column;
 	justify-content: space-between;
 	height: 100%;
-	
 }
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main{
 	overflow: auto;
 	height: 100%;
 	padding: 1rem;
-	overflow: auto;
+	height: 100%;
 }
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main::-webkit-scrollbar{
+	width: 1rem;
+	border-radius: 1rem;
+	background-color: darkgrey;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel main::-webkit-scrollbar-thumb{
+	background-color:#464649;
+	border-radius: 1rem;
+}
+
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{
 	border-radius: 1rem;
