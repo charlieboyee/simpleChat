@@ -9,6 +9,7 @@ import sio from '../sio';
 
 function Base(props) {
 	const {
+		allMessages,
 		userData,
 		setUserData,
 		userPosts,
@@ -18,6 +19,7 @@ function Base(props) {
 		notificationCount,
 		setNotificationCount,
 		setHomeFeed,
+		setAllMessages,
 	} = props;
 	return (
 		<div className='authorizedBase'>
@@ -27,12 +29,16 @@ function Base(props) {
 				userData={userData}
 				notificationCount={notificationCount}
 				setNotificationCount={setNotificationCount}
+				allMessages={allMessages}
+				setAllMessages={setAllMessages}
 			/>
 			<Outlet
 				context={{
 					followingPosts,
 					userData: [userData, setUserData],
 					userPosts: [userPosts, setUserPosts],
+					allMessages,
+					setAllMessages,
 				}}
 			/>
 		</div>
@@ -45,6 +51,7 @@ export default function AuthorizedRoutes() {
 	const [userData, setUserData] = useState({});
 	const [homeFeed, setHomeFeed] = useState({});
 	const [notificationCount, setNotificationCount] = useState(0);
+	const [allMessages, setAllMessages] = useState([]);
 
 	const controller = new AbortController();
 	const signal = controller.signal;
@@ -93,6 +100,9 @@ export default function AuthorizedRoutes() {
 		};
 	}, []);
 
+	if (!socket) {
+		return <div>no socket</div>;
+	}
 	return (
 		<Routes>
 			<Route
@@ -103,6 +113,8 @@ export default function AuthorizedRoutes() {
 						setNotificationCount={setNotificationCount}
 						userData={userData}
 						setUserData={setUserData}
+						allMessages={allMessages}
+						setAllMessages={setAllMessages}
 					/>
 				}
 			>

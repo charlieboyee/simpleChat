@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LoggedInContext } from '../index';
+import { useNavigate, useMatch } from 'react-router-dom';
+import { LoggedInContext, SocketContext } from '../index';
 import CreatePostModal from '../components/CreatePostModal';
 import PostModal from '../components/PostModal';
 import {
@@ -27,8 +27,10 @@ export default function NavBar({
 	setNotificationCount,
 }) {
 	const navigate = useNavigate();
+	const matchPath = useMatch('/inbox');
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
+	const [socket] = useContext(SocketContext);
 
 	const [notifications, setNotifications] = useState([]);
 
@@ -47,8 +49,58 @@ export default function NavBar({
 
 	const [postToView, setPostToView] = useState(null);
 
+	const [newMessageBadge, setNewMessageBadge] = useState(true);
+
 	const controller = new AbortController();
 	const signal = controller.signal;
+
+	useEffect(() => {
+		return () => {
+			controller.abort();
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!searchLoading) {
+			return;
+		}
+		fetch('/api/allUsers', { signal })
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ options }) => setSearchOptions(options));
+	}, [searchLoading]);
+
+	useEffect(() => {
+		if (!searchOpen) {
+			return setSearchOptions([]);
+		}
+	}, [searchOpen]);
+
+	useEffect(() => {
+		if (anchorEl && anchorEl.id === 'notificationButton') {
+			fetch('/api/notifications', { signal })
+				.then((res) => {
+					if (res.status === 200) {
+						return res.json();
+					}
+				})
+				.then((result) => {
+					//array of ALL user notifications read and unread
+					setNotifications(result.notifications);
+				});
+		}
+	}, [anchorEl]);
+
+	useEffect(() => {
+		if (socket && !matchPath) {
+			socket.on('notifyUser', () => {
+				setNewMessageBadge(false);
+			});
+		}
+	}, [socket]);
 
 	const handleMenuClick = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -90,51 +142,10 @@ export default function NavBar({
 			handleMenuClose();
 			setLoggedIn(false);
 			navigate('/', { replace: true });
-			console.log('sucessfully logged out');
 			return;
 		}
 		return;
 	};
-
-	useEffect(() => {
-		return () => {
-			controller.abort();
-		};
-	}, []);
-
-	useEffect(() => {
-		if (!searchLoading) {
-			return;
-		}
-		fetch('/api/allUsers', { signal })
-			.then((res) => {
-				if (res.status === 200) {
-					return res.json();
-				}
-			})
-			.then(({ options }) => setSearchOptions(options));
-	}, [searchLoading]);
-
-	useEffect(() => {
-		if (!searchOpen) {
-			return setSearchOptions([]);
-		}
-	}, [searchOpen]);
-
-	useEffect(() => {
-		if (anchorEl && anchorEl.id === 'notificationButton') {
-			fetch('/api/notifications', { signal })
-				.then((res) => {
-					if (res.status === 200) {
-						return res.json();
-					}
-				})
-				.then((result) => {
-					//array of ALL user notifications read and unread
-					setNotifications(result.notifications);
-				});
-		}
-	}, [anchorEl]);
 
 	return (
 		<nav id='mainNav'>
@@ -182,8 +193,16 @@ export default function NavBar({
 				<IconButton disableRipple onClick={() => navigate('/')}>
 					<HomeRoundedIcon className='mainNavButtons' />
 				</IconButton>
-				<IconButton disableRipple onClick={() => navigate('/inbox')}>
-					<SendRoundedIcon className='mainNavButtons' />
+				<IconButton
+					disableRipple
+					onClick={() => {
+						navigate('/inbox');
+						setNewMessageBadge(true);
+					}}
+				>
+					<Badge color='primary' variant='dot' invisible={newMessageBadge}>
+						<SendRoundedIcon className='mainNavButtons' />
+					</Badge>
 				</IconButton>
 				<IconButton disableRipple onClick={openCreatePostModal}>
 					<FileUploadRoundedIcon className='mainNavButtons' />

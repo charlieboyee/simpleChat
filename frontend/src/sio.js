@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const sio = (userData) => {
+const sio = (userData, setAllMessages) => {
 	const socket = io();
 
 	socket.on('connect', () => {
@@ -13,6 +13,7 @@ const sio = (userData) => {
 	});
 
 	socket.on('connect_error', (err) => {
+		console.log(err);
 		socket.auth = { username: userData.username };
 		socket.connect();
 	});

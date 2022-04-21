@@ -22,7 +22,6 @@ router.put('/like', (req, res) => {
 		.likePost(req.query.id, req.session.user)
 		.then((result) => {
 			if (result) {
-				console.log(result);
 				return res.json({ data: result });
 			}
 		})
@@ -101,7 +100,6 @@ router.get('/', (req, res) => {
 			return res.sendStatus(204);
 		})
 		.catch((err) => {
-			console.log(err);
 			res.sendStatus(500);
 		});
 });

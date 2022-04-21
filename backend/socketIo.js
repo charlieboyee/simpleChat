@@ -26,8 +26,15 @@ module.exports = (io, database) => {
 			socket.join(room);
 		});
 
+		socket.on('notifyUser', (participants) => {
+			participants.forEach((user) => {
+				if (user !== socket.username) {
+					socket.to(users[user]).emit('notifyUser', participants);
+				}
+			});
+		});
+
 		socket.on('sendMessage', (messageObj) => {
-			console.log(messageObj);
 			socket.to(messageObj.to).emit('receiveSentMessage', messageObj);
 		});
 

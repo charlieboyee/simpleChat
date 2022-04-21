@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useMatch } from 'react-router-dom';
 import { SocketContext } from '../../index';
 import emojis from 'emojis-list';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -16,7 +16,6 @@ import {
 	ListItemAvatar,
 	ListItemText,
 	Menu,
-	MenuItem,
 	Modal,
 	Paper,
 	Tab,
@@ -39,15 +38,16 @@ const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 function TabPanel({ children, index, value, convo, conversationList }) {
-	const { userData } = useOutletContext();
+	const { userData, allMessages, setAllMessages } = useOutletContext();
 	const [loggedInUser] = userData;
 	const [socket] = useContext(SocketContext);
+
+	const matchPath = useMatch('/inbox');
 
 	const bottomRef = useRef();
 	const formRef = useRef();
 
 	const [message, setMessage] = useState('');
-	const [allMessages, setAllMessages] = useState([]);
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
@@ -56,6 +56,9 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 	const [hasMore, setHasMore] = useState(true);
 
 	const [image, setImage] = useState();
+
+	const controller = new AbortController();
+	const signal = controller.signal;
 
 	useEffect(() => {
 		if (value === index && socket) {
@@ -67,7 +70,10 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 
 			const fetchConvo = async () => {
 				const result = await fetch(
-					`/api/conversations/conversation?id=${convo._id}`
+					`/api/conversations/conversation?id=${convo._id}`,
+					{
+						signal,
+					}
 				);
 
 				if (result.status === 200) {
@@ -79,6 +85,9 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 
 			fetchConvo();
 		}
+		return () => {
+			controller.abort();
+		};
 	}, [value, socket]);
 
 	useEffect(() => {
@@ -120,6 +129,8 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 	const sendPhoto = async (e) => {
 		e.preventDefault();
 
+		const participants = convo.participants.map((user) => user.username);
+
 		const messageObj = {
 			message,
 			timeStamp: new Date(),
@@ -131,11 +142,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 
 		formData.append('file', image);
 		formData.append('messageObj', JSON.stringify(messageObj));
-		formData.append(
-			'participants',
-
-			convo.participants.map((user) => user.username)
-		);
+		formData.append('participants', participants);
 
 		const result = await fetch(`/api/conversations/conversation`, {
 			method: 'POST',
@@ -143,6 +150,8 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		});
 
 		if (result.status === 200) {
+			socket.emit('notifyUser', participants);
+
 			const { data } = await result.json();
 			messageObj.message = data.message;
 			socket.emit('sendMessage', messageObj);
@@ -155,6 +164,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 
 	const sendMessage = async (e) => {
 		e.preventDefault();
+		const participants = convo.participants.map((user) => user.username);
 
 		const messageObj = {
 			message,
@@ -169,12 +179,15 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
 				messageObj,
-				participants: convo.participants.map((user) => user.username),
+				participants,
 			}),
 		});
 
 		if (result.status === 200) {
+			socket.emit('notifyUser', participants);
+
 			socket.emit('sendMessage', messageObj);
+
 			setAllMessages([...allMessages, messageObj]);
 			setMessage('');
 		}
@@ -298,6 +311,41 @@ export default function Inbox() {
 	const [tabValue, setTabValue] = useState(0);
 	const loading = open && options.length === 0;
 
+	const controller = new AbortController();
+	const signal = controller.signal;
+
+	useEffect(() => {
+		fetch('/api/conversations', {
+			signal,
+		})
+			.then((res) => {
+				if (res.status === 200) {
+					return res.json();
+				}
+			})
+			.then(({ data }) => {
+				setConversationList(data);
+			});
+
+		return () => {
+			controller.abort();
+		};
+	}, []);
+
+	useEffect(() => {
+		if (open) {
+			fetch('/api/allUsers')
+				.then((res) => {
+					if (res.status === 200) {
+						return res.json();
+					}
+				})
+				.then(({ options }) => {
+					setOptions(options);
+				});
+		}
+	}, [open]);
+
 	const closeModal = () => {
 		setAnchorEl(null);
 		setValue([]);
@@ -358,32 +406,6 @@ export default function Inbox() {
 		setConversationList([...conversationList, convo]);
 		closeModal();
 	};
-
-	useEffect(() => {
-		fetch('/api/conversations')
-			.then((res) => {
-				if (res.status === 200) {
-					return res.json();
-				}
-			})
-			.then(({ data }) => {
-				setConversationList(data);
-			});
-	}, []);
-
-	useEffect(() => {
-		if (open) {
-			fetch('/api/allUsers')
-				.then((res) => {
-					if (res.status === 200) {
-						return res.json();
-					}
-				})
-				.then(({ options }) => {
-					setOptions(options);
-				});
-		}
-	}, [open]);
 
 	if (!conversationList.length) {
 		return (
@@ -592,7 +614,6 @@ export default function Inbox() {
 				</section>
 				<section id='right'>
 					{conversationList.map((selectedConvo, selectedConvoIndex) => {
-						console.log(selectedConvo);
 						return (
 							<TabPanel
 								key={selectedConvoIndex}
