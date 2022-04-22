@@ -52,43 +52,36 @@ export default function Landing() {
 
 	return (
 		<main id='landing'>
-			<section>
-				<h1>Simple Chat</h1>
-				<Card>
-					<CardHeader title='Login' />
-					<CardContent>
-						<form onSubmit={logIn}>
-							<TextField
-								required
-								error={usernameError}
-								onChange={handleUsernameChange}
-								placeholder='Username'
-							/>
-							<TextField
-								required
-								error={passwordError}
-								onChange={handlePasswordChange}
-								placeholder='Password'
-								type='password'
-							/>
-							<Button type='submit'>Log In</Button>
-						</form>
-					</CardContent>
-					<CardActions>
-						<Button onClick={() => navigate('createAccount')}>
-							Don't have an account? Click here.
-						</Button>
-						<Button onClick={() => navigate('forgotPassword')}>
-							Forgot password? Click here.
-						</Button>
-					</CardActions>
-				</Card>
-			</section>
-
-			<footer>
-				AboutHelpPressAPIJobsPrivacyTermsLocationsTop AccountsHashtagsLanguage
-				English © 2022 INSTAGRAM FROM META
-			</footer>
+			<h1>Simple Chat</h1>
+			<Card raised>
+				<CardHeader title='Login' />
+				<CardContent>
+					<form onSubmit={logIn}>
+						<TextField
+							required
+							error={usernameError}
+							onChange={handleUsernameChange}
+							placeholder='Username'
+						/>
+						<TextField
+							required
+							error={passwordError}
+							onChange={handlePasswordChange}
+							placeholder='Password'
+							type='password'
+						/>
+						<Button type='submit'>Log In</Button>
+					</form>
+				</CardContent>
+				<CardActions>
+					<Button onClick={() => navigate('createAccount')}>
+						Don't have an account? Click here.
+					</Button>
+					<Button onClick={() => navigate('forgotPassword')}>
+						Forgot password? Click here.
+					</Button>
+				</CardActions>
+			</Card>
 		</main>
 	);
 }

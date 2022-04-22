@@ -499,7 +499,7 @@ export default function Inbox() {
 	return (
 		<>
 			<Modal id='inboxModal' onClose={closeModal} open={modalOpen}>
-				<Card>
+				<Card raised>
 					<CardHeader
 						avatar={
 							<IconButton onClick={closeModal}>
@@ -556,7 +556,7 @@ export default function Inbox() {
 				</Card>
 			</Modal>
 
-			<Card className='inboxCard yesMessage'>
+			<Card raised className='inboxCard yesMessage'>
 				<section id='left'>
 					<CardHeader
 						titleTypographyProps={{ variant: 'h5' }}

@@ -44,7 +44,7 @@
 	width: 70vw;
 	min-width: 300px;
 	margin: auto;
-	height: 70%;
+	height: 80%;
 	
 }
 
@@ -52,7 +52,6 @@
 	flex:2
 }
 .inboxCard.yesMessage section .MuiCardHeader-root{
-	border-bottom: black 1px solid;
 	text-align: center;	
 }
 

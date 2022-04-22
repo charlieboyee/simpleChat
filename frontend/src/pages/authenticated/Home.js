@@ -185,7 +185,7 @@ export default function Home({ homeFeed, setHomeFeed, setNotificationCount }) {
 			<main id='homePage'>
 				{homeFeed?.map((post, cardIndex) => {
 					return (
-						<Card key={cardIndex}>
+						<Card raised key={cardIndex}>
 							<CardHeader
 								avatar={
 									<Avatar
