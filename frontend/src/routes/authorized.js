@@ -57,12 +57,6 @@ export default function AuthorizedRoutes() {
 	const signal = controller.signal;
 
 	useEffect(() => {
-		if (userData.username) {
-			setSocket(sio(userData));
-		}
-	}, [userData.username]);
-
-	useEffect(() => {
 		fetch('/api/notifications/count', { signal })
 			.then((res) => {
 				if (res.status === 200) {
@@ -77,6 +71,7 @@ export default function AuthorizedRoutes() {
 				}
 			})
 			.then(({ data }) => {
+				setSocket(sio(data));
 				setUserData(data);
 				return;
 			});

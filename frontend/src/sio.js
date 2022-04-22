@@ -12,6 +12,14 @@ const sio = (userData, setAllMessages) => {
 		console.log(data);
 	});
 
+	socket.on('joinRoom', (data) => {
+		console.log(`User ${data.user} has joined ${data.room}`);
+	});
+
+	socket.on('leaveRoom', (data) => {
+		console.log(`User ${data.user} has left ${data.room}`);
+	});
+
 	socket.on('connect_error', (err) => {
 		console.log(err);
 		socket.auth = { username: userData.username };

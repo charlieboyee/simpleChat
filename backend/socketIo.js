@@ -22,8 +22,14 @@ module.exports = (io, database) => {
 	return io.on('connection', (socket) => {
 		socket.broadcast.emit('userConnected', `${socket.username}, ${socket.id}`);
 
-		socket.on('joinRoom', (room) => {
-			socket.join(room);
+		socket.on('joinRoom', (data) => {
+			socket.join(data.room);
+			socket.broadcast.to(data.room).emit('joinRoom', data);
+		});
+
+		socket.on('leaveRoom', (data) => {
+			socket.leave(data.room);
+			socket.broadcast.to(data.room).emit('leaveRoom', data);
 		});
 
 		socket.on('notifyUser', (participants) => {

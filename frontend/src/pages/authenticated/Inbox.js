@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { useOutletContext, useMatch } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { SocketContext } from '../../index';
 import emojis from 'emojis-list';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -42,8 +42,6 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 	const [loggedInUser] = userData;
 	const [socket] = useContext(SocketContext);
 
-	const matchPath = useMatch('/inbox');
-
 	const bottomRef = useRef();
 	const formRef = useRef();
 
@@ -79,7 +77,10 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 				if (result.status === 200) {
 					const { conversation } = await result.json();
 					setAllMessages(conversation.messages);
-					socket.emit('joinRoom', conversation._id);
+					socket.emit('joinRoom', {
+						user: loggedInUser.username,
+						room: conversation._id,
+					});
 				}
 			};
 
@@ -87,8 +88,13 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		}
 		return () => {
 			controller.abort();
+			socket.off('receiveSentMessage');
+			socket.emit('leaveRoom', {
+				user: loggedInUser.username,
+				room: convo._id,
+			});
 		};
-	}, [value, socket]);
+	}, [value]);
 
 	useEffect(() => {
 		bottomRef.current?.scrollIntoView({
@@ -145,7 +151,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		formData.append('participants', participants);
 
 		const result = await fetch(`/api/conversations/conversation`, {
-			method: 'POST',
+			method: 'PUT',
 			body: formData,
 		});
 
@@ -175,7 +181,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 		};
 
 		const result = await fetch(`/api/conversations/conversation`, {
-			method: 'POST',
+			method: 'PUT',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({
 				messageObj,

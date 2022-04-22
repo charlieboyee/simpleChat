@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate, useMatch } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { LoggedInContext, SocketContext } from '../index';
 import CreatePostModal from '../components/CreatePostModal';
 import PostModal from '../components/PostModal';
@@ -27,7 +27,7 @@ export default function NavBar({
 	setNotificationCount,
 }) {
 	const navigate = useNavigate();
-	const matchPath = useMatch('/inbox');
+	const location = useLocation();
 
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 	const [socket] = useContext(SocketContext);
@@ -95,12 +95,16 @@ export default function NavBar({
 	}, [anchorEl]);
 
 	useEffect(() => {
-		if (socket && !matchPath) {
+		if (socket && location.pathname !== '/inbox') {
 			socket.on('notifyUser', () => {
+				console.log('received');
 				setNewMessageBadge(false);
 			});
 		}
-	}, [socket]);
+		return () => {
+			socket.off('notifyUser');
+		};
+	}, [socket, location]);
 
 	const handleMenuClick = (event) => {
 		setAnchorEl(event.currentTarget);

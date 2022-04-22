@@ -14,7 +14,7 @@ router.get('/conversation', (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
-router.post('/conversation', upload.single('file'), (req, res) => {
+router.put('/conversation', upload.single('file'), (req, res) => {
 	if (!req.file) {
 		return database
 			.storeMessage(req.body.messageObj, req.body.participants)
