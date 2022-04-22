@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	Card,
@@ -9,7 +9,7 @@ import {
 	CardContent,
 } from '@mui/material';
 import { LoggedInContext } from '../../index';
-import './design/Landing.css';
+import './design/landing.css';
 
 export default function Landing() {
 	const navigate = useNavigate();
@@ -51,9 +51,9 @@ export default function Landing() {
 	};
 
 	return (
-		<div id='landing'>
-			<h1>Simple Chat</h1>
-			<main>
+		<main id='landing'>
+			<section>
+				<h1>Simple Chat</h1>
 				<Card>
 					<CardHeader title='Login' />
 					<CardContent>
@@ -62,14 +62,12 @@ export default function Landing() {
 								required
 								error={usernameError}
 								onChange={handleUsernameChange}
-								label='Username'
 								placeholder='Username'
 							/>
 							<TextField
 								required
 								error={passwordError}
 								onChange={handlePasswordChange}
-								label='Password'
 								placeholder='Password'
 								type='password'
 							/>
@@ -85,7 +83,12 @@ export default function Landing() {
 						</Button>
 					</CardActions>
 				</Card>
-			</main>
-		</div>
+			</section>
+
+			<footer>
+				AboutHelpPressAPIJobsPrivacyTermsLocationsTop AccountsHashtagsLanguage
+				English © 2022 INSTAGRAM FROM META
+			</footer>
+		</main>
 	);
 }

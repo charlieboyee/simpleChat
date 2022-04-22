@@ -38,7 +38,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 function TabPanel({ children, index, value, convo, conversationList }) {
-	const { userData, allMessages, setAllMessages } = useOutletContext();
+	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
 	const [socket] = useContext(SocketContext);
 
@@ -52,6 +52,8 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 
 	const [emojiList, setEmojiList] = useState([]);
 	const [hasMore, setHasMore] = useState(true);
+
+	const [allMessages, setAllMessages] = useState([]);
 
 	const [image, setImage] = useState();
 
@@ -636,7 +638,10 @@ export default function Inbox() {
 												return (
 													<Avatar
 														key={userIndex}
-														src={`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`}
+														src={
+															user.profilePhoto &&
+															`${process.env.REACT_APP_S3_URL}${user.profilePhoto}`
+														}
 													/>
 												);
 											})}

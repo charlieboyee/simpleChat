@@ -9,6 +9,8 @@ import {
 	CardContent,
 } from '@mui/material';
 
+import './design/createAccount.css';
+
 export default function CreateAccount() {
 	const navigate = useNavigate();
 
@@ -29,8 +31,9 @@ export default function CreateAccount() {
 		if (result.status === 200) {
 			const { status } = await result.json();
 			if (status) return navigate('/', { replace: true });
+
 			setUsernameError(true);
-			return console.log('User already exists');
+			return;
 		}
 		console.log('there is an error');
 		return;
@@ -46,18 +49,21 @@ export default function CreateAccount() {
 	};
 
 	return (
-		<main>
+		<main id='createAccount'>
 			<Card>
 				<CardHeader title='Create Account' />
 				<CardContent>
 					<form onSubmit={createAccount}>
 						<TextField
+							required
+							helperText={usernameError && 'User already exists'}
 							error={usernameError}
 							value={username}
 							onChange={handleUsernameChange}
 							placeholder='Username'
 						/>
 						<TextField
+							required
 							error={passwordError}
 							value={password}
 							onChange={handlePasswordChange}

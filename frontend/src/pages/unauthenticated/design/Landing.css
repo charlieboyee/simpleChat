@@ -1,10 +1,48 @@
-#landing {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100%;
-}
 h1 {
 	font-family: 'SimpleFont';
 	color: white;
 }
+
+#landing {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	margin: auto;
+}
+
+#landing section{
+	display: flex;
+	margin: auto 0;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+#landing section .MuiCard-root .MuiCardHeader-root{
+	text-align: center;
+}
+
+
+#landing section .MuiCard-root .MuiCardContent-root{
+	padding-bottom: 0
+}
+
+#landing section .MuiCard-root .MuiCardContent-root form{
+	display: flex;
+	flex-direction: column;
+}
+
+
+#landing section .MuiCard-root .MuiCardContent-root form .MuiTextField-root:first-child{
+	margin-bottom: 0.3rem;
+}
+
+#landing section .MuiCard-root .MuiCardActions-root {
+	display: flex;
+	flex-direction: column;
+}
+
+
+#landing footer{
+	margin-bottom: 1rem;
+}
+

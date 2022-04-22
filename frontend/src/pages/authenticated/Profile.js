@@ -123,10 +123,6 @@ function FollowersModal({
 			});
 	}, []);
 
-	useEffect(() => {
-		console.log(loggedInUser);
-	}, [loggedInUser]);
-
 	const handleClose = () => {
 		setFollowersModalOpen(false);
 	};

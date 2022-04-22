@@ -8,20 +8,25 @@ import {
 	Button,
 	CardContent,
 } from '@mui/material';
+
+import './design/forgotPassword.css';
+
 export default function CreateAccount() {
 	const navigate = useNavigate();
 
 	return (
-		<main>
+		<main id='forgotPassword'>
 			<Card>
 				<CardHeader title='Forgot Password' />
 				<CardContent>
 					<TextField placeholder='Username' />
-					<TextField placeholder='Password' type='password' />
+					<TextField placeholder='Old password' type='password' />
+					<TextField placeholder='New password' type='password' />
 				</CardContent>
 				<CardActions>
+					<Button onClick={() => console.log('clicked')}>Reset password</Button>
 					<Button onClick={() => navigate('/', { replace: true })}>
-						Click here to go back
+						Already have an account? Click here.
 					</Button>
 				</CardActions>
 			</Card>

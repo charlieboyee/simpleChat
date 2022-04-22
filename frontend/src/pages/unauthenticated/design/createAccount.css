@@ -1,0 +1,21 @@
+#createAccount{
+    display: flex;
+   align-items: center;
+height: 100%;
+margin: 0 auto;
+}
+
+#createAccount .MuiCardHeader-root{
+   text-align: center;
+}
+#createAccount .MuiCardContent-root{
+    padding-bottom: 0
+}
+#createAccount .MuiCardContent-root form{
+    display: flex;
+   flex-direction: column;
+}
+
+#createAccount .MuiCardContent-root form .MuiTextField-root:nth-child(2){
+    margin: .3rem 0;
+}

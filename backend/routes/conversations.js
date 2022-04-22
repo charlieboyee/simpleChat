@@ -11,7 +11,9 @@ router.get('/conversation', (req, res) => {
 	database
 		.getConversation(req.query.id)
 		.then((conversation) => res.json({ conversation }))
-		.catch((err) => res.sendStatus(500));
+		.catch((err) => {
+			res.sendStatus(500);
+		});
 });
 
 router.put('/conversation', upload.single('file'), (req, res) => {

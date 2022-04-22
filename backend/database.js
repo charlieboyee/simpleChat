@@ -140,7 +140,7 @@ const getAllConversations = async (user) => {
 		{
 			$match: {
 				participants: {
-					$in: ['charoo'],
+					$in: [user],
 				},
 			},
 		},
