@@ -55,13 +55,11 @@ export default function OtherProfile() {
 		if (results.status === 200) {
 			const { data } = await results.json();
 			setLoggedInUser(data[1]);
-
 			setOtherUserData((prev) => {
 				let newArr = prev.slice(1);
 				newArr.unshift(data[0]);
 				return newArr;
 			});
-
 			return;
 		}
 	};
@@ -76,10 +74,6 @@ export default function OtherProfile() {
 			setLoading(false);
 		});
 	}, [otherUser]);
-
-	useEffect(() => {
-		console.log(otherUserData);
-	}, [otherUserData]);
 
 	if (loading) {
 		return <LinearProgress />;

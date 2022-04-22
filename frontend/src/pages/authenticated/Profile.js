@@ -130,8 +130,12 @@ function FollowersModal({
 
 		if (result.status === 200) {
 			const data = await result.json();
-			setFollowers(data.followers);
-			setLoggedInUser({ ...loggedInUser, followers: data.followers });
+			console.log(data);
+			const newArr = followers.filter((user, userIndex) => {
+				return data.followers.includes(user.username);
+			});
+			setFollowers(newArr);
+			setLoggedInUser({ ...loggedInUser, followers: newArr });
 		}
 	};
 	return (

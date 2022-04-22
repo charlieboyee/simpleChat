@@ -35,6 +35,7 @@ const addFollower = async (user, follower) => {
 
 	const update = { $addToSet: { followers: follower } };
 	const result = users.findOneAndUpdate({ username: user }, update, options);
+
 	const update2 = { $addToSet: { following: user } };
 	const result2 = users.findOneAndUpdate(
 		{ username: follower },
@@ -43,7 +44,27 @@ const addFollower = async (user, follower) => {
 	);
 
 	const prom = await Promise.all([result, result2]);
-	return prom;
+	if (prom[0].lastErrorObject.n && prom[1].lastErrorObject.n) {
+		notifications.insertOne({
+			sender: follower,
+			recipient: user,
+			inception: new Date(),
+			type: 'following',
+			read: false,
+		});
+		return prom;
+	}
+	return null;
+};
+
+const changeReadStatus = async (id) => {
+	const query = { _id: new ObjectId(id) };
+	const update = { $set: { read: true } };
+	const result = await notifications.updateOne(query, update);
+	if (result.modifiedCount) {
+		return true;
+	}
+	return null;
 };
 
 const createAccount = async (user) => {
@@ -469,6 +490,7 @@ const unFollow = async (user, userToUnfollow) => {
 
 module.exports = {
 	addFollower,
+	changeReadStatus,
 	createAccount,
 	createPost,
 	deleteComment,

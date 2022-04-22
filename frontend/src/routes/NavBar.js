@@ -97,7 +97,6 @@ export default function NavBar({
 	useEffect(() => {
 		if (socket && location.pathname !== '/inbox') {
 			socket.on('notifyUser', () => {
-				console.log('received');
 				setNewMessageBadge(false);
 			});
 		}
@@ -124,6 +123,8 @@ export default function NavBar({
 				return 'liked your post.';
 			case 'comment':
 				return 'commented on your post.';
+			case 'following':
+				return 'is following you.';
 			default:
 				return;
 		}
@@ -134,6 +135,14 @@ export default function NavBar({
 		setPostModalOpen(true);
 		setPostToView(postId);
 		setAnchorEl(null);
+	};
+
+	const goToUser = (user, id) => {
+		navigate(`/profile/${user}`);
+		setAnchorEl(null);
+		fetch(`/api/notifications/read/?id=${id}`, {
+			method: 'PUT',
+		});
 	};
 
 	const openCreatePostModal = () => setModalOpen(true);
@@ -278,13 +287,26 @@ export default function NavBar({
 				) : anchorEl?.id === 'notificationButton' ? (
 					notifications.filter((noti) => !noti.read).length ? (
 						notifications?.map((notification, index) => {
+							console.log(notification);
 							if (!notification.read) {
 								return (
 									<MenuItem
 										key={index}
-										onClick={() =>
-											goToPost(notification.postRef, notification._id)
-										}
+										onClick={() => {
+											switch (notification.type) {
+												case 'like' || 'comment':
+													goToPost(notification.postRef, notification._id);
+													return;
+												case 'following':
+													goToUser(
+														notification.sender[0].username,
+														notification._id
+													);
+													return;
+												default:
+													return;
+											}
+										}}
 									>
 										<Avatar
 											src={

@@ -8,7 +8,6 @@ import {
 	CardActions,
 	CardMedia,
 	CardContent,
-	CircularProgress,
 	Input,
 	IconButton,
 	Menu,

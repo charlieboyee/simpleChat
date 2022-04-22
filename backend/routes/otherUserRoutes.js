@@ -26,7 +26,9 @@ router.post('/:user/follow', (req, res) => {
 				return res.json({ data: [result[0].value, result[1].value] });
 			}
 		})
-		.catch((err) => res.sendStatus(500));
+		.catch((err) => {
+			res.sendStatus(500);
+		});
 });
 
 router.get('/:user', (req, res) => {
