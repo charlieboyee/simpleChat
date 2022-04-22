@@ -59,9 +59,13 @@ function FollowingModal({
 		});
 
 		if (result.status === 200) {
-			const data = await result.json();
-			setFollowing(data.following);
-			setLoggedInUser({ ...loggedInUser, following: data.following });
+			const { data } = await result.json();
+
+			const newArr = following.filter((user, userIndex) => {
+				return data.following.includes(user.username);
+			});
+			setFollowing(newArr);
+			setLoggedInUser({ ...loggedInUser, following: newArr });
 			handleClose();
 			return;
 		}
@@ -119,6 +123,10 @@ function FollowersModal({
 			});
 	}, []);
 
+	useEffect(() => {
+		console.log(loggedInUser);
+	}, [loggedInUser]);
+
 	const handleClose = () => {
 		setFollowersModalOpen(false);
 	};
@@ -129,13 +137,14 @@ function FollowersModal({
 		});
 
 		if (result.status === 200) {
-			const data = await result.json();
-			console.log(data);
+			const { data } = await result.json();
 			const newArr = followers.filter((user, userIndex) => {
 				return data.followers.includes(user.username);
 			});
+
 			setFollowers(newArr);
-			setLoggedInUser({ ...loggedInUser, followers: newArr });
+			setLoggedInUser({ ...loggedInUser, followers: data.followers });
+			handleClose();
 		}
 	};
 	return (

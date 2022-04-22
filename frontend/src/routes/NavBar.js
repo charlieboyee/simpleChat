@@ -287,7 +287,6 @@ export default function NavBar({
 				) : anchorEl?.id === 'notificationButton' ? (
 					notifications.filter((noti) => !noti.read).length ? (
 						notifications?.map((notification, index) => {
-							console.log(notification);
 							if (!notification.read) {
 								return (
 									<MenuItem
