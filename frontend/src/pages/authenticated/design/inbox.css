@@ -11,7 +11,7 @@
 }
 
 .inboxCard.noMessage div:first-child {
-	border: solid black 1px;
+	border: solid black 5px;
 	border-radius: 50%;
 }
 .inboxCard.noMessage div:nth-child(2) {

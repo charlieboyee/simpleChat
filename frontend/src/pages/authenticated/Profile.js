@@ -320,7 +320,7 @@ export default function Profile() {
 				setModalOpen={setModalOpen}
 			/>
 			<section id='upperSection'>
-				<Card>
+				<Card raised>
 					<CardMedia>
 						{ownerData.profilePhoto ? (
 							<IconButton

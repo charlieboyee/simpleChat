@@ -180,6 +180,13 @@ export default function NavBar({
 				loading={searchLoading}
 				options={searchOptions}
 				getOptionLabel={(option) => option.username}
+				renderOption={(props, option) => {
+					return (
+						<span id='searchItem' {...props}>
+							{option.username}
+						</span>
+					);
+				}}
 				renderInput={(params) => (
 					<TextField
 						variant='filled'
