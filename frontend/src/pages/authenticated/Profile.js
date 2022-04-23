@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import {
 	Avatar,
 	Button,
@@ -261,6 +261,8 @@ export default function Profile() {
 	const { userData } = useOutletContext();
 	const [ownerData, setOwnerData] = userData;
 
+	const navigate = useNavigate();
+
 	const [posts, setPosts] = useState([]);
 
 	const [followersModalOpen, setFollowersModalOpen] = useState(false);
@@ -351,7 +353,9 @@ export default function Profile() {
 						<div>
 							<div>
 								<span>{ownerData.username}</span>
-								<Button variant='contained'>Edit Profile</Button>
+								<Button variant='contained' onClick={() => navigate('/edit')}>
+									Edit Profile
+								</Button>
 							</div>
 							<div>
 								<span>{posts.length ? posts.length : 0} Posts</span>
