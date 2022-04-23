@@ -239,7 +239,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 					onChange={(e) => setMessage(e.target.value)}
 					InputProps={{
 						endAdornment: message ? (
-							<Button>Send</Button>
+							<Button className='textFieldButtons'>Send</Button>
 						) : (
 							<IconButton component='label'>
 								<input
@@ -571,6 +571,9 @@ export default function Inbox() {
 						orientation='vertical'
 						value={tabValue}
 						onChange={handleTabChange}
+						TabIndicatorProps={{
+							style: { background: 'whitesmoke' },
+						}}
 					>
 						{conversationList.map((selectedConvo, selectedConvoIndex) => {
 							if (selectedConvo.participants?.length === 1) {

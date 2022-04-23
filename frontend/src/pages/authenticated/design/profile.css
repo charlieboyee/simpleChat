@@ -33,6 +33,14 @@
 #upperSection .MuiCard-root .MuiCardContent-root {
 	flex: 3
 }
+#upperSection
+	.MuiCard-root
+	.MuiCardContent-root
+	div
+	div:nth-child(1)
+	span{
+	margin-right: 1rem;
+}
 
 #upperSection
 	.MuiCard-root
@@ -40,8 +48,21 @@
 	div
 	div:nth-child(2)
 	.MuiButton-root {
+	
 	text-transform: none;
+
 }
+
+#upperSection
+	.MuiCard-root
+	.MuiCardContent-root
+	div
+	div:nth-child(2)
+	.MuiButton-root:nth-child(3) {
+		padding: 0
+}
+
+
 
 #upperSection .MuiCard-root .MuiCardContent-root div div:nth-child(2) span {
 	font-family: Roboto, Helvetica, Arial, sans-serif;
@@ -49,12 +70,14 @@
 	font-size: 0.875rem;
 }
 
-
-
 #lowerSection {
 	max-width: 900px;
 	width: 100%;
 	height: 100%;
+}
+
+#lowerSection .MuiTab-root{
+	color: whitesmoke
 }
 
 #lowerSection .tabPanel {

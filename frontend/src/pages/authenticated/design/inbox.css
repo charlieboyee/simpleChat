@@ -45,22 +45,40 @@
 	min-width: 300px;
 	margin: auto;
 	height: 80%;
+	background-color: black;
+	border: whitesmoke 1px solid;
 	
 }
 
 .inboxCard.yesMessage section[id='left'] {
-	flex:2
+	flex:2;
 }
+.inboxCard.yesMessage section[id='left'] .MuiTab-textColorPrimary{
+	color: white
+}
+
+.inboxCard.yesMessage section[id='left'] .Mui-selected{
+	color: red
+}
+
+.inboxCard.yesMessage section .MuiAvatarGroup-avatar{
+	border: none;
+}
+
 .inboxCard.yesMessage section .MuiCardHeader-root{
 	text-align: center;	
+	border: whitesmoke 1px solid;
+	color: whitesmoke
+}
+
+.inboxCard.yesMessage section .MuiCardHeader-action .MuiIconButton-root svg{
+	color: whitesmoke
 }
 
 .inboxCard.yesMessage section .MuiCardHeader-root .MuiAvatarGroup-avatar{
 	width: 24px;
-	height: 24px;	
+	height: 24px;
 }
-
-
 
 .inboxCard.yesMessage section[id='right'] {
 	flex: 4
@@ -83,9 +101,6 @@
 	padding: 1rem;
 	height: 100%;
 }
-
-
-
 
 .inboxCard.yesMessage section[id='right'] .tabPanel main .MuiPaper-root{
 	border-radius: 1rem;
@@ -120,6 +135,20 @@
 .inboxCard.yesMessage section[id='right'] .tabPanel main #incomingMessage > div:last-child,
 .inboxCard.yesMessage section[id='right'] .tabPanel main #outgoingMessage > div:last-child{
 	font-size: .7em;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel form .MuiOutlinedInput-root fieldset{
+	border: none
+}
+
+
+.inboxCard.yesMessage section[id='right'] .tabPanel form .MuiOutlinedInput-root{
+	border: solid whitesmoke 1px;
+	color: whitesmoke;
+}
+
+.inboxCard.yesMessage section[id='right'] .tabPanel form .MuiOutlinedInput-root .MuiIconButton-root{
+	color: whitesmoke;
 }
 
 #scrollableTarget{

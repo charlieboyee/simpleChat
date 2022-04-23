@@ -380,6 +380,9 @@ export default function Profile() {
 									Following`}
 								</Button>
 							</div>
+							<div>
+								{ownerData.description ? ownerData.descriptio : 'nothing'}
+							</div>
 						</div>
 					</CardContent>
 				</Card>

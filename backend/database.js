@@ -78,6 +78,7 @@ const createAccount = async (user) => {
 		followers: [],
 		following: [],
 		profilePhoto: '',
+		description: '',
 	});
 	return result;
 };
