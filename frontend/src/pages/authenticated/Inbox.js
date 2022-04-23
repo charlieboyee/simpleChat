@@ -32,6 +32,8 @@ import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import SentimentSatisfiedOutlinedIcon from '@mui/icons-material/SentimentSatisfiedOutlined';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 
+import EmojiList from '../../components/Emoji';
+
 import './design/inbox.css';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
@@ -48,10 +50,6 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 	const [message, setMessage] = useState('');
 
 	const [anchorEl, setAnchorEl] = useState(null);
-	const open = Boolean(anchorEl);
-
-	const [emojiList, setEmojiList] = useState([]);
-	const [hasMore, setHasMore] = useState(true);
 
 	const [allMessages, setAllMessages] = useState([]);
 
@@ -112,26 +110,7 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 	}, [image]);
 
 	const openMenu = (event) => {
-		setEmojiList(Array.from({ length: 300 }));
 		setAnchorEl(event.currentTarget);
-	};
-	const closeMenu = () => {
-		setAnchorEl(null);
-	};
-
-	const fetchNext = () => {
-		if (emojiList.length >= emojis.length) {
-			setHasMore(false);
-			return;
-		}
-
-		setEmojiList((prevState) => {
-			const newArr = prevState.concat(Array.from({ length: 500 }));
-			if (newArr.length > emojis.length) {
-				return emojis;
-			}
-			return newArr;
-		});
 	};
 
 	const sendPhoto = async (e) => {
@@ -259,47 +238,12 @@ function TabPanel({ children, index, value, convo, conversationList }) {
 					}}
 				/>
 			</form>
-			<Menu
-				sx={{ width: 900 }}
+			<EmojiList
 				anchorEl={anchorEl}
-				open={open}
-				onClose={closeMenu}
-				anchorOrigin={{
-					vertical: 'top',
-					horizontal: 'right',
-				}}
-				transformOrigin={{
-					vertical: 'bottom',
-					horizontal: 'left',
-				}}
-			>
-				<div id='scrollableTarget'>
-					<InfiniteScroll
-						dataLength={emojiList.length}
-						hasMore={hasMore}
-						next={fetchNext}
-						loader={<h4>Loading...</h4>}
-						endMessage={<p style={{ textAlign: 'center' }}>No more emojis.</p>}
-						scrollableTarget='scrollableTarget'
-					>
-						{emojiList.map((emoji, emojiIndex) => {
-							return (
-								<IconButton
-									disableRipple
-									onClick={(e) => {
-										const newMessage = message.concat(e.target.innerText);
-										setMessage(newMessage);
-										closeMenu();
-									}}
-									key={emojiIndex}
-								>
-									{emojis[emojiIndex]}
-								</IconButton>
-							);
-						})}
-					</InfiniteScroll>
-				</div>
-			</Menu>
+				setAnchorEl={setAnchorEl}
+				message={message}
+				setMessage={setMessage}
+			/>
 		</div>
 	);
 }

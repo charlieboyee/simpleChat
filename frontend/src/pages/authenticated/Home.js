@@ -17,11 +17,17 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import SentimentSatisfiedOutlinedIcon from '@mui/icons-material/SentimentSatisfiedOutlined';
+
+import EmojiList from '../../components/Emoji.js';
 import './design/home.css';
 
 function CommentInput(props) {
 	const { post, setHomeFeed, index } = props;
 	const [comment, setComment] = useState('');
+
+	const [anchorEl, setAnchorEl] = useState(null);
+
 	const postComment = async (e, postId) => {
 		e.preventDefault();
 
@@ -48,17 +54,34 @@ function CommentInput(props) {
 		return;
 	};
 
+	const openMenu = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
 	return (
-		<form onSubmit={(e) => postComment(e, post._id)}>
-			<Input
-				disableUnderline
-				endAdornment={<Button type='submit'>Comment</Button>}
-				fullWidth
-				placeholder='Comment'
-				value={comment}
-				onChange={(e) => setComment(e.target.value)}
+		<>
+			<form onSubmit={(e) => postComment(e, post._id)}>
+				<Input
+					startAdornment={
+						<IconButton onClick={openMenu}>
+							<SentimentSatisfiedOutlinedIcon />
+						</IconButton>
+					}
+					disableUnderline
+					endAdornment={<Button type='submit'>Comment</Button>}
+					fullWidth
+					placeholder='Comment'
+					value={comment}
+					onChange={(e) => setComment(e.target.value)}
+				/>
+			</form>
+			<EmojiList
+				anchorEl={anchorEl}
+				setAnchorEl={setAnchorEl}
+				message={comment}
+				setMessage={setComment}
 			/>
-		</form>
+		</>
 	);
 }
 
