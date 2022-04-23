@@ -12,11 +12,71 @@ import {
 } from '@mui/material';
 import './design/editProfile.css';
 
-function TabPanel({ children, value, index }) {
+function AppsAndWebsitesTabs() {
+	const [value, setValue] = useState(0);
+
+	const handleChange = (e, newValue) => {
+		setValue(newValue);
+	};
+	return (
+		<>
+			<header>Apps and Websites</header>
+			<Tabs onChange={handleChange} value={value} fullWidth centered>
+				<Tab label='Active' />
+				<Tab label='Expired' />
+				<Tab label='Removed' />
+			</Tabs>
+			<TabPanel inner='innerTab' value={value} index={0}>
+				<p>
+					These are apps and websites you've connected to your Instagram
+					account. They can access non-public information that you choose to
+					share with them.
+				</p>
+				<p>
+					You have not authorized any applications to access your Instagram
+					account.
+				</p>
+			</TabPanel>
+			<TabPanel inner='innerTab' value={value} index={1}>
+				<p>
+					These are apps and websites you've connected to your Instagram account
+					that you may not have used in the last 90 days. They're no longer able
+					to access your non-public information, but may still have the
+					information you shared while they were active. "Non-public" means
+					information that an app can only access if you choose to share it when
+					you log in with your Instagram account (like your email address).
+				</p>
+				<p>
+					You have no expired applications that had access to your Instagram
+					account.
+				</p>
+			</TabPanel>
+			<TabPanel inner='innerTab' value={value} index={2}>
+				<p>
+					These are apps and websites that are no longer connected to your
+					Instagram account. They can't access your non-public information
+					anymore, but may still have the information you shared while they were
+					active. "Non-public" means information that an app can only access if
+					you choose to share it when you log in with your Instagram account
+					(like your email address). You can ask an app to delete your
+					information. To do it, review their Privacy Policy for details and
+					contact information. If you contact an app, they may need your User
+					ID.
+				</p>
+				<p>
+					You have no removed applications that had access to your Instagram
+					account.
+				</p>
+			</TabPanel>
+		</>
+	);
+}
+
+function TabPanel({ children, value, index, inner = '' }) {
 	return (
 		<div
 			value={value}
-			className={value !== index ? 'tabPanel hidden' : 'tabPanel'}
+			className={value !== index ? `tabPanel hidden` : `tabPanel ${inner}`}
 		>
 			{children}
 		</div>
@@ -35,7 +95,13 @@ export default function EditProfile() {
 	return (
 		<main>
 			<Card id='editProfileCard'>
-				<Tabs orientation='vertical' value={value} onChange={handleChange}>
+				<Tabs
+					orientation='vertical'
+					value={value}
+					onChange={handleChange}
+					TabIndicatorProps={{ style: { left: 0, width: '.2rem' } }}
+					sx={{ borderRight: 'solid 1px black' }}
+				>
 					<Tab label='Edit Proflie' />
 					<Tab label='Change Password' />
 					<Tab label='Apps and Websites' />
@@ -179,7 +245,7 @@ export default function EditProfile() {
 							</div>
 						</label>
 
-						<label id='bottom'>
+						<label className='bottom'>
 							<span></span>
 							<div>
 								<Button
@@ -201,8 +267,49 @@ export default function EditProfile() {
 						</label>
 					</form>
 				</TabPanel>
-				<TabPanel value={value} index={1}></TabPanel>
-				<TabPanel value={value} index={2}></TabPanel>
+				<TabPanel value={value} index={1}>
+					<section>
+						<Avatar
+							src={
+								loggedInUser.profilePhoto &&
+								`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`
+							}
+						/>
+						<div>{loggedInUser.username}</div>
+					</section>
+					<form>
+						<label>
+							<span>Old Password</span>
+							<TextField type='password' placeholder='Phone Number' />
+						</label>
+						<label>
+							<span>New Password</span>
+							<TextField type='password' placeholder='Phone Number' />
+						</label>
+						<label>
+							<span>Confirm New Password</span>
+							<TextField type='password' placeholder='Phone Number' />
+						</label>
+						<label className='bottom'>
+							<span></span>
+							<div>
+								<Button
+									sx={{ display: 'block' }}
+									className='noTextTrans disableHover'
+									onClick={() => console.log('hi')}
+								>
+									Change Password
+								</Button>
+								<Button className='noTextTrans disableHover'>
+									Forgot Password?
+								</Button>
+							</div>
+						</label>
+					</form>
+				</TabPanel>
+				<TabPanel value={value} index={2}>
+					<AppsAndWebsitesTabs />
+				</TabPanel>
 				<TabPanel value={value} index={3}></TabPanel>
 				<TabPanel value={value} index={4}></TabPanel>
 				<TabPanel value={value} index={5}></TabPanel>

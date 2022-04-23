@@ -65,12 +65,16 @@
 	border: none;
 }
 
-.inboxCard.yesMessage section .MuiCardHeader-root{
+.inboxCard.yesMessage section[id='left'] .MuiCardHeader-root{
 	text-align: center;	
 	border: whitesmoke 1px solid;
 	color: whitesmoke
 }
-
+.inboxCard.yesMessage section[id='right'] .MuiCardHeader-root{
+	text-align: left;	
+	border: whitesmoke 1px solid;
+	color: whitesmoke
+}
 .inboxCard.yesMessage section .MuiCardHeader-action .MuiIconButton-root svg{
 	color: whitesmoke
 }
