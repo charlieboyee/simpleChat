@@ -41,7 +41,7 @@ export default function Tab0({ loggedInUser }) {
 				<label>
 					<span>Name</span>
 					<div>
-						<TextField type='text' placeholder='Name' fullWidth />
+						<TextField disabled type='text' placeholder='Name' fullWidth />
 						<p className='greyText'>
 							Help people discover your account by using the name you're known
 							by: either your full name, nickname, or business name. You can
