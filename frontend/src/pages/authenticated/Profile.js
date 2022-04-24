@@ -19,6 +19,7 @@ import {
 	ListItemAvatar,
 } from '@mui/material';
 import './design/profile.css';
+import Footer from '../../components/Footer';
 
 function TabPanel(props) {
 	const { value, index, children } = props;
@@ -411,6 +412,7 @@ export default function Profile() {
 					videos
 				</TabPanel>
 			</section>
+			<Footer />
 		</main>
 	);
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import Footer from '../../components/Footer';
 import {
 	Avatar,
 	Card,
@@ -387,6 +388,7 @@ export default function EditProfile() {
 				<TabPanel value={value} index={10}></TabPanel>
 				<TabPanel value={value} index={11}></TabPanel>
 			</Card>
+			<Footer />
 		</main>
 	);
 }

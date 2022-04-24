@@ -58,3 +58,19 @@
 #mainNav .mainNavButtons{
 	color: whitesmoke
 }
+
+.authorizedBase footer{
+	margin: 1rem;
+align-self: center;	
+text-align: center;
+font-size: .7rem;
+color: whitesmoke;
+}
+
+.authorizedBase footer .MuiButtonGroup-text .MuiButtonGroup-groupedText{
+	color: whitesmoke;
+	border-color: whitesmoke;
+	font-size: .7rem;
+}
+
+
