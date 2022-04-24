@@ -48,3 +48,18 @@
 .comment .MuiIconButton-root {
 	float: right;
 }
+
+#homePage footer{
+	position: absolute;
+	right: 2rem;
+	bottom: 0;	
+}
+
+#homePage footer .MuiButtonGroup-root{
+	display: flex;
+	flex-direction: column;
+}
+
+#homePage footer .MuiButtonGroup-text .MuiButtonGroup-groupedText{
+	border:none;
+}

@@ -1,0 +1,9 @@
+export { default as Tab0 } from './Tab0';
+export { default as Tab1 } from './Tab1';
+export { default as Tab3 } from './Tab3';
+export { default as Tab4 } from './Tab4';
+export { default as Tab5 } from './Tab5';
+export { default as Tab6 } from './Tab6';
+export { default as Tab7 } from './Tab7';
+export { default as Tab8 } from './Tab8';
+export { default as Tab10 } from './Tab10';

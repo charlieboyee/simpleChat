@@ -1,8 +1,7 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { SocketContext } from '../../index';
-import emojis from 'emojis-list';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import Footer from '../../components/Footer';
 
 import {
 	Autocomplete,
@@ -15,7 +14,6 @@ import {
 	ListItem,
 	ListItemAvatar,
 	ListItemText,
-	Menu,
 	Modal,
 	Paper,
 	Tab,
@@ -437,6 +435,7 @@ export default function Inbox() {
 						Send Message
 					</Button>
 				</Card>
+				<Footer />
 			</>
 		);
 	}
@@ -605,6 +604,7 @@ export default function Inbox() {
 					})}
 				</section>
 			</Card>
+			<Footer />
 		</>
 	);
 }

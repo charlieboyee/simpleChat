@@ -19,7 +19,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SentimentSatisfiedOutlinedIcon from '@mui/icons-material/SentimentSatisfiedOutlined';
 
-import EmojiList from '../../components/Emoji.js';
+import Footer from '../../components/Footer';
+import EmojiList from '../../components/Emoji';
 import './design/home.css';
 
 function CommentInput(props) {
@@ -315,6 +316,7 @@ export default function Home({ homeFeed, setHomeFeed, setNotificationCount }) {
 						</Card>
 					);
 				})}
+				<Footer />
 			</main>
 		);
 	}
