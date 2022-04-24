@@ -6,13 +6,20 @@
     
 }
 
-#editProfileCard .tabPanel.hidden,
-#editProfileCard .tabPanel.hidden.innerTab{
+#editProfileCard .tabPanel.hidden{
     display: none;
 }
 
-#editProfileCard .tabPanel.innerTab{
+#editProfileCard .innerTabPanel.hidden{
+    display: none;
+}
+
+#editProfileCard .innerTabPanel{
     padding: 0
+}
+
+#editProfileCard .innerTabPanel p:last-child{
+    color: grey
 }
 
 #editProfileCard .tabPanel header{
@@ -37,13 +44,17 @@
     display: flex;
 }
 
-#editProfileCard .tabPanel section span{
+
+#editProfileCard .tabPanel section span:first-child{
     flex: 1;
     text-align: right;
 }
-#editProfileCard .tabPanel section .MuiButton-root{
-    flex: 4;
-    padding: 0;
+#editProfileCard .tabPanel section span:last-child{
+flex: 4;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
 }
 
 

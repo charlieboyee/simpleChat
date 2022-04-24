@@ -12,7 +12,33 @@ import {
 } from '@mui/material';
 import './design/editProfile.css';
 
-function AppsAndWebsitesTabs() {
+function TabPanel({ children, value, index }) {
+	return (
+		<div
+			value={value}
+			className={value !== index ? `tabPanel hidden` : `tabPanel`}
+		>
+			{children}
+		</div>
+	);
+}
+
+function InnerTabPanel({ children, value, index, outerValue }) {
+	return (
+		<div
+			value={value}
+			className={
+				value !== index && outerValue !== 2
+					? `innerTabPanel hidden`
+					: `innerTabPanel`
+			}
+		>
+			{children}
+		</div>
+	);
+}
+
+function AppsAndWebsitesTabs({ outerValue }) {
 	const [value, setValue] = useState(0);
 
 	const handleChange = (e, newValue) => {
@@ -21,12 +47,12 @@ function AppsAndWebsitesTabs() {
 	return (
 		<>
 			<header>Apps and Websites</header>
-			<Tabs onChange={handleChange} value={value} fullWidth centered>
-				<Tab label='Active' />
-				<Tab label='Expired' />
-				<Tab label='Removed' />
+			<Tabs onChange={handleChange} value={value} variant='fullWidth' centered>
+				<Tab className='noTextTrans disableHover' label='Active' />
+				<Tab className='noTextTrans disableHover' label='Expired' />
+				<Tab className='noTextTrans disableHover' label='Removed' />
 			</Tabs>
-			<TabPanel inner='innerTab' value={value} index={0}>
+			<InnerTabPanel value={value} index={0}>
 				<p>
 					These are apps and websites you've connected to your Instagram
 					account. They can access non-public information that you choose to
@@ -36,8 +62,8 @@ function AppsAndWebsitesTabs() {
 					You have not authorized any applications to access your Instagram
 					account.
 				</p>
-			</TabPanel>
-			<TabPanel inner='innerTab' value={value} index={1}>
+			</InnerTabPanel>
+			<InnerTabPanel value={value} index={1}>
 				<p>
 					These are apps and websites you've connected to your Instagram account
 					that you may not have used in the last 90 days. They're no longer able
@@ -50,8 +76,8 @@ function AppsAndWebsitesTabs() {
 					You have no expired applications that had access to your Instagram
 					account.
 				</p>
-			</TabPanel>
-			<TabPanel inner='innerTab' value={value} index={2}>
+			</InnerTabPanel>
+			<InnerTabPanel value={value} index={2}>
 				<p>
 					These are apps and websites that are no longer connected to your
 					Instagram account. They can't access your non-public information
@@ -67,21 +93,11 @@ function AppsAndWebsitesTabs() {
 					You have no removed applications that had access to your Instagram
 					account.
 				</p>
-			</TabPanel>
+			</InnerTabPanel>
 		</>
 	);
 }
 
-function TabPanel({ children, value, index, inner = '' }) {
-	return (
-		<div
-			value={value}
-			className={value !== index ? `tabPanel hidden` : `tabPanel ${inner}`}
-		>
-			{children}
-		</div>
-	);
-}
 export default function EditProfile() {
 	const { userData } = useOutletContext();
 	const [loggedInUser] = userData;
@@ -102,17 +118,61 @@ export default function EditProfile() {
 					TabIndicatorProps={{ style: { left: 0, width: '.2rem' } }}
 					sx={{ borderRight: 'solid 1px black' }}
 				>
-					<Tab label='Edit Proflie' />
-					<Tab label='Change Password' />
-					<Tab label='Apps and Websites' />
-					<Tab label='Email Notifications' />
-					<Tab label='Push Notifications' />
-					<Tab label='Manage Contacts' />
-					<Tab label='Privacy and Security' />
-					<Tab label='Supervision' />
-					<Tab label='Login Activity' />
-					<Tab label='Emails from Instagram' />
-					<Tab label='Help' />
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Edit Proflie'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Change Password'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Apps and Websites'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Email Notifications'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Push Notifications'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Manage Contacts'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Privacy and Security'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Supervision'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Login Activity'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Emails from Instagram'
+					/>
+					<Tab
+						disableRipple
+						className='noTextTrans disableHover'
+						label='Help'
+					/>
 				</Tabs>
 				<TabPanel value={value} index={0}>
 					<section>
@@ -138,15 +198,17 @@ export default function EditProfile() {
 							onChange={(e) => setImg(e.target.files[0])}
 							hidden
 						/>
-						<Button
-							disableRipple
-							variant='string'
-							component='label'
-							className='disableHover noTextTrans'
-							htmlFor='editChangePhoto'
-						>
-							Change Profile Photo
-						</Button>
+						<span>
+							<Button
+								disableRipple
+								variant='string'
+								component='label'
+								className='disableHover noTextTrans'
+								htmlFor='editChangePhoto'
+							>
+								Change Profile Photo
+							</Button>
+						</span>
 					</section>
 
 					<form>
@@ -260,6 +322,7 @@ export default function EditProfile() {
 									sx={{ float: 'right' }}
 									disableRipple
 									className='disableHover noTextTrans'
+									onClick={() => console.log('hi')}
 								>
 									Temporariliy disable my account
 								</Button>
@@ -269,13 +332,17 @@ export default function EditProfile() {
 				</TabPanel>
 				<TabPanel value={value} index={1}>
 					<section>
-						<Avatar
-							src={
-								loggedInUser.profilePhoto &&
-								`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`
-							}
-						/>
-						<div>{loggedInUser.username}</div>
+						<span>
+							<IconButton>
+								<Avatar
+									src={
+										loggedInUser.profilePhoto &&
+										`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`
+									}
+								/>
+							</IconButton>
+						</span>
+						<span style={{ paddingLeft: '1rem' }}>{loggedInUser.username}</span>
 					</section>
 					<form>
 						<label>
@@ -308,7 +375,7 @@ export default function EditProfile() {
 					</form>
 				</TabPanel>
 				<TabPanel value={value} index={2}>
-					<AppsAndWebsitesTabs />
+					<AppsAndWebsitesTabs outerValue={2} />
 				</TabPanel>
 				<TabPanel value={value} index={3}></TabPanel>
 				<TabPanel value={value} index={4}></TabPanel>
