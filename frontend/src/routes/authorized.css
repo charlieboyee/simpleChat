@@ -1,6 +1,7 @@
 @font-face {
 	font-family: SimpleFont;
 	src: url('../assets/fonts/Fredoka-Regular.ttf');
+	
 }
 .authorizedBase {
 	height: 100vh;

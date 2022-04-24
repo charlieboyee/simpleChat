@@ -1,0 +1,96 @@
+#editProfileCard{
+    display: flex;
+    margin: 0 auto;
+    max-width: 900px;
+    width: 100%;
+    
+}
+
+#editProfileCard .tabPanel.hidden{
+    display: none;
+}
+
+#editProfileCard .innerTabPanel.hidden{
+    display: none;
+}
+
+#editProfileCard .innerTabPanel{
+    padding: 0
+}
+
+#editProfileCard .innerTabPanel p:last-child{
+    color: grey
+}
+
+#editProfileCard .tabPanel header{
+    font-size: 2rem;
+}
+
+#editProfileCard .tabPanel{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 2rem
+}   
+
+
+
+#editProfileCard .tabPanel form{
+    display: flex;
+    flex-direction: column;
+    
+}
+#editProfileCard .tabPanel section{
+    display: flex;
+}
+
+
+#editProfileCard .tabPanel section span:first-child{
+    flex: 1;
+    text-align: right;
+}
+#editProfileCard .tabPanel section span:last-child{
+flex: 4;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+}
+
+
+
+#editProfileCard .tabPanel form label{
+    display: flex;
+    margin: .2rem 0
+}
+
+#editProfileCard .tabPanel form label span{
+    flex: 1;
+    text-align: right;
+    padding-right: 1rem;
+}
+  
+#editProfileCard .tabPanel form label div{
+  flex: 4   
+}
+
+#editProfileCard .tabPanel form label div h6{
+    display: inline;
+      
+}
+
+#editProfileCard .tabPanel .disableHover{
+    background-color: transparent;
+}
+#editProfileCard .noTextTrans{
+    text-transform: none;
+    pointer-events: initial;
+}
+#editProfileCard .greyText{
+    color: grey
+}
+
+#editProfileCard .bottom{
+    pointer-events: none;
+}
+
