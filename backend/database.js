@@ -68,7 +68,9 @@ const changeReadStatus = async (id) => {
 };
 
 const createAccount = async (user) => {
-	let result = await users.findOne({ username: user.username });
+	let result = await users.findOne({
+		$or: [{ username: user.username }, { email: user.email }],
+	});
 	if (result) return result;
 	const hash = await bcrypt.hash(user.password, saltRounds);
 	result = await users.insertOne({
@@ -79,6 +81,7 @@ const createAccount = async (user) => {
 		following: [],
 		profilePhoto: '',
 		description: '',
+		email: user.email,
 	});
 	return result;
 };

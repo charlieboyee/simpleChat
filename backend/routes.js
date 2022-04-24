@@ -3,6 +3,8 @@ const database = require('./database');
 const { isAuthorized } = require('./middlewares');
 const bcrypt = require('bcrypt');
 const routes = require('./routes/');
+const sendMail = require('./nodeMailer');
+const { text } = require('express');
 const router = express.Router();
 
 router.use('/conversations', routes.conversations);
@@ -42,9 +44,15 @@ router.post('/createAccount', (req, res) => {
 		.createAccount(req.body)
 		.then((user) => {
 			if (user.acknowledged) {
+				sendMail(req.body, 'Account Created');
 				return res.json({ status: true });
 			}
-			res.json({ status: false });
+			if (user.username === req.body.username) {
+				return res.json({ status: false, error: 'username' });
+			}
+			if (user.email === req.body.email) {
+				return res.json({ status: false, error: 'email' });
+			}
 		})
 		.catch((err) => res.sendStatus(500));
 });

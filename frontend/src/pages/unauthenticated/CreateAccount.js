@@ -16,8 +16,10 @@ export default function CreateAccount() {
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [email, setEmail] = useState('');
 	const [usernameError, setUsernameError] = useState(false);
 	const [passwordError, setPasswordError] = useState(false);
+	const [emailError, setEmailError] = useState(false);
 
 	const createAccount = async (e) => {
 		e.preventDefault();
@@ -26,13 +28,19 @@ export default function CreateAccount() {
 			headers: {
 				'content-type': 'application/json',
 			},
-			body: JSON.stringify({ username, password }),
+			body: JSON.stringify({ username, password, email }),
 		});
 		if (result.status === 200) {
-			const { status } = await result.json();
-			if (status) return navigate('/', { replace: true });
-
-			setUsernameError(true);
+			const data = await result.json();
+			if (data.status) return navigate('/', { replace: true });
+			switch (data.error) {
+				case 'username':
+					return setUsernameError(true);
+				case 'email':
+					return setEmailError(true);
+				default:
+					console.log('Error creating account.');
+			}
 			return;
 		}
 		console.log('there is an error');
@@ -45,7 +53,13 @@ export default function CreateAccount() {
 	};
 
 	const handlePasswordChange = (e) => {
+		setPasswordError(false);
 		setPassword(e.target.value);
+	};
+
+	const handleEmailChange = (e) => {
+		setEmailError(false);
+		setEmail(e.target.value);
 	};
 
 	return (
@@ -61,6 +75,15 @@ export default function CreateAccount() {
 							value={username}
 							onChange={handleUsernameChange}
 							placeholder='Username'
+						/>
+						<TextField
+							required
+							helperText={emailError && 'Email already in use'}
+							error={emailError}
+							value={email}
+							onChange={handleEmailChange}
+							placeholder='example@email.com'
+							type='email'
 						/>
 						<TextField
 							required
