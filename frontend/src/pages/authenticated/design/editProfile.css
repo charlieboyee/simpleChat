@@ -5,17 +5,29 @@
     width: 100%;
     
 }
+#editProfileCard .tabPanel{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 2rem;
+    flex: 4
+}   
 
+#editProfileCard .MuiTabs-root{
+    flex: 2
+}
+
+#editProfileCard #innerTabs{
+    flex: 0
+}
+
+#editProfileCard .innerTabPanel.hidden,
 #editProfileCard .tabPanel.hidden{
     display: none;
 }
 
-#editProfileCard .innerTabPanel.hidden{
-    display: none;
-}
-
 #editProfileCard .innerTabPanel{
-    padding: 0
+    padding: 0;    
 }
 
 #editProfileCard .innerTabPanel p:last-child{
@@ -25,20 +37,9 @@
 #editProfileCard .tabPanel header{
     font-size: 2rem;
 }
-
-#editProfileCard .tabPanel{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 2rem
-}   
-
-
-
 #editProfileCard .tabPanel form{
     display: flex;
-    flex-direction: column;
-    
+    flex-direction: column;  
 }
 #editProfileCard .tabPanel section{
     display: flex;
@@ -56,7 +57,6 @@ flex-direction: column;
 justify-content: center;
 align-items: flex-start;
 }
-
 
 
 #editProfileCard .tabPanel form label{
@@ -92,5 +92,25 @@ align-items: flex-start;
 
 #editProfileCard .bottom{
     pointer-events: none;
+}
+
+#editProfileCard .tabPanel[value='3'] div{
+    margin-left: 1rem
+}
+
+#editProfileCard .tabPanel[value='4'] .MuiFormControl-root{
+    margin-bottom: 1rem;
+    border-bottom: solid 1px black
+}
+#editProfileCard .tabPanel[value='4'] .MuiFormLabel-root,
+#editProfileCard .tabPanel[value='6'] .MuiFormLabel-root{
+    font-weight: bold;
+    color: black;   
+}
+
+#editProfileCard .tabPanel[value='4'] .MuiFormControlLabel-label,
+#editProfileCard .tabPanel[value='6'] .MuiFormControlLabel-label{
+    font-size: .8rem;
+    font-weight: bold;
 }
 

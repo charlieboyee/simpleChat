@@ -435,6 +435,7 @@ export default function Inbox() {
 						Send Message
 					</Button>
 				</Card>
+				<Footer />
 			</>
 		);
 	}

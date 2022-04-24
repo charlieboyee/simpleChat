@@ -1,16 +1,8 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import Footer from '../../components/Footer';
-import {
-	Avatar,
-	Card,
-	Checkbox,
-	Button,
-	IconButton,
-	Tab,
-	Tabs,
-	TextField,
-} from '@mui/material';
+import * as EditProfileTab from './editProfileTabs';
+import { Button, Card, Tab, Tabs } from '@mui/material';
 import './design/editProfile.css';
 
 function TabPanel({ children, value, index }) {
@@ -39,6 +31,45 @@ function InnerTabPanel({ children, value, index, outerValue }) {
 	);
 }
 
+function EmailsFromSimpleChat() {
+	const [value, setValue] = useState(0);
+
+	const handleChange = (e, newValue) => {
+		setValue(newValue);
+	};
+	return (
+		<>
+			<header>Emails From SimpleChat</header>
+			<Tabs
+				id='innerTabs'
+				onChange={handleChange}
+				value={value}
+				variant='fullWidth'
+				centered
+			>
+				<Tab className='noTextTrans disableHover' label='Security' />
+				<Tab className='noTextTrans disableHover' label='Other' />
+			</Tabs>
+			<InnerTabPanel value={value} index={0}>
+				<p>
+					Security and login emails from Instagram in the last 14 days will
+					appear here. You can use it to verify which emails are real and which
+					are fake.
+					<Button className='disableHover noTextTrans'>Learn more.</Button>
+				</p>
+			</InnerTabPanel>
+			<InnerTabPanel value={value} index={1}>
+				<p>
+					Other emails from Instagram in the last 14 days that aren't about
+					security or login will appear here. You can use it to verify which
+					emails are real and which are fake. Learn more.
+					<Button className='disableHover noTextTrans'>Learn more.</Button>
+				</p>
+			</InnerTabPanel>
+		</>
+	);
+}
+
 function AppsAndWebsitesTabs({ outerValue }) {
 	const [value, setValue] = useState(0);
 
@@ -48,7 +79,13 @@ function AppsAndWebsitesTabs({ outerValue }) {
 	return (
 		<>
 			<header>Apps and Websites</header>
-			<Tabs onChange={handleChange} value={value} variant='fullWidth' centered>
+			<Tabs
+				id='innerTabs'
+				onChange={handleChange}
+				value={value}
+				variant='fullWidth'
+				centered
+			>
 				<Tab className='noTextTrans disableHover' label='Active' />
 				<Tab className='noTextTrans disableHover' label='Expired' />
 				<Tab className='noTextTrans disableHover' label='Removed' />
@@ -104,7 +141,6 @@ export default function EditProfile() {
 	const [loggedInUser] = userData;
 
 	const [value, setValue] = useState(0);
-	const [img, setImg] = useState(null);
 
 	const handleChange = (e, newValue) => {
 		setValue(newValue);
@@ -167,7 +203,7 @@ export default function EditProfile() {
 					<Tab
 						disableRipple
 						className='noTextTrans disableHover'
-						label='Emails from Instagram'
+						label='Emails from SimpleChat'
 					/>
 					<Tab
 						disableRipple
@@ -176,217 +212,36 @@ export default function EditProfile() {
 					/>
 				</Tabs>
 				<TabPanel value={value} index={0}>
-					<section>
-						<span>
-							<IconButton
-								disableRipple
-								component='label'
-								htmlFor='editChangePhoto'
-							>
-								<Avatar
-									src={
-										loggedInUser.profilePhoto &&
-										`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`
-									}
-								/>
-							</IconButton>
-						</span>
-
-						<input
-							id='editChangePhoto'
-							type='file'
-							accept='image/*'
-							onChange={(e) => setImg(e.target.files[0])}
-							hidden
-						/>
-						<span>
-							<Button
-								disableRipple
-								variant='string'
-								component='label'
-								className='disableHover noTextTrans'
-								htmlFor='editChangePhoto'
-							>
-								Change Profile Photo
-							</Button>
-						</span>
-					</section>
-
-					<form>
-						<label>
-							<span>Name</span>
-							<div>
-								<TextField type='text' placeholder='Name' fullWidth />
-								<p className='greyText'>
-									Help people discover your account by using the name you're
-									known by: either your full name, nickname, or business name.
-									You can only change your name twice within 14 days.
-								</p>
-							</div>
-						</label>
-
-						<label>
-							<span>Username</span>
-							<div>
-								<TextField
-									fullWidth
-									type='text'
-									disabled
-									placeholder={loggedInUser.username}
-								/>
-								<p className='greyText'>
-									In most cases, you'll be able to change your username back to
-									undefined for another undefined days.
-									<Button
-										disableRipple
-										variant='text'
-										className='disableHover noTextTrans'
-									>
-										Learn more.
-									</Button>
-								</p>
-							</div>
-						</label>
-
-						<label>
-							<span>Website</span>
-							<TextField
-								type='text'
-								disabled
-								placeholder='http://wwww.simpleChat.com'
-							/>
-						</label>
-
-						<label>
-							<span>Description</span>
-							<TextField placeholder='Description' />
-						</label>
-						<label>
-							<span></span>
-							<div className='greyText'>
-								<h6>Personal Information</h6>
-								<p>
-									Provide your personal information, even if the account is used
-									for a business, a pet or something else. This won't be a part
-									of your public profile.
-								</p>
-							</div>
-						</label>
-
-						<label>
-							<span>Email</span>
-							<TextField
-								type='email'
-								disabled
-								placeholder='example@email.com'
-							/>
-						</label>
-
-						<label>
-							<span>Phone Number</span>
-							<TextField type='text' disabled placeholder='Phone Number' />
-						</label>
-
-						<label>
-							<span>Gender</span>
-							<TextField type='text' disabled placeholder='Gender' />
-						</label>
-
-						<label>
-							<span>Similar Account Suggestions</span>
-							<div>
-								<Checkbox
-									sx={{ float: 'left' }}
-									disableRipple
-									disabled
-									defaultChecked
-								/>
-								<h6>
-									Include your account when recommending similar accounts people
-									might want to follow.
-								</h6>
-							</div>
-						</label>
-
-						<label className='bottom'>
-							<span></span>
-							<div>
-								<Button
-									variant='contained'
-									className='noTextTrans'
-									onClick={() => console.log('gii')}
-								>
-									Submit
-								</Button>
-
-								<Button
-									sx={{ float: 'right' }}
-									disableRipple
-									className='disableHover noTextTrans'
-									onClick={() => console.log('hi')}
-								>
-									Temporariliy disable my account
-								</Button>
-							</div>
-						</label>
-					</form>
+					<EditProfileTab.Tab0 loggedInUser={loggedInUser} />
 				</TabPanel>
 				<TabPanel value={value} index={1}>
-					<section>
-						<span>
-							<IconButton>
-								<Avatar
-									src={
-										loggedInUser.profilePhoto &&
-										`${process.env.REACT_APP_S3_URL}${loggedInUser.profilePhoto}`
-									}
-								/>
-							</IconButton>
-						</span>
-						<span style={{ paddingLeft: '1rem' }}>{loggedInUser.username}</span>
-					</section>
-					<form>
-						<label>
-							<span>Old Password</span>
-							<TextField type='password' placeholder='Phone Number' />
-						</label>
-						<label>
-							<span>New Password</span>
-							<TextField type='password' placeholder='Phone Number' />
-						</label>
-						<label>
-							<span>Confirm New Password</span>
-							<TextField type='password' placeholder='Phone Number' />
-						</label>
-						<label className='bottom'>
-							<span></span>
-							<div>
-								<Button
-									sx={{ display: 'block' }}
-									className='noTextTrans disableHover'
-									onClick={() => console.log('hi')}
-								>
-									Change Password
-								</Button>
-								<Button className='noTextTrans disableHover'>
-									Forgot Password?
-								</Button>
-							</div>
-						</label>
-					</form>
+					<EditProfileTab.Tab1 loggedInUser={loggedInUser} />
 				</TabPanel>
 				<TabPanel value={value} index={2}>
 					<AppsAndWebsitesTabs outerValue={2} />
 				</TabPanel>
-				<TabPanel value={value} index={3}></TabPanel>
-				<TabPanel value={value} index={4}></TabPanel>
-				<TabPanel value={value} index={5}></TabPanel>
-				<TabPanel value={value} index={6}></TabPanel>
-				<TabPanel value={value} index={7}></TabPanel>
+				<TabPanel value={value} index={3}>
+					<EditProfileTab.Tab3 />
+				</TabPanel>
+				<TabPanel value={value} index={4}>
+					<EditProfileTab.Tab4 />
+				</TabPanel>
+				<TabPanel value={value} index={5}>
+					<EditProfileTab.Tab5 />
+				</TabPanel>
+				<TabPanel value={value} index={6}>
+					<EditProfileTab.Tab6 />
+				</TabPanel>
+				<TabPanel value={value} index={7}>
+					<EditProfileTab.Tab7 />
+				</TabPanel>
 				<TabPanel value={value} index={8}></TabPanel>
-				<TabPanel value={value} index={9}></TabPanel>
-				<TabPanel value={value} index={10}></TabPanel>
-				<TabPanel value={value} index={11}></TabPanel>
+				<TabPanel value={value} index={9}>
+					<EmailsFromSimpleChat />
+				</TabPanel>
+				<TabPanel value={value} index={10}>
+					<EditProfileTab.Tab10 />
+				</TabPanel>
 			</Card>
 			<Footer />
 		</main>
