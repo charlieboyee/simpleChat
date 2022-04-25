@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import { SocketContext } from '../index';
+import Loading from '../components/Loading';
 import * as Page from '../pages/authenticated';
 import NavBar from './NavBar';
 import NotFound from '../pages/NotFound';
@@ -90,7 +91,7 @@ export default function AuthorizedRoutes() {
 	}, []);
 
 	if (!socket) {
-		return <div>no socket</div>;
+		return <Loading />;
 	}
 	return (
 		<Routes>

@@ -320,5 +320,5 @@ export default function Home({ homeFeed, setHomeFeed, setNotificationCount }) {
 			</main>
 		);
 	}
-	return <h1>Nothing to display yet</h1>;
+	return <h1>There are no posts to show.</h1>;
 }

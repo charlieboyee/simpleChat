@@ -2,6 +2,7 @@ import { useEffect, useState, useContext, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { SocketContext } from '../../index';
 import Footer from '../../components/Footer';
+import Loading from '../../components/Loading';
 
 import {
 	Autocomplete,
@@ -255,6 +256,8 @@ export default function Inbox() {
 
 	const [conversationList, setConversationList] = useState([]);
 
+	const [contentLoading, setContentLoading] = useState(true);
+
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState([]);
 	const [value, setValue] = useState([]);
@@ -275,6 +278,7 @@ export default function Inbox() {
 			})
 			.then(({ data }) => {
 				setConversationList(data);
+				setContentLoading(false);
 			});
 
 		return () => {
@@ -357,6 +361,9 @@ export default function Inbox() {
 		closeModal();
 	};
 
+	if (contentLoading) {
+		return <Loading />;
+	}
 	if (!conversationList.length) {
 		return (
 			<>

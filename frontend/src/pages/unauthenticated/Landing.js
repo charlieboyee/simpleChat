@@ -30,6 +30,7 @@ export default function Landing() {
 
 	const logIn = async (e) => {
 		e.preventDefault();
+
 		const result = await fetch('/api/logIn', {
 			method: 'POST',
 			headers: {
