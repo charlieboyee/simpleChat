@@ -20,9 +20,9 @@ export default function CreateAccount() {
 
 	const [emailError, setEmailError] = useState(false);
 	const [verificationError, setVerificationError] = useState(false);
+	const [confirmError, setConfirmError] = useState(false);
 
 	const [newPassword, setNewPassword] = useState('');
-	const [oldPassword, setOldPassword] = useState('');
 	const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
 	const handleCodeChange = (e) => {
@@ -35,9 +35,39 @@ export default function CreateAccount() {
 		setEmail(e.target.value);
 	};
 
-	const changePassword = () => {};
+	const handleConfirmPassword = (e) => {
+		setConfirmError(false);
+		setConfirmNewPassword(e.target.value);
+	};
+	const handleNewPassword = (e) => {
+		setConfirmError(false);
+		setNewPassword(e.target.value);
+	};
 
-	const verifyCode = async () => {
+	const changePassword = async (e) => {
+		e.preventDefault();
+		if (newPassword !== confirmNewPassword) {
+			setConfirmError(true);
+			return;
+		}
+		const result = await fetch('/api/changePassword', {
+			method: 'PUT',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ email, newPassword }),
+		});
+
+		if (result.status === 200) {
+			navigate('/', { replace: true });
+			return;
+		}
+
+		setConfirmError(true);
+		return;
+	};
+
+	const verifyCode = async (e) => {
+		e.preventDefault();
+
 		const result = await fetch('/api/verifyCode', {
 			method: 'PUT',
 			body: JSON.stringify({ code, email }),
@@ -53,7 +83,6 @@ export default function CreateAccount() {
 
 	const sendEmail = async (e) => {
 		e.preventDefault();
-		console.log(email);
 		const result = await fetch('/api/sendVerificationCode', {
 			method: 'PUT',
 			headers: { 'content-type': 'application/json' },
@@ -65,6 +94,7 @@ export default function CreateAccount() {
 		}
 		if (result.status === 204) {
 			setEmailError(true);
+			return;
 		}
 	};
 
@@ -105,25 +135,30 @@ export default function CreateAccount() {
 	if (stage === 1) {
 		return (
 			<main id='forgotPassword'>
-				<Card>
-					<CardHeader title='Forgot Password' />
-					<CardContent>
-						<p>Code expires in 3 minutes.</p>
-						<TextField
-							helperText={verificationError && 'Please try again.'}
-							error={verificationError}
-							placeholder='Verification Code'
-							onChange={handleCodeChange}
-							value={code}
-						/>
-					</CardContent>
-					<CardActions>
-						<Button onClick={verifyCode}>Verify</Button>
-						<Button onClick={() => navigate('/', { replace: true })}>
-							Already have an account? Click here.
-						</Button>
-					</CardActions>
-				</Card>
+				<form onSubmit={verifyCode}>
+					<Card>
+						<CardHeader title='Forgot Password' />
+						<CardContent>
+							<p>Code expires in 3 minutes.</p>
+							<TextField
+								helperText={verificationError && 'Please try again.'}
+								error={verificationError}
+								placeholder='Verification Code'
+								onChange={handleCodeChange}
+								value={code}
+							/>
+						</CardContent>
+						<CardActions>
+							<Button type='submit'>Verify</Button>
+							<Button
+								type='button'
+								onClick={() => navigate('/', { replace: true })}
+							>
+								Already have an account? Click here.
+							</Button>
+						</CardActions>
+					</Card>
+				</form>
 			</main>
 		);
 	}
@@ -131,32 +166,43 @@ export default function CreateAccount() {
 	if (stage === 2) {
 		return (
 			<main id='forgotPassword'>
-				<Card>
-					<CardHeader title='Forgot Password' />
-					<CardContent>
-						<TextField
-							placeholder='Old Password'
-							value={oldPassword}
-							type='password'
-						/>
-						<TextField
-							placeholder='New Password'
-							value={newPassword}
-							type='password'
-						/>
-						<TextField
-							placeholder='Confirm New Password'
-							value={confirmNewPassword}
-							type='password'
-						/>
-					</CardContent>
-					<CardActions>
-						<Button onClick={changePassword}>Reset Password</Button>
-						<Button onClick={() => navigate('/', { replace: true })}>
-							Already have an account? Click here.
-						</Button>
-					</CardActions>
-				</Card>
+				<form onSubmit={changePassword}>
+					<Card>
+						<CardHeader title='Forgot Password' />
+						<CardContent>
+							<TextField
+								placeholder='New Password'
+								value={newPassword}
+								type='password'
+								onChange={handleNewPassword}
+								required
+								error={confirmError}
+							/>
+							<TextField
+								placeholder='Confirm New Password'
+								value={confirmNewPassword}
+								type='password'
+								required
+								error={confirmError}
+								onChange={handleConfirmPassword}
+								helperText={
+									confirmError && newPassword !== confirmNewPassword
+										? 'Please make sure that both fields match'
+										: 'Code expired or network error'
+								}
+							/>
+						</CardContent>
+						<CardActions>
+							<Button type='submit'>Reset Password</Button>
+							<Button
+								type='button'
+								onClick={() => navigate('/', { replace: true })}
+							>
+								Already have an account? Click here.
+							</Button>
+						</CardActions>
+					</Card>
+				</form>
 			</main>
 		);
 	}

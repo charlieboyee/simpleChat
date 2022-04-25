@@ -57,6 +57,21 @@ const addFollower = async (user, follower) => {
 	return null;
 };
 
+const changePassword = async ({ newPassword, email }) => {
+	const hash = await bcrypt.hash(newPassword, saltRounds);
+
+	const query = { email };
+	const options = { returnDocument: 'after' };
+	const update = { $set: { password: hash } };
+
+	const result = await users.findOneAndUpdate(query, update, options);
+
+	if (result.lastErrorObject.n) {
+		return true;
+	}
+	return null;
+};
+
 const changeReadStatus = async (id) => {
 	const query = { _id: new ObjectId(id) };
 	const update = { $set: { read: true } };
@@ -519,6 +534,7 @@ const verifyCode = async (email, code) => {
 
 module.exports = {
 	addFollower,
+	changePassword,
 	changeReadStatus,
 	createAccount,
 	createPost,

@@ -19,6 +19,17 @@ router.get('/allUsers', isAuthorized, (req, res) => {
 		.catch((err) => res.sendStatus(500));
 });
 
+router.put('/changePassword', (req, res) => {
+	database
+		.changePassword(req.body)
+		.then((result) => {
+			if (result) {
+				return res.sendStatus(200);
+			}
+			return res.sendStatus(204);
+		})
+		.catch((err) => res.sendStatus(500));
+});
 router.post('/createAccount', (req, res) => {
 	database
 		.createAccount(req.body)
@@ -51,19 +62,7 @@ router.post('/logIn', (req, res) => {
 				req.session.user = req.body.username;
 				return res.json({ status: [req.sessionID, result] });
 			}
-			res.json({ status: false });
-		})
-		.catch((err) => res.sendStatus(500));
-});
-
-router.put('/verifyCode', (req, res) => {
-	database
-		.verifyCode(req.body.email, req.body.code)
-		.then((result) => {
-			if (result) {
-				return res.sendStatus(200);
-			}
-			return res.sendStatus(204);
+			return res.json({ status: false });
 		})
 		.catch((err) => res.sendStatus(500));
 });
@@ -80,13 +79,24 @@ router.put('/sendVerificationCode', (req, res) => {
 					return res.sendStatus(204);
 				})
 				.catch((err) => {
-					console.log(err);
 					return res.sendStatus(500);
 				});
 		})
 		.catch((err) => {
 			res.sendStatus(500);
 		});
+});
+
+router.put('/verifyCode', (req, res) => {
+	database
+		.verifyCode(req.body.email, req.body.code)
+		.then((result) => {
+			if (result) {
+				return res.sendStatus(200);
+			}
+			return res.sendStatus(204);
+		})
+		.catch((err) => res.sendStatus(500));
 });
 
 router.get('/', isAuthorized, (req, res) => {

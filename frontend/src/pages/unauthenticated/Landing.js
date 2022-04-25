@@ -16,16 +16,15 @@ export default function Landing() {
 	const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [usernameError, setUsernameError] = useState(false);
-	const [passwordError, setPasswordError] = useState(false);
+	const [error, setError] = useState(false);
 
 	const handleUsernameChange = (e) => {
-		setUsernameError(false);
+		setError(false);
 		setUsername(e.target.value);
 	};
 
 	const handlePasswordChange = (e) => {
-		setPasswordError(false);
+		setError(false);
 		setPassword(e.target.value);
 	};
 
@@ -44,8 +43,7 @@ export default function Landing() {
 				setLoggedIn(true);
 				return;
 			}
-			setPasswordError(true);
-			setUsernameError(true);
+			setError(true);
 			return;
 		}
 	};
@@ -59,16 +57,17 @@ export default function Landing() {
 					<form onSubmit={logIn}>
 						<TextField
 							required
-							error={usernameError}
+							error={error}
 							onChange={handleUsernameChange}
 							placeholder='Username'
 						/>
 						<TextField
 							required
-							error={passwordError}
+							error={error}
 							onChange={handlePasswordChange}
 							placeholder='Password'
 							type='password'
+							helperText={error && 'Username or password incorrect.'}
 						/>
 						<Button type='submit'>Log In</Button>
 					</form>
