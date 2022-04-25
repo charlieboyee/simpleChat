@@ -515,7 +515,7 @@ export default function Inbox() {
 						value={tabValue}
 						onChange={handleTabChange}
 						TabIndicatorProps={{
-							style: { background: 'whitesmoke' },
+							style: { background: 'black', right: 0, width: 3 },
 						}}
 					>
 						{conversationList.map((selectedConvo, selectedConvoIndex) => {
