@@ -3,11 +3,22 @@ const nodemailer = require('nodemailer');
 async function sendMail(options, type) {
 	let text;
 	let subject;
-	if (type === 'Account Created') {
-		subject = 'Account successfully created.';
-		text =
-			'Welcome to SimpleChat! Please respect the community guidelines and chat away!';
+	let code;
+	switch (type) {
+		case 'Account Created':
+			subject = 'Account successfully created.';
+			text =
+				'Welcome to SimpleChat! Please respect the community guidelines and chat away!';
+			break;
+		case 'Code':
+			code = Math.floor(Math.random() * 900000) + 100000;
+			text = `This is your code ${code}`;
+			subject = 'Password reset code.';
+			break;
+		default:
+			console.log('No email type');
 	}
+
 	const transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
@@ -24,7 +35,7 @@ async function sendMail(options, type) {
 	};
 
 	const result = await transporter.sendMail(mailOptions);
-	return result;
+	return code;
 }
 
 module.exports = sendMail;

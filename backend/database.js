@@ -475,6 +475,18 @@ const storeMessage = async (messageObj, participants) => {
 	return null;
 };
 
+const storeVerificationCode = async (email, code) => {
+	const token = jwt.sign({ code }, process.env.ACCESS_SECRET, {
+		expiresIn: 1800000,
+	});
+	if (!token) return null;
+	const result = await users.updateOne({ email }, { $set: { tempJwt: token } });
+	if (result.modifiedCount) {
+		return true;
+	}
+	return null;
+};
+
 const unFollow = async (user, userToUnfollow) => {
 	const query = { username: user };
 	const update = { $pull: { following: userToUnfollow } };
@@ -488,6 +500,19 @@ const unFollow = async (user, userToUnfollow) => {
 	const result = await Promise.all([prom, prom2]);
 	if (result[0].lastErrorObject.n && result[1].lastErrorObject.n) {
 		return result[0].value;
+	}
+	return null;
+};
+
+const verifyCode = async (email, code) => {
+	const result = await users.findOne({ email });
+	if (!result) return null;
+	console.log(result);
+
+	const decoded = jwt.verify(result.tempJwt, process.env.ACCESS_SECRET);
+	if (!decoded.code) return null;
+	if (code == decoded.code) {
+		return true;
 	}
 	return null;
 };
@@ -518,5 +543,7 @@ module.exports = {
 	removeFollower,
 	runDb,
 	storeMessage,
+	storeVerificationCode,
 	unFollow,
+	verifyCode,
 };
