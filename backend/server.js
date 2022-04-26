@@ -34,7 +34,7 @@ database.runDb().then(() => {
 	app.use(
 		session({
 			store: new RedisStore({ client: redisClient }),
-			secret: 'jjong',
+			secret: process.env.SESSION_SECRET,
 			resave: false,
 			genid: () => {
 				return uuidv4(); // use UUIDs for session IDs
