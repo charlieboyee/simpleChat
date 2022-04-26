@@ -12,6 +12,10 @@ const { createServer } = require('http');
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(path.join(__dirname, 'build')));
+}
+
 let RedisStore = require('connect-redis')(session);
 const { createClient } = require('redis');
 let redisClient = createClient({ legacyMode: true });
@@ -25,9 +29,7 @@ redisClient.on('error', (err) => {
 });
 
 require('./socketIo')(io, database);
-if (process.env.NODE_ENV === 'production') {
-	app.use(express.static(path.join(__dirname, 'build')));
-}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
