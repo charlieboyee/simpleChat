@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 const api = require('./routes.js');
 const database = require('./database');
 const express = require('express');
@@ -24,9 +25,8 @@ redisClient.on('error', (err) => {
 });
 
 require('./socketIo')(io, database);
-console.log(__dirname + '\\build');
 if (process.env.NODE_ENV === 'production') {
-	app.use(express.static(path.join(__dirname, '\\build')));
+	app.use(express.static(path.join(__dirname, 'build')));
 }
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
