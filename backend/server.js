@@ -48,7 +48,7 @@ database.runDb().then(() => {
 	);
 	app.use('/api', api);
 
-	httpServer.listen(process.env.PORT, () => {
+	httpServer.listen(process.env.PORT || 3001, () => {
 		console.log(`Connected to port ${process.env.PORT}`);
 	});
 });
