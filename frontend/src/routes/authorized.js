@@ -54,6 +54,7 @@ export default function AuthorizedRoutes() {
 		fetch('/api/notifications/count', { signal })
 			.then((res) => {
 				if (res.status === 200) {
+					console.log(res);
 					return res.json();
 				}
 			})
