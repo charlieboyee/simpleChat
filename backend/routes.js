@@ -64,7 +64,10 @@ router.post('/logIn', (req, res) => {
 			}
 			return res.json({ status: false });
 		})
-		.catch((err) => res.sendStatus(500));
+		.catch((err) => {
+			console.log(err);
+			res.sendStatus(500);
+		});
 });
 
 router.put('/sendVerificationCode', (req, res) => {
