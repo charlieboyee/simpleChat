@@ -20,7 +20,7 @@ let RedisStore = require('connect-redis')(session);
 const { createClient } = require('redis');
 let redisClient = createClient({
 	legacyMode: true,
-	url: process.env.REDIS_TLS_URL,
+	url: process.env.REDIS_URL,
 });
 redisClient.connect();
 
