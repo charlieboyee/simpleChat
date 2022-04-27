@@ -11,3 +11,4 @@ Known Issues
 - Messages in conversation collection will not scale. It will hit maximum memory for its document at 16MB.
 - Video upload is not supported yet.
 - Not DRY.
+- Email verification not working yet.
