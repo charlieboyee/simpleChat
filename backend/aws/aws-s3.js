@@ -13,7 +13,11 @@ const IAM = process.env.S3_IAM;
 
 const s3 = new S3Client({
 	region: region,
-	credentials: fromIni({ profile: IAM }),
+	//fromIni({ profile: IAM })
+	credentials: {
+		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+	},
 });
 
 const deletePhoto = async (key) => {
