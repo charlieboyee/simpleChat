@@ -84,9 +84,15 @@ router.post('/', upload.single('file'), (req, res) => {
 					}
 					res.json({ status: false });
 				})
-				.catch((err) => res.sendStatus(500));
+				.catch((err) => {
+					console.log(err);
+					res.sendStatus(500);
+				});
 		})
-		.catch((err) => res.sendStatus(500));
+		.catch((err) => {
+			console.log(err);
+			res.sendStatus(500);
+		});
 });
 
 router.get('/', (req, res) => {
