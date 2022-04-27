@@ -51,6 +51,7 @@ database.runDb().then(() => {
 				return uuidv4(); // use UUIDs for session IDs
 			},
 			cookie: {
+				secure: true,
 				httpOnly: true,
 				maxAge: minute * 60,
 			},
