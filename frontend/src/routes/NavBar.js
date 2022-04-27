@@ -61,6 +61,10 @@ export default function NavBar({
 	}, []);
 
 	useEffect(() => {
+		console.log(notifications);
+	}, [notifications]);
+
+	useEffect(() => {
 		console.log(postModalOpen);
 	}, [postModalOpen]);
 
