@@ -8,6 +8,7 @@ router.get('/count', (req, res) => {
 	database
 		.getUserNotificationCount(req.session.user)
 		.then((result) => {
+			console.log(result);
 			return res.json({ count: result });
 		})
 		.catch((err) => {
