@@ -7,7 +7,7 @@ const {
 	S3Client,
 } = require('@aws-sdk/client-s3');
 const { fromIni } = require('@aws-sdk/credential-provider-ini');
-const bucket = process.env.S3_BUCKET;
+const bucket = process.env.S3_BUCKET_NAME;
 const region = process.env.S3_REGION;
 const IAM = process.env.S3_IAM;
 
