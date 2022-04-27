@@ -61,8 +61,8 @@ export default function NavBar({
 	}, []);
 
 	useEffect(() => {
-		console.log(notifications);
-	}, [notifications]);
+		console.log(postModalOpen);
+	}, [postModalOpen]);
 
 	useEffect(() => {
 		if (!searchLoading) {
