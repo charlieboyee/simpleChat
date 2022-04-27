@@ -299,6 +299,7 @@ export default function NavBar({
 									<MenuItem
 										key={index}
 										onClick={() => {
+											console.log('clicking');
 											switch (notification.type) {
 												case 'like' || 'comment':
 													goToPost(notification.postRef, notification._id);
