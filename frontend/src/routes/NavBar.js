@@ -310,7 +310,10 @@ export default function NavBar({
 										onClick={() => {
 											console.log('clicking');
 											switch (notification.type) {
-												case 'like' || 'comment':
+												case 'like':
+													goToPost(notification.postRef, notification._id);
+													return;
+												case 'comment':
 													goToPost(notification.postRef, notification._id);
 													return;
 												case 'following':
