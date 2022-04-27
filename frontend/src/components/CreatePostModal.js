@@ -50,6 +50,7 @@ export default function CreatePostModal(props) {
 			}
 			return;
 		}
+		return;
 	};
 
 	const toStageZero = () => {
