@@ -10,7 +10,11 @@ router.get('/count', (req, res) => {
 		.then((result) => {
 			return res.json({ count: result });
 		})
-		.catch((err) => req.sendStatus(500));
+		.catch((err) => {
+			console.log(err);
+			req.sendStatus(500);
+			return;
+		});
 });
 
 router.put('/read', (req, res) => {
