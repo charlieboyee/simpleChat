@@ -135,6 +135,7 @@ export default function NavBar({
 	};
 
 	const goToPost = (postId, notiId) => {
+		console.log(postId, notiId);
 		setNotificationId(notiId);
 		setPostModalOpen(true);
 		setPostToView(postId);
