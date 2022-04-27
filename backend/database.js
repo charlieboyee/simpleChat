@@ -524,7 +524,6 @@ const unFollow = async (user, userToUnfollow) => {
 const verifyCode = async (email, code) => {
 	const result = await users.findOne({ email });
 	if (!result) return null;
-	console.log(result);
 
 	const decoded = jwt.verify(result.tempJwt, process.env.ACCESS_SECRET);
 	if (!decoded.code) return null;

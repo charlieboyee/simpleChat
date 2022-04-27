@@ -61,14 +61,6 @@ export default function NavBar({
 	}, []);
 
 	useEffect(() => {
-		console.log(notifications);
-	}, [notifications]);
-
-	useEffect(() => {
-		console.log(postModalOpen);
-	}, [postModalOpen]);
-
-	useEffect(() => {
 		if (!searchLoading) {
 			return;
 		}
@@ -139,7 +131,6 @@ export default function NavBar({
 	};
 
 	const goToPost = (postId, notiId) => {
-		console.log(postId, notiId);
 		setNotificationId(notiId);
 		setPostModalOpen(true);
 		setPostToView(postId);
@@ -308,13 +299,11 @@ export default function NavBar({
 									<MenuItem
 										key={index}
 										onClick={() => {
-											console.log('clicking');
 											switch (notification.type) {
-												case 'like':
+												case 'like' || 'comment':
 													goToPost(notification.postRef, notification._id);
 													return;
-												case 'comment':
-													goToPost(notification.postRef, notification._id);
+
 													return;
 												case 'following':
 													goToUser(

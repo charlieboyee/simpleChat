@@ -4,16 +4,12 @@ import {
 	Modal,
 	Button,
 	Card,
-	CardHeader,
 	CardContent,
-	CardMedia,
 	IconButton,
 	Input,
 	List,
 	ListItem,
 	ListItemAvatar,
-	ListItemButton,
-	ListItemText,
 	CircularProgress,
 } from '@mui/material';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
@@ -132,7 +128,6 @@ export default function PostModal({
 				);
 				if (results.status === 200) {
 					const data = await results.json();
-					console.log(data);
 					setPostToView(data[0]);
 					setLoading(false);
 				}
