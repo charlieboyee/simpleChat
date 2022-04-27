@@ -57,7 +57,8 @@ export default function AuthorizedRoutes() {
 					return res.json();
 				}
 			})
-			.then(({ count }) => setNotificationCount(count));
+			.then(({ count }) => setNotificationCount(count))
+			.catch((err) => console.log(err));
 		fetch(`/api/user`, { signal })
 			.then((res) => {
 				if (res.status === 200) {
