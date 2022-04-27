@@ -13,7 +13,7 @@ router.get('/count', (req, res) => {
 		})
 		.catch((err) => {
 			console.log(err);
-			req.sendStatus(500);
+			req.statusCode(500).send(err);
 			return;
 		});
 });
