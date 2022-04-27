@@ -131,7 +131,7 @@ export default function PostModal({
 					}
 				);
 				if (results.status === 200) {
-					const data = await results.json();
+					const { data } = await results.json();
 					setPostToView(data[0]);
 					setLoading(false);
 				}
